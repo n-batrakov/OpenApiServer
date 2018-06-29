@@ -1,4 +1,6 @@
-﻿using JetBrains.Annotations;
+using System.Diagnostics;
+
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +20,8 @@ namespace App
         [UsedImplicitly]
         public void ConfigureServices(IServiceCollection services)
         {
+            var specs = OpenApiDocumentsProvider.GetDocuments("Specs");
+            Debugger.Break();
         }
 
         [UsedImplicitly]
