@@ -6,7 +6,7 @@ using ITExpert.OpenApiServer.Exceptions;
 
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApiServer.Util
+namespace ITExpert.OpenApiServer.Utils
 {
     public class ReferenceResolver
     {

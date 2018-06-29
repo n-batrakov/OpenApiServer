@@ -1,3 +1,9 @@
+using System.IO;
+using System.Linq;
+
+using ITExpert.OpenApiServer.MockServer;
+using ITExpert.OpenApiServer.Utils;
+
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,6 +29,11 @@ namespace ITExpert.OpenApiServer.Configuration
         [UsedImplicitly]
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            var defaultDir = Path.Combine(env.ContentRootPath, "Specs");
+            var specsDir = Configuration.GetValue("specs", defaultDir);
+            var specs = OpenApiDocumentsProvider.GetDocuments(specsDir).ToArray();
+
+            app.UseMockServer(specs);
         }
     }
 }

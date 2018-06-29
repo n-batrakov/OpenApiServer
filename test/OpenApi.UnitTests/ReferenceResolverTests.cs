@@ -1,5 +1,5 @@
 using ITExpert.OpenApiServer.Exceptions;
-using ITExpert.OpenApiServer.Util;
+using ITExpert.OpenApiServer.Utils;
 
 using Microsoft.OpenApi.Models;
 
