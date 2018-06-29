@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using ITExpert.OpenApiServer.Exceptions;
+
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
@@ -10,7 +12,7 @@ using Microsoft.OpenApi.Readers;
 
 using Newtonsoft.Json.Linq;
 
-namespace App
+namespace ITExpert.OpenApiServer.Utils
 {
     public static class OpenApiDocumentsProvider
     {

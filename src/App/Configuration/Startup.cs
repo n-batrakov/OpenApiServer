@@ -1,12 +1,10 @@
-using System.Diagnostics;
-
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace App
+namespace ITExpert.OpenApiServer.Configuration
 {
     public class Startup
     {
