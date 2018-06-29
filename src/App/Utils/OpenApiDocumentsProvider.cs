@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 
 using ITExpert.OpenApiServer.Exceptions;
+using ITExpert.OpenApiServer.Extensions;
 
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Extensions;
@@ -75,7 +76,7 @@ namespace ITExpert.OpenApiServer.Utils
         }
 
         private static IEnumerable<IEnumerable<OpenApiDocument>> GroupBySpecName(IEnumerable<OpenApiDocument> specs) =>
-                specs.GroupBy(x => $"{x.Info.Title}:{x.Info.Version}").Select(x => (IEnumerable<OpenApiDocument>)x);
+                specs.GroupBy(x => x.GetId()).Select(x => (IEnumerable<OpenApiDocument>)x);
 
         private static OpenApiDocument MergeSpecs(IEnumerable<OpenApiDocument> doc)
         {
