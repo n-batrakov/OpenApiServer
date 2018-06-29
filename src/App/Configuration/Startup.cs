@@ -20,8 +20,6 @@ namespace App
         [UsedImplicitly]
         public void ConfigureServices(IServiceCollection services)
         {
-            var specs = OpenApiDocumentsProvider.GetDocuments("Specs");
-            Debugger.Break();
         }
 
         [UsedImplicitly]
