@@ -8,21 +8,15 @@ using Microsoft.OpenApi.Models;
 
 namespace ITExpert.OpenApiServer.Utils
 {
-    public class ReferenceResolver
+    public static class OpenApiDocumentExtensions
     {
-        private OpenApiDocument Document { get; }
-
-        public ReferenceResolver(OpenApiDocument document)
-        {
-            Document = document;
-        }
-
-        public T Resolve<T>(OpenApiReference reference)
+        public static T ResolveReference<T>(this OpenApiDocument doc, OpenApiReference reference)
         {
             if (reference.IsLocal && reference.Type != null)
             {
-                return (T)ResolveLocalByType(reference.Id, reference.Type.Value);
+                return (T)ResolveLocalByType(doc, reference.Id, reference.Type.Value);
             }
+
             if (reference.IsExternal)
             {
                 throw new NotSupportedException("External references are not supported just yet.");
@@ -31,9 +25,9 @@ namespace ITExpert.OpenApiServer.Utils
             throw new FormatException($"Invalid reference: '{reference.Id}'");
         }
 
-        private object ResolveLocalByType(string id, ReferenceType type)
+        private static object ResolveLocalByType(OpenApiDocument doc, string id, ReferenceType type)
         {
-            var lookup = Document.Components;
+            var lookup = doc.Components;
             switch (type)
             {
                 case ReferenceType.Schema:
@@ -55,7 +49,7 @@ namespace ITExpert.OpenApiServer.Utils
                 case ReferenceType.Callback:
                     return GetValue(lookup.Callbacks);
                 case ReferenceType.Tag:
-                    return Document.Tags.FirstOrDefault(x => x.Name.Equals(id, StringComparison.OrdinalIgnoreCase));
+                    return doc.Tags.FirstOrDefault(x => x.Name.Equals(id, StringComparison.OrdinalIgnoreCase));
                 default:
                     throw new ArgumentOutOfRangeException();
             }

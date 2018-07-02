@@ -15,20 +15,19 @@ namespace ITExpert.OpenApiServer.MockServer
         public static IApplicationBuilder UseMockServer(this IApplicationBuilder app, params OpenApiDocument[] specs)
         {
             var routes = specs.SelectMany(GetRoutes).ToArray();
-            var validator = new RequestValidator();
-            var generator = new ResponseGenerator();
             var routeBuilder = new RouteBuilder(app);
 
             foreach (var route in routes)
             {
                 var template = GetRouteTemplate(route.Path);
-                var handler = new MockRouteHandler(route.Operation, validator, generator, route.Resolver);
+                var handler = new MockRouteHandler(route.Operation, route.Validator, route.Generator);
                 routeBuilder.MapVerb(template, route.OperationType.ToString(), handler.InvokeAsync);
             }
 
             return app.UseRouter(routeBuilder.Build());
         }
 
+        // ReSharper disable once UnusedParameter.Local
         private static string GetRouteTemplate(string openApiRoute)
         {
             throw new NotImplementedException();
@@ -36,33 +35,28 @@ namespace ITExpert.OpenApiServer.MockServer
 
         private static IEnumerable<MockServerRouteContext> GetRoutes(OpenApiDocument doc)
         {
-            var resolver = new ReferenceResolver(doc);
+            var validator = new RequestValidator();
+            var generator = new ResponseGenerator(doc);
+
             return doc.Paths.SelectMany(
                     path => path.Value.Operations.Select(
-                            verb => new MockServerRouteContext(
-                                    path.Key,
-                                    verb.Key,
-                                    verb.Value,
-                                    resolver)));
+                            verb => new MockServerRouteContext
+                                    {
+                                            Path = path.Key,
+                                            Operation = verb.Value,
+                                            OperationType = verb.Key,
+                                            Validator = validator,
+                                            Generator = generator
+                                    }));
         }
 
         private class MockServerRouteContext
         {
-            public string Path { get; }
-            public OperationType OperationType { get; }
-            public OpenApiOperation Operation { get; }
-            public ReferenceResolver Resolver { get; }
-
-            public MockServerRouteContext(string path,
-                                          OperationType operationType,
-                                          OpenApiOperation operation,
-                                          ReferenceResolver resolver)
-            {
-                Path = path;
-                OperationType = operationType;
-                Operation = operation;
-                Resolver = resolver;
-            }
+            public string Path { get; set; }
+            public OperationType OperationType { get; set; }
+            public OpenApiOperation Operation { get; set; }
+            public RequestValidator Validator { get; set; }
+            public ResponseGenerator Generator { get; set; }
         }
     }
 }

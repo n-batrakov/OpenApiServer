@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 
-using ITExpert.OpenApiServer.Util;
+using JetBrains.Annotations;
 
 using Microsoft.OpenApi.Models;
 
 namespace ITExpert.OpenApiServer.Utils
 {
+    [PublicAPI]
     public class MockHttpResponse
     {
         public int StatusCode { get; }
@@ -14,11 +15,18 @@ namespace ITExpert.OpenApiServer.Utils
         public IDictionary<string, string> Headers { get; }
     }
 
+    [PublicAPI]
     public class ResponseGenerator
     {
+        private OpenApiDocument Document { get; }
+
+        public ResponseGenerator(OpenApiDocument document)
+        {
+            Document = document;
+        }
+
         public MockHttpResponse MockResponse(OpenApiResponse spec,
-                                             string mediaType,
-                                             ReferenceResolver resolver)
+                                             string mediaType)
         {
             throw new NotImplementedException();
         }

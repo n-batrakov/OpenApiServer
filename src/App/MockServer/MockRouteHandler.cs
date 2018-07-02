@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
+using ITExpert.OpenApiServer.MockServer.Types;
 using ITExpert.OpenApiServer.Utils;
 
 using Microsoft.AspNetCore.Http;
@@ -18,25 +19,23 @@ namespace ITExpert.OpenApiServer.MockServer
     public class MockRouteHandler
     {
         private OpenApiOperation Operation { get; }
+
         private RequestValidator Validator { get; }
         private ResponseGenerator Generator { get; }
-        private ReferenceResolver Resolver { get; }
 
         public MockRouteHandler(OpenApiOperation operation,
                                 RequestValidator validator,
-                                ResponseGenerator generator,
-                                ReferenceResolver resolver)
+                                ResponseGenerator generator)
         {
             Operation = operation;
             Validator = validator;
             Generator = generator;
-            Resolver = resolver;
         }
 
         public Task InvokeAsync(HttpContext ctx)
         {
             var requestCtx = GetRequestContext(ctx.Request);
-            var status = Validator.Validate(requestCtx, Operation, Resolver);
+            var status = Validator.Validate(requestCtx, Operation);
             if (status.IsFaulty)
             {
                 return RespondWithErrors(ctx.Response, status.Errors);
@@ -44,7 +43,7 @@ namespace ITExpert.OpenApiServer.MockServer
 
             var responseSpec = ChooseResponse();
             var mediaType = GetAcceptableMediaType(ctx.Request);
-            var responseMock = Generator.MockResponse(responseSpec, mediaType, Resolver);
+            var responseMock = Generator.MockResponse(responseSpec, mediaType);
             return RespondWithMock(ctx.Response, responseMock);
         }
 
@@ -98,17 +97,16 @@ namespace ITExpert.OpenApiServer.MockServer
             return response.WriteAsync(json, Encoding.UTF8);
         }
 
-        private static HttpRequestValidationContext GetRequestContext(HttpRequest request)
-        {
-            return new HttpRequestValidationContext
-                   {
-                           Route = request.Path,
-                           Headers = request.Headers,
-                           Query = request.Query,
-                           Form = request.Form,
-                           Body = ReadBody(request)
-                   };
-        }
+        private static HttpRequestValidationContext GetRequestContext(HttpRequest request) =>
+                new HttpRequestValidationContext
+                {
+                        Route = request.Path,
+                        Headers = request.Headers,
+                        Query = request.Query,
+                        Form = request.Form,
+                        Body = ReadBody(request),
+                        ContentType = request.ContentType
+                };
 
         private static string ReadBody(HttpRequest request)
         {

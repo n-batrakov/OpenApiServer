@@ -1,6 +1,6 @@
 using Xunit.Sdk;
 
-namespace OpenApiServer.UnitTests
+namespace OpenApiServer.UnitTests.Utils
 {
     public static class DeepAssert
     {
