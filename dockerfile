@@ -14,4 +14,4 @@ RUN dotnet publish -c Release -r linux-x64 --self-contained -o publish -nowarn:m
 FROM base AS final
 WORKDIR /app
 COPY --from=build /sln/src/App/publish .
-CMD ["./ITExpert.OpenApi"]
+CMD ["./ITExpert.OpenApiServer"]
