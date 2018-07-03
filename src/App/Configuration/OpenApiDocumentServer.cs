@@ -51,7 +51,7 @@ namespace ITExpert.OpenApiServer.Configuration
             const string filename = "swagger.json";
             var ver = $"v{apiVersion}";
             var name = apiTitle.Replace(" ", "");
-            return Path.Combine(dir, name, ver, filename);
+            return Path.Combine(dir, name, ver, filename).ToLowerInvariant();
         }
     }
 }
