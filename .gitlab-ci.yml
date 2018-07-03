@@ -1,0 +1,43 @@
+stages:
+  - build
+  - push
+  - deploy
+
+variables:
+  image: itexpert/openapi
+  service: spec
+  url_dev: http://localmail.itexpert.ru:6001/api/spec/
+
+
+
+build docker image:
+  stage: build
+  only:
+    - develop
+  tags: 
+    - linux-docker
+  script: docker build -t $image .
+
+push docker image:
+  stage: push
+  only:
+    - develop
+  tags:
+    - linux-docker
+  retry: 2
+  script: docker push $image
+
+deploy develop:
+  stage: deploy
+  only:
+    - develop
+  tags:
+    - ritm
+  retry: 2
+  environment:
+    name: develop
+    url: $url_dev
+  script: >
+    cd /srv/ritm &&
+    docker pull $image &&
+    docker-compose up -d $service

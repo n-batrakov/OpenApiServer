@@ -29,7 +29,7 @@ namespace ITExpert.OpenApiServer.Configuration
         [UsedImplicitly]
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            var defaultDir = Path.Combine(env.ContentRootPath, "Specs");
+            var defaultDir = Path.Combine(env.ContentRootPath, "specs");
             var specsDir = Configuration.GetValue("specs", defaultDir);
             var specs = OpenApiDocumentsProvider.GetDocuments(specsDir).ToArray();
 
