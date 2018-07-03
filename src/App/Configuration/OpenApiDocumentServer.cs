@@ -4,6 +4,7 @@ using System.IO;
 using ITExpert.OpenApiServer.Extensions;
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
@@ -14,14 +15,16 @@ namespace ITExpert.OpenApiServer.Configuration
     {
         public static IApplicationBuilder UseOpenApiServer(this IApplicationBuilder app,
                                                            IEnumerable<OpenApiDocument> specs,
-                                                           string webRootPath)
+                                                           string contentDirectory)
         {
-            WriteSpecs(webRootPath, specs);
+            WriteSpecs(contentDirectory, specs);
 
+            var fileProvider = new PhysicalFileProvider(contentDirectory);
             return app.UseFileServer(new FileServerOptions
                                      {
                                              EnableDirectoryBrowsing = true,
-                                             DirectoryBrowserOptions = {RequestPath = ""}
+                                             DirectoryBrowserOptions = {RequestPath = ""},
+                                             FileProvider = fileProvider
                                      });
         }
 
