@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace ITExpert.OpenApiServer.Configuration
 {
@@ -27,11 +28,11 @@ namespace ITExpert.OpenApiServer.Configuration
         }
 
         [UsedImplicitly]
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             var defaultDir = Path.Combine(env.ContentRootPath, "specs");
             var specsDir = Configuration.GetValue("specs", defaultDir);
-            var specs = OpenApiDocumentsProvider.GetDocuments(specsDir).ToArray();
+            var specs = OpenApiDocumentsProvider.GetDocuments(specsDir, loggerFactory).ToArray();
 
             //app.UseMockServer(specs);
 

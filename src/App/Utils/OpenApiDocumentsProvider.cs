@@ -6,6 +6,7 @@ using System.Linq;
 using ITExpert.OpenApiServer.Exceptions;
 using ITExpert.OpenApiServer.Extensions;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
@@ -27,18 +28,26 @@ namespace ITExpert.OpenApiServer.Utils
                         MergeNullValueHandling = MergeNullValueHandling.Ignore
                 };
 
-        public static IEnumerable<OpenApiDocument> GetDocuments(string directory)
+        public static IEnumerable<OpenApiDocument> GetDocuments(string directory, ILoggerFactory loggerFactory)
         {
+            var logger = loggerFactory.CreateLogger("SpecReader");
+            logger.LogInformation($"Searching for specs in {directory}");
+
             var yamlFiles = GetFilesRecursiveley(directory, "*.yml");
             var jsonFiles = GetFilesRecursiveley(directory, "*.json");
-            var specs = Enumerable
-                        .Concat(yamlFiles, jsonFiles)
+            var files = jsonFiles.Concat(yamlFiles).ToArray();
+
+            var specs = files
                         .Where(x => !string.IsNullOrEmpty(x))
                         .Select(ConvertToSpec);
 
-            var result = GroupBySpecName(specs).Select(MergeSpecs);
+            var result = GroupBySpecName(specs).Select(MergeSpecs).ToArray();
 
-            return result.ToArray();
+            var names = string.Join(", ", result.Select(x => x.GetId()));
+            logger.LogInformation($"Specs merged ({files.Length} to {result.Length}).");
+            logger.LogInformation($"Specs available: {names}");
+
+            return result;
         }
 
         private static IEnumerable<string> GetFilesRecursiveley(string directory, string pattern)
