@@ -5,7 +5,7 @@ stages:
 
 variables:
   image: itexpert/openapi
-  service: spec
+  service: specs
   url_dev: http://localmail.itexpert.ru:6001/api/spec/
 
 
