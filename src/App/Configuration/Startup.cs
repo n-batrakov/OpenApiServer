@@ -36,7 +36,7 @@ namespace ITExpert.OpenApiServer.Configuration
 
             //app.UseMockServer(specs);
 
-            app.UseOpenApiServer(specs, env.WebRootPath);
+            app.UseOpenApiServer(specs, Path.Combine(env.ContentRootPath, "wwwroot"));
         }
     }
 }
