@@ -76,7 +76,7 @@ namespace ITExpert.OpenApiServer.Utils
         }
 
         private static IEnumerable<IEnumerable<OpenApiDocument>> GroupBySpecName(IEnumerable<OpenApiDocument> specs) =>
-                specs.GroupBy(x => x.GetId()).Select(x => (IEnumerable<OpenApiDocument>)x);
+                specs.OrderBy(x => x.Info.Version).GroupBy(x => x.GetId()).Select(x => (IEnumerable<OpenApiDocument>)x);
 
         private static OpenApiDocument MergeSpecs(IEnumerable<OpenApiDocument> doc)
         {
