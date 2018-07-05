@@ -4,6 +4,7 @@ using System.IO;
 using ITExpert.OpenApiServer.Extensions;
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Extensions;
@@ -24,8 +25,17 @@ namespace ITExpert.OpenApiServer.Configuration
                                      {
                                              EnableDirectoryBrowsing = true,
                                              DirectoryBrowserOptions = {RequestPath = ""},
-                                             FileProvider = fileProvider
+                                             FileProvider = fileProvider,
+                                             StaticFileOptions =
+                                             {
+                                                     OnPrepareResponse = OnPrepareResponse
+                                             }
                                      });
+        }
+
+        private static void OnPrepareResponse(StaticFileResponseContext obj)
+        {
+            obj.Context.Response.ContentType += ";charset=utf-8";
         }
 
         private static void WriteSpecs(string dir, IEnumerable<OpenApiDocument> specs)
