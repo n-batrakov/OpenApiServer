@@ -25,17 +25,8 @@ namespace ITExpert.OpenApiServer.Configuration
                                      {
                                              EnableDirectoryBrowsing = true,
                                              DirectoryBrowserOptions = {RequestPath = ""},
-                                             FileProvider = fileProvider,
-                                             StaticFileOptions =
-                                             {
-                                                     OnPrepareResponse = OnPrepareResponse
-                                             }
+                                             FileProvider = fileProvider
                                      });
-        }
-
-        private static void OnPrepareResponse(StaticFileResponseContext obj)
-        {
-            obj.Context.Response.ContentType += ";charset=utf-8";
         }
 
         private static void WriteSpecs(string dir, IEnumerable<OpenApiDocument> specs)
