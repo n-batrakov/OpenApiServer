@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -11,7 +12,7 @@ using Microsoft.OpenApi;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
-
+using Microsoft.OpenApi.Writers;
 using Newtonsoft.Json.Linq;
 
 namespace ITExpert.OpenApiServer.Utils
@@ -94,7 +95,10 @@ namespace ITExpert.OpenApiServer.Utils
 
             JObject SerializeAsJson(OpenApiDocument spec)
             {
-                var json = spec.Serialize(OpenApiSpecVersion.OpenApi3_0, OpenApiFormat.Json);
+                var stringWriter = new StringWriter();
+                var openApiWriter = new MyJsonWriter(stringWriter);
+                spec.Serialize(openApiWriter, OpenApiSpecVersion.OpenApi3_0);
+                var json = stringWriter.ToString();
                 return JObject.Parse(json);
             }
 
@@ -102,6 +106,18 @@ namespace ITExpert.OpenApiServer.Utils
             {
                 first.Merge(second, MergeSettings);
                 return first;
+            }
+        }
+
+        private class MyJsonWriter : OpenApiJsonWriter
+        {
+            public MyJsonWriter(TextWriter textWriter): base(textWriter)
+            {
+            }
+
+            public override void WriteValue(DateTimeOffset value) 
+            {
+                WriteValue(value.ToString("o"));
             }
         }
     }
