@@ -39,7 +39,7 @@ namespace ITExpert.OpenApi.Server.Configuration
             {
                 var path = GetSpecFilePath(dir, spec.Info.GetMajorVersion(), spec.Info.Title);
                 var content = spec.SerializeAsJson(OpenApiSpecVersion.OpenApi3_0);
-
+                
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
 
                 using (var writer = File.CreateText(path))

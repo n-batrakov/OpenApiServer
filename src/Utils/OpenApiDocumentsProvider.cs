@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Microsoft.OpenApi;
-using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
-using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Linq;
 
@@ -25,11 +22,9 @@ namespace ITExpert.OpenApi.Utils
                         MergeNullValueHandling = MergeNullValueHandling.Ignore
                 };
 
-        public static IEnumerable<OpenApiDocument> GetDocuments(string directory)
+        public static IEnumerable<OpenApiDocument> GetDocuments(string directory, bool recursively = true)
         {
-            var yamlFiles = GetFilesRecursiveley(directory, "*.yml");
-            var jsonFiles = GetFilesRecursiveley(directory, "*.json");
-            var files = jsonFiles.Concat(yamlFiles).ToArray();
+            var files = GetFiles(directory, new[] {"*.json", "*.yml", "*.yaml"}, recursively);
 
             var specs = files
                         .Where(x => !string.IsNullOrEmpty(x))
@@ -38,14 +33,14 @@ namespace ITExpert.OpenApi.Utils
             return GroupBySpecName(specs).Select(MergeSpecs).ToArray();
         }
 
-        private static IEnumerable<string> GetFilesRecursiveley(string directory, string pattern)
+        private static IEnumerable<string> GetFiles(string directory, string[] patterns, bool recursively)
         {
-            return GetPaths(directory).Select(File.ReadAllText);
+            return patterns.SelectMany(GetPaths).Select(File.ReadAllText);
 
-            IEnumerable<string> GetPaths(string dir) =>
-                    Directory
-                            .GetFiles(dir, pattern)
-                            .Concat(Directory.GetDirectories(dir).SelectMany(GetPaths));
+            IEnumerable<string> GetPaths(string pattern) =>
+                    recursively
+                            ? Directory.GetFiles(directory, pattern, SearchOption.AllDirectories)
+                            : Directory.GetFiles(directory, pattern, SearchOption.TopDirectoryOnly);
         }
 
         private static OpenApiDocument ConvertToSpec(string spec)
@@ -80,31 +75,13 @@ namespace ITExpert.OpenApi.Utils
             var jsonSpec = doc.Select(SerializeAsJson).Aggregate(MergeJson).ToString();
             return ConvertToSpec(jsonSpec);
 
-            JObject SerializeAsJson(OpenApiDocument spec)
-            {
-                var stringWriter = new StringWriter();
-                var openApiWriter = new MyOpenApiJsonWriter(stringWriter);
-                spec.Serialize(openApiWriter, OpenApiSpecVersion.OpenApi3_0);
-                var json = stringWriter.ToString();
-                return JObject.Parse(json);
-            }
+            JObject SerializeAsJson(OpenApiDocument spec) =>
+                    JObject.Parse(OpenApiSerializer.Serialize(spec));
 
             JObject MergeJson(JObject first, JObject second)
             {
                 first.Merge(second, MergeSettings);
                 return first;
-            }
-        }
-
-        private class MyOpenApiJsonWriter : OpenApiJsonWriter
-        {
-            public MyOpenApiJsonWriter(TextWriter textWriter): base(textWriter)
-            {
-            }
-
-            public override void WriteValue(DateTimeOffset value) 
-            {
-                WriteValue(value.ToString("o"));
             }
         }
     }
