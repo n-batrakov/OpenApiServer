@@ -1,16 +1,15 @@
 using System.Collections.Generic;
 using System.IO;
 
-using ITExpert.OpenApiServer.Extensions;
+using ITExpert.OpenApi.Utils;
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApiServer.Configuration
+namespace ITExpert.OpenApi.Server.Configuration
 {
     public static class OpenApiDocumentServer
     {

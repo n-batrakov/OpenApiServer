@@ -1,6 +1,6 @@
 using System;
 
-using ITExpert.OpenApiServer.MockServer.Types;
+using ITExpert.OpenApi.Server.MockServer.Types;
 
 namespace OpenApiServer.UnitTests.Utils
 {

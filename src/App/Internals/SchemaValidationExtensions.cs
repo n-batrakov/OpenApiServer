@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using ITExpert.OpenApiServer.MockServer.Types;
+using ITExpert.OpenApi.Server.MockServer.Types;
 
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Writers;
@@ -10,7 +10,7 @@ using Microsoft.OpenApi.Writers;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApiServer.Utils
+namespace ITExpert.OpenApi.Server.Internals
 {
     public static class SchemaValidationExtensions
     {

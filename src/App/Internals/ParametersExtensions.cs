@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApiServer.Utils
+namespace ITExpert.OpenApi.Server.Internals
 {
     public static class ParametersExtensions
     {

@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenApiServer", "src\App\OpenApiServer.csproj", "{E6739915-5F73-41A2-816B-DA252C69FD8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "src\App\Server.csproj", "{E6739915-5F73-41A2-816B-DA252C69FD8B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenApiServer.UnitTests", "test\OpenApi.UnitTests\OpenApiServer.UnitTests.csproj", "{3D3D7A36-2653-494C-BE57-42350777BF35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "test\OpenApi.UnitTests\UnitTests.csproj", "{3D3D7A36-2653-494C-BE57-42350777BF35}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utils", "src\Utils\Utils.csproj", "{FC3008D1-2D86-464F-8849-0178929677C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,18 @@ Global
 		{3D3D7A36-2653-494C-BE57-42350777BF35}.Release|x64.Build.0 = Release|Any CPU
 		{3D3D7A36-2653-494C-BE57-42350777BF35}.Release|x86.ActiveCfg = Release|Any CPU
 		{3D3D7A36-2653-494C-BE57-42350777BF35}.Release|x86.Build.0 = Release|Any CPU
+		{FC3008D1-2D86-464F-8849-0178929677C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC3008D1-2D86-464F-8849-0178929677C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC3008D1-2D86-464F-8849-0178929677C4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FC3008D1-2D86-464F-8849-0178929677C4}.Debug|x64.Build.0 = Debug|Any CPU
+		{FC3008D1-2D86-464F-8849-0178929677C4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FC3008D1-2D86-464F-8849-0178929677C4}.Debug|x86.Build.0 = Debug|Any CPU
+		{FC3008D1-2D86-464F-8849-0178929677C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC3008D1-2D86-464F-8849-0178929677C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC3008D1-2D86-464F-8849-0178929677C4}.Release|x64.ActiveCfg = Release|Any CPU
+		{FC3008D1-2D86-464F-8849-0178929677C4}.Release|x64.Build.0 = Release|Any CPU
+		{FC3008D1-2D86-464F-8849-0178929677C4}.Release|x86.ActiveCfg = Release|Any CPU
+		{FC3008D1-2D86-464F-8849-0178929677C4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

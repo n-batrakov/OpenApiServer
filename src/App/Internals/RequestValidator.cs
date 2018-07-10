@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApiServer.MockServer.Types;
+using ITExpert.OpenApi.Server.MockServer.Types;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
@@ -11,7 +11,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace ITExpert.OpenApiServer.Utils
+namespace ITExpert.OpenApi.Server.Internals
 {
     public class HttpRequestValidationContext
     {

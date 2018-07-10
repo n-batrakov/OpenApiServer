@@ -2,14 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApiServer.Exceptions;
-
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApiServer.Utils
+namespace ITExpert.OpenApi.Utils
 {
     public static class OpenApiDocumentExtensions
     {
+        public static string GetId(this OpenApiDocument doc) =>
+                $"{doc.Info.Title.ToLowerInvariant()}@{GetMajorVersion(doc.Info)}";
+
+        public static string GetMajorVersion(this OpenApiInfo info)
+        {
+            var split = info.Version.Split('.');
+            return split[0];
+        }
+
         public static T ResolveReference<T>(this OpenApiDocument doc, OpenApiReference reference)
         {
             if (reference.IsLocal && reference.Type != null)

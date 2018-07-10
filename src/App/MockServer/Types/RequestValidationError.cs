@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ITExpert.OpenApiServer.MockServer.Types
+namespace ITExpert.OpenApi.Server.MockServer.Types
 {
     public class RequestValidationError : IEquatable<RequestValidationError>
     {

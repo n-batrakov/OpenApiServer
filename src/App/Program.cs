@@ -1,9 +1,9 @@
-using ITExpert.OpenApiServer.Configuration;
+using ITExpert.OpenApi.Server.Configuration;
 
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace ITExpert.OpenApiServer
+namespace ITExpert.OpenApi.Server
 {
     public class Program
     {

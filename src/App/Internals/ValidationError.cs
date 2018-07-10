@@ -1,6 +1,6 @@
-using ITExpert.OpenApiServer.MockServer.Types;
+using ITExpert.OpenApi.Server.MockServer.Types;
 
-namespace ITExpert.OpenApiServer.Utils
+namespace ITExpert.OpenApi.Server.Internals
 {
     public static class ValidationError
     {

@@ -1,16 +1,17 @@
 using System.IO;
 using System.Linq;
 
-using ITExpert.OpenApiServer.Utils;
+using ITExpert.OpenApi.Utils;
 
 using JetBrains.Annotations;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace ITExpert.OpenApiServer.Configuration
+namespace ITExpert.OpenApi.Server.Configuration
 {
     public class Startup
     {
@@ -32,7 +33,7 @@ namespace ITExpert.OpenApiServer.Configuration
         {
             var defaultDir = Path.Combine(env.ContentRootPath, "specs");
             var specsDir = Configuration.GetValue("specs", defaultDir);
-            var specs = OpenApiDocumentsProvider.GetDocuments(specsDir, loggerFactory).ToArray();
+            var specs = OpenApiDocumentsProvider.GetDocuments(specsDir).ToArray();
 
             //app.UseMockServer(specs);
 

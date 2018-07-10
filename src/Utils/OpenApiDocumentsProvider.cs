@@ -1,21 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-using ITExpert.OpenApiServer.Exceptions;
-using ITExpert.OpenApiServer.Extensions;
-
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
 using Microsoft.OpenApi.Writers;
+
 using Newtonsoft.Json.Linq;
 
-namespace ITExpert.OpenApiServer.Utils
+namespace ITExpert.OpenApi.Utils
 {
     public static class OpenApiDocumentsProvider
     {
@@ -29,11 +25,8 @@ namespace ITExpert.OpenApiServer.Utils
                         MergeNullValueHandling = MergeNullValueHandling.Ignore
                 };
 
-        public static IEnumerable<OpenApiDocument> GetDocuments(string directory, ILoggerFactory loggerFactory)
+        public static IEnumerable<OpenApiDocument> GetDocuments(string directory)
         {
-            var logger = loggerFactory.CreateLogger("SpecReader");
-            logger.LogInformation($"Searching for specs in {directory}");
-
             var yamlFiles = GetFilesRecursiveley(directory, "*.yml");
             var jsonFiles = GetFilesRecursiveley(directory, "*.json");
             var files = jsonFiles.Concat(yamlFiles).ToArray();
@@ -42,13 +35,7 @@ namespace ITExpert.OpenApiServer.Utils
                         .Where(x => !string.IsNullOrEmpty(x))
                         .Select(ConvertToSpec);
 
-            var result = GroupBySpecName(specs).Select(MergeSpecs).ToArray();
-
-            var names = string.Join(", ", result.Select(x => x.GetId()));
-            logger.LogInformation($"Specs merged ({files.Length} to {result.Length}).");
-            logger.LogInformation($"Specs available: {names}");
-
-            return result;
+            return GroupBySpecName(specs).Select(MergeSpecs).ToArray();
         }
 
         private static IEnumerable<string> GetFilesRecursiveley(string directory, string pattern)
@@ -96,7 +83,7 @@ namespace ITExpert.OpenApiServer.Utils
             JObject SerializeAsJson(OpenApiDocument spec)
             {
                 var stringWriter = new StringWriter();
-                var openApiWriter = new MyJsonWriter(stringWriter);
+                var openApiWriter = new MyOpenApiJsonWriter(stringWriter);
                 spec.Serialize(openApiWriter, OpenApiSpecVersion.OpenApi3_0);
                 var json = stringWriter.ToString();
                 return JObject.Parse(json);
@@ -109,9 +96,9 @@ namespace ITExpert.OpenApiServer.Utils
             }
         }
 
-        private class MyJsonWriter : OpenApiJsonWriter
+        private class MyOpenApiJsonWriter : OpenApiJsonWriter
         {
-            public MyJsonWriter(TextWriter textWriter): base(textWriter)
+            public MyOpenApiJsonWriter(TextWriter textWriter): base(textWriter)
             {
             }
 
