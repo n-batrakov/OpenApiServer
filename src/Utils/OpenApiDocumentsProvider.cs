@@ -28,7 +28,8 @@ namespace ITExpert.OpenApi.Utils
 
             var specs = files
                         .Where(x => !string.IsNullOrEmpty(x))
-                        .Select(ConvertToSpec);
+                        .Select(ConvertToSpec)
+                        .Where(x => x != null);
 
             return GroupBySpecName(specs).Select(MergeSpecs).ToArray();
         }
@@ -57,9 +58,10 @@ namespace ITExpert.OpenApi.Utils
             }
             catch (ArgumentException)
             {
-                throw new OpenApiFormatException(
-                        "Cannot read file. Probably spec version is not specified. " +
-                        "Each spec must contain either `openapi: \"x.x.x\"` or `swagger: 2.0`");
+                //Cannot read file. 
+                // Probably spec version is not specified. 
+                // Each spec must contain either `openapi: \"x.x.x\"` or `swagger: 2.0`
+                return null;
             }
             catch (NullReferenceException)
             {

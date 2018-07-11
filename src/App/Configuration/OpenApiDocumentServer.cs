@@ -17,6 +17,7 @@ namespace ITExpert.OpenApi.Server.Configuration
                                                            IEnumerable<OpenApiDocument> specs,
                                                            string contentDirectory)
         {
+            Directory.CreateDirectory(contentDirectory);
             WriteSpecs(contentDirectory, specs);
 
             var fileProvider = new PhysicalFileProvider(contentDirectory);
@@ -38,7 +39,7 @@ namespace ITExpert.OpenApi.Server.Configuration
             void WriteOneSpec(OpenApiDocument spec)
             {
                 var path = GetSpecFilePath(dir, spec.Info.GetMajorVersion(), spec.Info.Title);
-                var content = spec.SerializeAsJson(OpenApiSpecVersion.OpenApi3_0);
+                var content = OpenApiSerializer.Serialize(spec);
                 
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
 
@@ -53,8 +54,8 @@ namespace ITExpert.OpenApi.Server.Configuration
         {
             const string filename = "swagger.json";
             var ver = $"v{apiVersion}";
-            var name = apiTitle.Replace(" ", "");
-            return Path.Combine(dir, name, ver, filename).ToLowerInvariant();
+            var name = apiTitle.Replace(" ", "").ToLowerInvariant();
+            return Path.Combine(dir, name, ver, filename);
         }
     }
 }
