@@ -1,12 +1,12 @@
 using System.IO;
 
-using ITExpert.OpenApi.Server.Internals;
-using ITExpert.OpenApi.Server.MockServer.Types;
+using ITExpert.OpenApi.Server.Core.MockServer.Internals;
+using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
 
-namespace OpenApiServer.UnitTests.Utils
+namespace UnitTests.Utils
 {
     public static class TestData
     {

@@ -1,13 +1,13 @@
-using ITExpert.OpenApi.Server.Internals;
-using ITExpert.OpenApi.Server.MockServer.Types;
+using ITExpert.OpenApi.Server.Core.MockServer;
+using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
-using OpenApiServer.UnitTests.Utils;
+using UnitTests.Utils;
 
 using Xunit;
 
-using ValidationError = ITExpert.OpenApi.Server.Internals.ValidationError;
+using ValidationError = ITExpert.OpenApi.Server.Core.MockServer.Internals.ValidationError;
 
-namespace OpenApiServer.UnitTests
+namespace UnitTests
 {
     public class RequestValidatorTests
     {

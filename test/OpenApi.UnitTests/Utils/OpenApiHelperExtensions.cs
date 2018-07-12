@@ -7,7 +7,7 @@ using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json;
 
-namespace OpenApiServer.UnitTests.Utils
+namespace UnitTests.Utils
 {
     public static class OpenApiHelperExtensions
     {

@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 
+using ITExpert.OpenApi.Server.Core.DocumentationServer;
 using ITExpert.OpenApi.Utils;
 
 using JetBrains.Annotations;

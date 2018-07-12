@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.Internals
+namespace ITExpert.OpenApi.Server.Core.MockServer.Internals
 {
     public static class ParametersExtensions
     {

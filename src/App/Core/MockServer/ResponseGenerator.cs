@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.Internals
+namespace ITExpert.OpenApi.Server.Core.MockServer
 {
     [PublicAPI]
     public class MockHttpResponse

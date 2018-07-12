@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Server.Internals;
+using ITExpert.OpenApi.Server.Core.MockServer;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Primitives;
 
-namespace OpenApiServer.UnitTests.Utils
+namespace UnitTests.Utils
 {
     public class RequestBuilder
     {

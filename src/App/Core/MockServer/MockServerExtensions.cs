@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Server.Internals;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.MockServer
+namespace ITExpert.OpenApi.Server.Core.MockServer
 {
     public static class MockServerExtensions
     {

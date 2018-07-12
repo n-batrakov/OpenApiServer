@@ -1,8 +1,8 @@
 using System;
 
-using ITExpert.OpenApi.Server.MockServer.Types;
+using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
-namespace OpenApiServer.UnitTests.Utils
+namespace UnitTests.Utils
 {
     public static class RequestStatusExtensions
     {

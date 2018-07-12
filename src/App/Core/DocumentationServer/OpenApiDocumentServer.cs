@@ -5,11 +5,9 @@ using ITExpert.OpenApi.Utils;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.OpenApi;
-using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.Configuration
+namespace ITExpert.OpenApi.Server.Core.DocumentationServer
 {
     public static class OpenApiDocumentServer
     {

@@ -6,15 +6,14 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Server.Internals;
-using ITExpert.OpenApi.Server.MockServer.Types;
+using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json;
 
-namespace ITExpert.OpenApi.Server.MockServer
+namespace ITExpert.OpenApi.Server.Core.MockServer
 {
     public class MockRouteHandler
     {

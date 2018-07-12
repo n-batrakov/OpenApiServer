@@ -4,11 +4,11 @@ using ITExpert.OpenApi.Utils;
 
 using Microsoft.OpenApi.Models;
 
-using OpenApiServer.UnitTests.Utils;
+using UnitTests.Utils;
 
 using Xunit;
 
-namespace OpenApiServer.UnitTests
+namespace UnitTests
 {
     public class ReferenceResolverTests
     {
