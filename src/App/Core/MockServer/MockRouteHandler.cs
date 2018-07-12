@@ -20,11 +20,11 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
         private OpenApiOperation Operation { get; }
 
         private RequestValidator Validator { get; }
-        private ResponseGenerator Generator { get; }
+        private MockResponseGenerator Generator { get; }
 
         public MockRouteHandler(OpenApiOperation operation,
                                 RequestValidator validator,
-                                ResponseGenerator generator)
+                                MockResponseGenerator generator)
         {
             Operation = operation;
             Validator = validator;
@@ -41,18 +41,29 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             }
 
             var responseSpec = ChooseResponse();
-            var mediaType = GetAcceptableMediaType(ctx.Request);
+            var mediaType = GetMediaType(responseSpec);
             var responseMock = Generator.MockResponse(responseSpec, mediaType);
+
             return RespondWithMock(ctx.Response, responseMock);
         }
 
-        // TODO: Implement properly
-        private static string GetAcceptableMediaType(HttpRequest request)
+        private OpenApiMediaType GetMediaType(OpenApiResponse response)
         {
-            return request.Headers["Accept"].First();
+            var hasJson = response.Content.TryGetValue("application/json", out var result);
+            if (hasJson)
+            {
+                return result;
+            }
+
+            var hasAny = response.Content.TryGetValue("*/*", out result);
+            if (hasAny)
+            {
+                return result;
+            }
+
+            throw new NotSupportedException("MockServer only supports 'application/json' or '*/*' for now.");
         }
 
-        // TODO: Choose response based on request
         private OpenApiResponse ChooseResponse()
         {
             if (Operation.Responses.Count == 0)
@@ -85,6 +96,8 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                 response.Headers[header.Key] = header.Value;
             }
 
+            response.ContentType = "application/json";
+
             return response.WriteAsync(mock.Body, Encoding.UTF8);
         }
 
@@ -102,10 +115,15 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                         Route = request.Path,
                         Headers = request.Headers,
                         Query = request.Query,
-                        Form = request.Form,
+                        Form = ReadForm(request),
                         Body = ReadBody(request),
                         ContentType = request.ContentType
                 };
+
+        private static IFormCollection ReadForm(HttpRequest request)
+        {
+            return request.HasFormContentType ? request.Form : null;
+        }
 
         private static string ReadBody(HttpRequest request)
         {

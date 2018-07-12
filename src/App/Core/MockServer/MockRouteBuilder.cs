@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -35,19 +34,19 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             {
                 var template = GetRouteTemplate(route.Path);
                 var handler = new MockRouteHandler(route.Operation, route.Validator, route.Generator);
-                RouteBuilder.MapVerb(template, route.OperationType.ToString(), handler.InvokeAsync);
+                RouteBuilder.MapVerb(route.OperationType.ToString(), template, handler.InvokeAsync);
             }
         }
 
         private static string GetRouteTemplate(string openApiRoute)
         {
-            return openApiRoute;
+            return openApiRoute.Substring(1);
         }
 
         private static IEnumerable<MockServerRouteContext> GetRoutes(OpenApiDocument doc)
         {
             var validator = new RequestValidator();
-            var generator = new ResponseGenerator(doc);
+            var generator = new MockResponseGenerator(doc);
 
             return doc.Paths.SelectMany(
                     path => path.Value.Operations.Select(
@@ -67,7 +66,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             public OperationType OperationType { get; set; }
             public OpenApiOperation Operation { get; set; }
             public RequestValidator Validator { get; set; }
-            public ResponseGenerator Generator { get; set; }
+            public MockResponseGenerator Generator { get; set; }
         }
     }
 }
