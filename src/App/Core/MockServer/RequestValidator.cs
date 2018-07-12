@@ -14,16 +14,6 @@ using Newtonsoft.Json.Linq;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer
 {
-    public class HttpRequestValidationContext
-    {
-        public string Route { get; set; }
-        public IHeaderDictionary Headers { get; set; }
-        public IQueryCollection Query { get; set; }
-        public string Body { get; set; }
-        public IFormCollection Form { get; set; }
-        public string ContentType { get; set; }
-    }
-
     public class RequestValidator
     {
         public RequestValidationStatus Validate(HttpRequestValidationContext context,

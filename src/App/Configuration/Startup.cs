@@ -2,6 +2,7 @@ using System.IO;
 using System.Linq;
 
 using ITExpert.OpenApi.Server.Core.DocumentationServer;
+using ITExpert.OpenApi.Server.Core.MockServer;
 using ITExpert.OpenApi.Utils;
 
 using JetBrains.Annotations;
@@ -36,7 +37,7 @@ namespace ITExpert.OpenApi.Server.Configuration
             var specsDir = Configuration.GetValue("specs", defaultDir);
             var specs = OpenApiDocumentsProvider.GetDocuments(specsDir).ToArray();
 
-            //app.UseMockServer(specs);
+            app.UseMockServer(specs);
 
             app.UseOpenApiServer(specs, Path.Combine(env.ContentRootPath, "wwwroot"));
         }

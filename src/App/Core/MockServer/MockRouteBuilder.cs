@@ -8,27 +8,40 @@ using Microsoft.OpenApi.Models;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer
 {
-    public static class MockServerExtensions
+    public class MockRouteBuilder
     {
-        public static IApplicationBuilder UseMockServer(this IApplicationBuilder app, params OpenApiDocument[] specs)
-        {
-            var routes = specs.SelectMany(GetRoutes).ToArray();
-            var routeBuilder = new RouteBuilder(app);
+        private IEnumerable<OpenApiDocument> Specs { get; }
+        private RouteBuilder RouteBuilder { get; }
 
-            foreach (var route in routes)
+        public MockRouteBuilder(IApplicationBuilder applicationBuilder, IEnumerable<OpenApiDocument> specs)
+        {
+            RouteBuilder = new RouteBuilder(applicationBuilder);
+            Specs = specs;
+        }
+
+        public IRouter Build()
+        {
+            foreach (var spec in Specs)
+            {
+                MapSpec(spec);
+            }
+
+            return RouteBuilder.Build();
+        }
+
+        private void MapSpec(OpenApiDocument spec)
+        {
+            foreach (var route in GetRoutes(spec))
             {
                 var template = GetRouteTemplate(route.Path);
                 var handler = new MockRouteHandler(route.Operation, route.Validator, route.Generator);
-                routeBuilder.MapVerb(template, route.OperationType.ToString(), handler.InvokeAsync);
+                RouteBuilder.MapVerb(template, route.OperationType.ToString(), handler.InvokeAsync);
             }
-
-            return app.UseRouter(routeBuilder.Build());
         }
 
-        // ReSharper disable once UnusedParameter.Local
         private static string GetRouteTemplate(string openApiRoute)
         {
-            throw new NotImplementedException();
+            return openApiRoute;
         }
 
         private static IEnumerable<MockServerRouteContext> GetRoutes(OpenApiDocument doc)
