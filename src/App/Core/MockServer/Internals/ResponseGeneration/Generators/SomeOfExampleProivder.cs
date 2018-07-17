@@ -13,6 +13,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
 
         public SomeOfExampleProivder(IReadOnlyCollection<IOpenApiExampleProvider> providers, Random random)
         {
+            Providers = providers;
             Random = random;
         }
 
