@@ -104,7 +104,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
         private static Task RespondWithErrors(HttpResponse response, IEnumerable<RequestValidationError> errors)
         {
             response.StatusCode = (int)HttpStatusCode.BadRequest;
-
+            response.ContentType = "application/json";
             var json = JsonConvert.SerializeObject(errors);
             return response.WriteAsync(json, Encoding.UTF8);
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using Microsoft.OpenApi.Models;
@@ -10,6 +11,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
     //TODO: Property dependencies
     public class ObjectExampleProvider : IOpenApiExampleProvider
     {
+        private Random Random { get; }
         private IReadOnlyCollection<IOpenApiExampleProvider> Providers { get; }
 
         private static readonly string[] AdditionalPropertiesExampleNames =
@@ -19,9 +21,10 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
                 "DynamicProp3"
         };
 
-        public ObjectExampleProvider(IReadOnlyCollection<IOpenApiExampleProvider> providers)
+        public ObjectExampleProvider(IReadOnlyCollection<IOpenApiExampleProvider> providers, Random random)
         {
             Providers = providers;
+            Random = random;
         }
 
         public bool WriteValue(IOpenApiWriter writer, OpenApiSchema schema)
@@ -35,6 +38,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
             {
                 WriteAllOfSchemas(writer, schema);
                 WriteAnyOfSchema(writer, schema);
+                WriteOneOfSchema(writer, schema);
                 WriteProperties(writer, schema);
             }
             writer.WriteEndObject();
@@ -44,7 +48,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
 
         private void WriteAllOfSchemas(IOpenApiWriter writer, OpenApiSchema schema)
         {
-            if (schema.AllOf == null || schema.AllOf.Count <= 0)
+            if (schema.AllOf == null || schema.AllOf.Count == 0)
             {
                 return;
             }
@@ -57,7 +61,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
 
         private void WriteAnyOfSchema(IOpenApiWriter writer, OpenApiSchema schema)
         {
-            if (schema.AnyOf == null || schema.AnyOf.Count <= 0)
+            if (schema.AnyOf == null || schema.AnyOf.Count == 0)
             {
                 return;
             }
@@ -66,6 +70,18 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
             {
                 WriteProperties(writer, anyOfSchema);
             }
+        }
+
+        private void WriteOneOfSchema(IOpenApiWriter writer, OpenApiSchema schema)
+        {
+            if (schema.OneOf == null || schema.OneOf.Count == 0)
+            {
+                return;
+            }
+
+            var index = Random.Next(0, schema.OneOf.Count);
+            var oneOfSchema = schema.OneOf[index];
+            WriteProperties(writer, oneOfSchema);
         }
 
         private void WriteProperties(IOpenApiWriter writer, OpenApiSchema schema)

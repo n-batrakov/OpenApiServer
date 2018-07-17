@@ -33,6 +33,8 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
                 case OpenApiSchemaType.String:
                 case OpenApiSchemaType.Object:
                 case OpenApiSchemaType.Array:
+                case OpenApiSchemaType.Any:
+                case OpenApiSchemaType.Combined:
                     return false;
                 default:
                     throw new ArgumentOutOfRangeException();

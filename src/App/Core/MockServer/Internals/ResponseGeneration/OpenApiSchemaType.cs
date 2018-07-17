@@ -9,5 +9,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration
         String,
         Object,
         Array,
+        Combined,
+        Any,
     }
 }

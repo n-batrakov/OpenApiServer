@@ -16,7 +16,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
 
         public bool WriteValue(IOpenApiWriter writer, OpenApiSchema schema)
         {
-            var isEnum = schema.IsString() && schema.Enum != null;
+            var isEnum = schema.Enum != null && schema.Enum.Count > 0;
             if (!isEnum)
             {
                 return false;
