@@ -2,7 +2,6 @@ using System.Collections.Generic;
 
 using ITExpert.OpenApi.Server.Configuration;
 
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
@@ -25,7 +24,8 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
 
         public int Execute()
         {
-            WebHost.CreateDefaultBuilder()
+            OpenApi.Server.Program
+                   .CreateHostBuilder()
                    .UseStartup<Startup>()
                    .UseConfiguration(GetServerConfiguration(SpecsDirectory))
                    .ConfigureLogging(x => x.SetMinimumLevel(LogLevel))

@@ -1,10 +1,7 @@
 using System.Collections.Generic;
 
-using JetBrains.Annotations;
-
 namespace ITExpert.OpenApi.Server.Core.MockServer.Types
 {
-    [PublicAPI]
     public class MockHttpResponse
     {
         public string Body { get; }

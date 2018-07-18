@@ -5,13 +5,10 @@ using ITExpert.OpenApi.Server.Core.DocumentationServer;
 using ITExpert.OpenApi.Server.Core.MockServer;
 using ITExpert.OpenApi.Utils;
 
-using JetBrains.Annotations;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace ITExpert.OpenApi.Server.Configuration
 {
@@ -24,14 +21,14 @@ namespace ITExpert.OpenApi.Server.Configuration
             Configuration = configuration;
         }
 
-        [UsedImplicitly]
+        // ReSharper disable once UnusedMember.Global
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMockServer();
         }
 
-        [UsedImplicitly]
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        // ReSharper disable once UnusedMember.Global
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             var contentRoot = Path.Combine(env.ContentRootPath, "wwwroot");
 
