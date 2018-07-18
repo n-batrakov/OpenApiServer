@@ -15,6 +15,7 @@
     <PackageReference Include="Microsoft.Extensions.CommandlineUtils" Version="1.1.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\App\Server.csproj" />
     <ProjectReference Include="..\Utils\Utils.csproj" />
   </ItemGroup>
 

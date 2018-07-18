@@ -2,12 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.Generators;
-
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Writers;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer
+namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.Generators
 {
     public class OpenApiExampleProvider : IOpenApiExampleProvider
     {
@@ -38,7 +36,6 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             // The order between these two is important.
             providers.Add(new ObjectExampleProvider(providers, rnd));
             providers.Add(new SomeOfExampleProivder(providers, rnd));
-
 
             return providers.Select(Wrap).ToArray();
 

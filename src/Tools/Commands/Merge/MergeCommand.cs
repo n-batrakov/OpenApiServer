@@ -7,7 +7,7 @@ using ITExpert.OpenApi.Utils;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Tools
+namespace ITExpert.OpenApi.Tools.Commands.Merge
 {
     public class MergeCommand
     {
