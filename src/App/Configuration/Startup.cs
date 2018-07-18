@@ -33,13 +33,14 @@ namespace ITExpert.OpenApi.Server.Configuration
         [UsedImplicitly]
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            var defaultDir = Path.Combine(env.ContentRootPath, "specs");
+            var contentRoot = Path.Combine(env.ContentRootPath, "wwwroot");
+
+            var defaultDir = Path.Combine(contentRoot, "specs");
             var specsDir = Configuration.GetValue("specs", defaultDir);
             var specs = OpenApiDocumentsProvider.GetDocuments(specsDir).ToArray();
 
-            app.UseMockServer(specs);
-
-            app.UseOpenApiServer(specs, Path.Combine(env.ContentRootPath, "wwwroot"));
+            app.UseMockServer(specs)
+               .UseOpenApiServer(specs, contentRoot);
         }
     }
 }

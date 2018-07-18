@@ -51,7 +51,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
         {
             var title = doc.Info.Title.Replace(" ", "");
             var version = doc.Info.GetMajorVersion();
-            return $"{title}/v{version}";
+            return $"/api/{title}/v{version}";
         }
 
         private string GetRouteTemplate(string openApiRoute, OpenApiDocument spec)

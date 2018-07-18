@@ -16,6 +16,6 @@
     <ProjectReference Include="..\Utils\Utils.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <None Include="wwwroot\**" CopyToOutputDirectory="Always" LinkBase="wwwroot\" />
   </ItemGroup>
 </Project>

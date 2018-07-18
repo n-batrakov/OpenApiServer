@@ -18,6 +18,11 @@ namespace ITExpert.OpenApi.Tools
             app.Command("merge", MergeConfiguration.Configure);
             app.Command("server", LaunchServerConfiguration.Configure);
 
+            if (args == null || args.Length == 0)
+            {
+                args = new[] {"server"};
+            }
+
             return app.Execute(args);
         }
     }

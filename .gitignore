@@ -244,4 +244,4 @@ ModelManifest.xml
 .idea/
 .directory
 
-wwwroot
+wwwroot/out
