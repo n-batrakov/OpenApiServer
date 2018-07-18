@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 using ITExpert.OpenApi.Server.Configuration;
 
@@ -10,13 +10,13 @@ using Microsoft.Extensions.Logging;
 
 namespace ITExpert.OpenApi.Tools.Commands.Server
 {
-    public class LauncServerCommand
+    public class LaunchServerCommand
     {
         private int Port { get; }
         private string SpecsDirectory { get; }
         private LogLevel LogLevel { get; }
 
-        public LauncServerCommand(LaunchServerCommandOptions options)
+        public LaunchServerCommand(LaunchServerCommandOptions options)
         {
             Port = options.Port == default ? 5000 : options.Port;
             SpecsDirectory = options.SpecsDirectory ?? ".";

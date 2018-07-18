@@ -25,7 +25,7 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
                                                     SpecsDirectory = rootArg.Value,
                                                     Verbose = verbosityArg.HasValue()
                                             };
-                              var command = new LauncServerCommand(options);
+                              var command = new LaunchServerCommand(options);
                               return command.Execute();
                           });
         }
