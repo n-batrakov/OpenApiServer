@@ -1,11 +1,32 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Writers;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration
 {
-    public static class OpenApiSchemaExtensions
+    internal static class Extensions
     {
+        private static readonly Random Random = new Random();
+
+        public static IEnumerable<T> TakeRandom<T>(this IEnumerable<T> source, double probability = 0.5) =>
+                source.Where(element => Random.NextDouble() <= probability);
+
+        public static void WriteValueOrThrow(this IEnumerable<IOpenApiExampleProvider> providers,
+                                             IOpenApiWriter writer,
+                                             OpenApiSchema schema)
+        {
+            var isExampleProvided = providers.Any(x => x.TryWriteValue(writer, schema));
+            if (isExampleProvided)
+            {
+                return;
+            }
+
+            throw new ValueGeneratorNotFoundException();
+        }
+
         public static OpenApiSchemaType ConvertTypeToEnum(this OpenApiSchema schema)
         {
             if (schema.Type == null)
@@ -31,5 +52,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration
             }
             return Enum.Parse<OpenApiSchemaType>(schema.Type, ignoreCase: true);
         }
+
+
     }
 }

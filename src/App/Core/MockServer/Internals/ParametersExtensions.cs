@@ -6,7 +6,7 @@ using Microsoft.OpenApi.Models;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Internals
 {
-    public static class ParametersExtensions
+    internal static class ParametersExtensions
     {
         public static object GetValue(this OpenApiParameter parameter, StringValues values)
         {

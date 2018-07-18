@@ -17,7 +17,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
             Random = random;
         }
 
-        public bool WriteValue(IOpenApiWriter writer, OpenApiSchema schema)
+        public bool TryWriteValue(IOpenApiWriter writer, OpenApiSchema schema)
         {
             if (schema.AnyOf != null && schema.AnyOf.Count > 0)
             {

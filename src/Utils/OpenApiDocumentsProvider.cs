@@ -58,7 +58,7 @@ namespace ITExpert.OpenApi.Utils
             }
             catch (ArgumentException)
             {
-                //Cannot read file. 
+                // Cannot read file. 
                 // Probably spec version is not specified. 
                 // Each spec must contain either `openapi: \"x.x.x\"` or `swagger: 2.0`
                 return null;

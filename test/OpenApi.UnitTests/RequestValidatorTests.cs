@@ -1,11 +1,10 @@
 using ITExpert.OpenApi.Server.Core.MockServer;
+using ITExpert.OpenApi.Server.Core.MockServer.Internals;
 using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
 using UnitTests.Utils;
 
 using Xunit;
-
-using ValidationError = ITExpert.OpenApi.Server.Core.MockServer.Internals.ValidationError;
 
 namespace UnitTests
 {

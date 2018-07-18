@@ -16,7 +16,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
             ExampleProviders = providers;
         }
 
-        public bool WriteValue(IOpenApiWriter writer, OpenApiSchema schema)
+        public bool TryWriteValue(IOpenApiWriter writer, OpenApiSchema schema)
         {
             if (!schema.IsArray())
             {

@@ -27,7 +27,7 @@ namespace ITExpert.OpenApi.Server.Configuration
         [UsedImplicitly]
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRouting();
+            services.AddMockServer();
         }
 
         [UsedImplicitly]

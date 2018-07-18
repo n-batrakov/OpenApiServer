@@ -4,7 +4,7 @@ using Microsoft.OpenApi.Models;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration
 {
-    public static class OpenApiSchemaTypes
+    internal static class OpenApiSchemaTypes
     {
         public static bool IsString(this OpenApiSchema schema) => schema.ConvertTypeToEnum() == OpenApiSchemaType.String;
         public static bool IsObject(this OpenApiSchema schema) => schema.ConvertTypeToEnum() == OpenApiSchemaType.Object;

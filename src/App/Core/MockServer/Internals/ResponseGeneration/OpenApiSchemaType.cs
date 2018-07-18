@@ -1,6 +1,6 @@
 namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration
 {
-    public enum OpenApiSchemaType
+    internal enum OpenApiSchemaType
     {
         Null,
         Boolean,

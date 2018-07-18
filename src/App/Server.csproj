@@ -16,7 +16,6 @@
     <ProjectReference Include="..\Utils\Utils.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="specs\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 </Project>

@@ -12,7 +12,7 @@ using Newtonsoft.Json.Schema;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Internals
 {
-    public static class SchemaValidationExtensions
+    internal static class SchemaValidationExtensions
     {
         public static IEnumerable<RequestValidationError> ValidateValue(this OpenApiSchema schema, object value)
         {

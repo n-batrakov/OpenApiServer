@@ -5,6 +5,6 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 {
     public interface IOpenApiExampleProvider
     {
-        bool WriteValue(IOpenApiWriter writer, OpenApiSchema schema);
+        bool TryWriteValue(IOpenApiWriter writer, OpenApiSchema schema);
     }
 }

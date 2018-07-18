@@ -12,7 +12,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
             Provider = provider;
         }
 
-        public bool WriteValue(IOpenApiWriter writer, OpenApiSchema schema)
+        public bool TryWriteValue(IOpenApiWriter writer, OpenApiSchema schema)
         {
             if (schema.Example != null)
             {
@@ -26,7 +26,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
                 return true;
             }
 
-            return Provider.WriteValue(writer, schema);
+            return Provider.TryWriteValue(writer, schema);
         }
     }
 }

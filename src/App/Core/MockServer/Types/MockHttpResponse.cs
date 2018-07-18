@@ -7,13 +7,17 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Types
     [PublicAPI]
     public class MockHttpResponse
     {
-        public int StatusCode { get; }
         public string Body { get; }
         public IDictionary<string, string> Headers { get; }
 
-        public MockHttpResponse(int statusCode, string body, IDictionary<string, string> headers)
+        public MockHttpResponse(string body)
         {
-            StatusCode = statusCode;
+            Body = body;
+            Headers = new Dictionary<string, string>();
+        }
+
+        public MockHttpResponse(string body, IDictionary<string, string> headers)
+        {
             Body = body;
             Headers = headers;
         }

@@ -1,8 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ITExpert.OpenApi.Utils;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer
@@ -11,9 +16,13 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
     {
         private IEnumerable<OpenApiDocument> Specs { get; }
         private RouteBuilder RouteBuilder { get; }
+        private Func<OpenApiDocument, string> GetRoutePrefix { get; }
 
         public MockRouteBuilder(IApplicationBuilder applicationBuilder, IEnumerable<OpenApiDocument> specs)
         {
+            var options = applicationBuilder.ApplicationServices.GetService<IOptions<MockServerOptions>>();
+            GetRoutePrefix = options?.Value.GetRoutePrefix ?? GetDefaultRoutePrefix;
+
             RouteBuilder = new RouteBuilder(applicationBuilder);
             Specs = specs;
         }
@@ -32,21 +41,34 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
         {
             foreach (var route in GetRoutes(spec))
             {
-                var template = GetRouteTemplate(route.Path);
+                var template = GetRouteTemplate(route.Path, spec);
                 var handler = new MockRouteHandler(route.Operation, route.Validator, route.Generator);
                 RouteBuilder.MapVerb(route.OperationType.ToString(), template, handler.InvokeAsync);
             }
         }
 
-        private static string GetRouteTemplate(string openApiRoute)
+        private static string GetDefaultRoutePrefix(OpenApiDocument doc)
         {
-            return openApiRoute.Substring(1);
+            var title = doc.Info.Title.Replace(" ", "");
+            var version = doc.Info.GetMajorVersion();
+            return $"{title}/v{version}";
+        }
+
+        private string GetRouteTemplate(string openApiRoute, OpenApiDocument spec)
+        {
+            var prefix = GetRoutePrefix(spec);
+            if (prefix.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+            {
+                prefix = prefix.Substring(1);
+            }
+
+            return $"{prefix}{openApiRoute}";
         }
 
         private static IEnumerable<MockServerRouteContext> GetRoutes(OpenApiDocument doc)
         {
             var validator = new RequestValidator();
-            var generator = new MockResponseGenerator(doc);
+            var generator = new MockResponseGenerator();
 
             return doc.Paths.SelectMany(
                     path => path.Value.Operations.Select(
