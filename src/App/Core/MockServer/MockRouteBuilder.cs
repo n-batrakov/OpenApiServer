@@ -16,14 +16,17 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
     {
         private IEnumerable<OpenApiDocument> Specs { get; }
         private RouteBuilder RouteBuilder { get; }
+
+        private string HostUrl { get; }
         private Func<OpenApiDocument, string> GetRoutePrefix { get; }
 
-        public MockRouteBuilder(IApplicationBuilder applicationBuilder, IEnumerable<OpenApiDocument> specs)
+        public MockRouteBuilder(IApplicationBuilder app, IEnumerable<OpenApiDocument> specs)
         {
-            var options = applicationBuilder.ApplicationServices.GetService<IOptions<MockServerOptions>>();
-            GetRoutePrefix = options?.Value.GetRoutePrefix ?? GetDefaultRoutePrefix;
+            var options = app.ApplicationServices.GetService<IOptions<MockServerOptions>>();
+            GetRoutePrefix = options.Value.GetRoutePrefix ?? GetDefaultRoutePrefix;
+            HostUrl = options.Value.Host;
 
-            RouteBuilder = new RouteBuilder(applicationBuilder);
+            RouteBuilder = new RouteBuilder(app);
             Specs = specs;
         }
 
@@ -31,10 +34,27 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
         {
             foreach (var spec in Specs)
             {
+                AddMockServer(spec);
                 MapSpec(spec);
             }
 
             return RouteBuilder.Build();
+        }
+
+        private void AddMockServer(OpenApiDocument spec)
+        {
+            if (string.IsNullOrEmpty(HostUrl))
+            {
+                return;
+            }
+
+            var mockServerUrl = $"{HostUrl}{GetRoutePrefix(spec)}";
+            var mockServer = new OpenApiServer
+                             {
+                                     Url = mockServerUrl,
+                                     Description = "Mock server"
+                             };
+            spec.Servers.Add(mockServer);
         }
 
         private void MapSpec(OpenApiDocument spec)

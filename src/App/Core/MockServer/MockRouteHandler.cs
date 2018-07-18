@@ -34,6 +34,8 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 
         public Task InvokeAsync(HttpContext ctx)
         {
+            SetAccessControlHeaders(ctx);
+
             var requestCtx = GetRequestContext(ctx.Request);
             var validationStatus = Validator.Validate(requestCtx, Operation);
             if (validationStatus.IsFaulty)
@@ -105,6 +107,10 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             return response.WriteAsync(json, Encoding.UTF8);
         }
 
+        private static void SetAccessControlHeaders(HttpContext ctx)
+        {
+            ctx.Response.Headers["Access-Control-Allow-Origin"] = ctx.Request.Headers["Origin"];
+        }
 
 
         private static HttpRequestValidationContext GetRequestContext(HttpRequest request) =>
