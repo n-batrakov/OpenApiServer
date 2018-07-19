@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 using Microsoft.OpenApi.Models;
@@ -11,20 +10,18 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
     //TODO: Property dependencies
     public class ObjectExampleProvider : IOpenApiExampleProvider
     {
-        private Random Random { get; }
         private IReadOnlyCollection<IOpenApiExampleProvider> Providers { get; }
 
         private static readonly string[] AdditionalPropertiesExampleNames =
         {
-                "DynamicProp1",
-                "DynamicProp2",
-                "DynamicProp3"
+                "dynamicProp1",
+                "dynamicProp2",
+                "dynamicProp3"
         };
 
-        public ObjectExampleProvider(IReadOnlyCollection<IOpenApiExampleProvider> providers, Random random)
+        public ObjectExampleProvider(IReadOnlyCollection<IOpenApiExampleProvider> providers)
         {
             Providers = providers;
-            Random = random;
         }
 
         public bool TryWriteValue(IOpenApiWriter writer, OpenApiSchema schema)
@@ -36,52 +33,11 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
 
             writer.WriteStartObject();
             {
-                WriteAllOfSchemas(writer, schema);
-                WriteAnyOfSchema(writer, schema);
-                WriteOneOfSchema(writer, schema);
                 WriteProperties(writer, schema);
             }
             writer.WriteEndObject();
 
             return true;
-        }
-
-        private void WriteAllOfSchemas(IOpenApiWriter writer, OpenApiSchema schema)
-        {
-            if (schema.AllOf == null || schema.AllOf.Count == 0)
-            {
-                return;
-            }
-
-            foreach (var allOfSchema in schema.AllOf)
-            {
-                WriteProperties(writer, allOfSchema);
-            }
-        }
-
-        private void WriteAnyOfSchema(IOpenApiWriter writer, OpenApiSchema schema)
-        {
-            if (schema.AnyOf == null || schema.AnyOf.Count == 0)
-            {
-                return;
-            }
-
-            foreach (var anyOfSchema in schema.AnyOf.TakeRandom())
-            {
-                WriteProperties(writer, anyOfSchema);
-            }
-        }
-
-        private void WriteOneOfSchema(IOpenApiWriter writer, OpenApiSchema schema)
-        {
-            if (schema.OneOf == null || schema.OneOf.Count == 0)
-            {
-                return;
-            }
-
-            var index = Random.Next(0, schema.OneOf.Count);
-            var oneOfSchema = schema.OneOf[index];
-            WriteProperties(writer, oneOfSchema);
         }
 
         private void WriteProperties(IOpenApiWriter writer, OpenApiSchema schema)

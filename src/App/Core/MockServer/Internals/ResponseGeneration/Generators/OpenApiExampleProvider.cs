@@ -33,9 +33,8 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
 
             providers.Add(new ArrayExampleProvider(providers));
 
-            // The order between these two is important.
-            providers.Add(new ObjectExampleProvider(providers, rnd));
-            providers.Add(new SomeOfExampleProivder(providers, rnd));
+            providers.Add(new CombinedExampleProvider(providers));
+            providers.Add(new ObjectExampleProvider(providers));
 
             return providers.Select(Wrap).ToArray();
 

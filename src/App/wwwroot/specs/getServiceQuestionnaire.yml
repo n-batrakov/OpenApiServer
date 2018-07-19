@@ -118,7 +118,7 @@ components:
     filterLogicalNode:
       description: Узел, объединяющий между собой другие узлы фильтра через конъюнкцию или дезъюнкцию
       type: object
-      required: [operaotr, nodes]
+      required: [operator, nodes]
       properties:
         isNegative:
           description: если `True`, то логическое условие блока следует инвертировать
