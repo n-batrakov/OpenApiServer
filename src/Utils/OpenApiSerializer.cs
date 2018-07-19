@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 
 using Microsoft.OpenApi;
@@ -19,7 +20,7 @@ namespace ITExpert.OpenApi.Utils
                                    Format = OpenApiFormat.Json,
                                    SpecVersion = targetVersion
                            };
-            var stringWriter = new StringWriter();
+            var stringWriter = new StringWriter(CultureInfo.InvariantCulture);
             var openApiWriter = new MyOpenApiJsonWriter(stringWriter, settings);
             callback(openApiWriter);
             return stringWriter.ToString();

@@ -5,6 +5,7 @@ using System.Linq;
 using ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration;
 using ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.Generators;
 using ITExpert.OpenApi.Server.Core.MockServer.Types;
+using ITExpert.OpenApi.Utils;
 
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Writers;
@@ -22,13 +23,14 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 
         public MockHttpResponse MockResponse(OpenApiMediaType mediaType)
         {
-            var textWriter = new StringWriter(CultureInfo.InvariantCulture);
-            var jsonWriter = new OpenApiJsonWriter(textWriter);
+            var body = OpenApiSerializer.Serialize(WriteBody);
 
-            var _ = TryWriteExample(jsonWriter, mediaType) ||
-                    ExampleProvider.TryWriteValue(jsonWriter, mediaType.Schema);
+            return new MockHttpResponse(body);
 
-            return new MockHttpResponse(textWriter.ToString());
+            void WriteBody(IOpenApiWriter writer)
+            {
+                var _ = TryWriteExample(writer, mediaType) || ExampleProvider.TryWriteValue(writer, mediaType.Schema);
+            }
         }
 
         private static bool TryWriteExample(IOpenApiWriter writer, OpenApiMediaType mediaType)
