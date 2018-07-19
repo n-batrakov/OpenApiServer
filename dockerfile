@@ -2,7 +2,7 @@ FROM microsoft/dotnet:runtime-deps AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM microsoft/aspnetcore-build:latest AS restore
+FROM microsoft/dotnet:sdk AS restore
 WORKDIR /sln
 COPY . .
 RUN dotnet restore -r linux-x64
