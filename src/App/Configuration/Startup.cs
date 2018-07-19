@@ -24,7 +24,8 @@ namespace ITExpert.OpenApi.Server.Configuration
         // ReSharper disable once UnusedMember.Global
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMockServer(x => x.Host = "http://localhost:35200");
+            var host = Configuration.GetValue<string>("host");
+            services.AddMockServer(x => x.Host = host);
         }
 
         // ReSharper disable once UnusedMember.Global

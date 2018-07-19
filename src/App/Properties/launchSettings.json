@@ -3,9 +3,10 @@
     "App": {
       "commandName": "Project",
       "launchBrowser": false,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
+        "environmentVariables": {
+            "ASPNETCORE_ENVIRONMENT": "Development",
+            "host": "localhost:35200"
+        },
       "applicationUrl": "http://localhost:35200/"
     }
   }
