@@ -11,6 +11,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
     public class ObjectExampleProvider : IOpenApiExampleProvider
     {
         private IReadOnlyCollection<IOpenApiExampleProvider> Providers { get; }
+        private ObjectDepthCounter DepthCounter { get; }
 
         private static readonly string[] AdditionalPropertiesExampleNames =
         {
@@ -19,9 +20,10 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
                 "dynamicProp3"
         };
 
-        public ObjectExampleProvider(IReadOnlyCollection<IOpenApiExampleProvider> providers)
+        public ObjectExampleProvider(IReadOnlyCollection<IOpenApiExampleProvider> providers, ObjectDepthCounter counter)
         {
             Providers = providers;
+            DepthCounter = counter;
         }
 
         public bool TryWriteValue(IOpenApiWriter writer, OpenApiSchema schema)
@@ -32,9 +34,15 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
             }
 
             writer.WriteStartObject();
+
+            using (DepthCounter.Enter())
             {
-                WriteProperties(writer, schema);
+                if (DepthCounter.CanEnter)
+                {
+                    WriteProperties(writer, schema);
+                }
             }
+
             writer.WriteEndObject();
 
             return true;

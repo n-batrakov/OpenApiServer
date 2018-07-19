@@ -18,6 +18,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
 
         private static IOpenApiExampleProvider[] GetProviders(Random rnd)
         {
+            var counter = new ObjectDepthCounter(depthThreshold: 5);
             var providers = new List<IOpenApiExampleProvider>();
 
             // The order between this and others is important.
@@ -34,7 +35,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals.ResponseGeneration.G
             providers.Add(new ArrayExampleProvider(providers));
 
             providers.Add(new CombinedExampleProvider(providers));
-            providers.Add(new ObjectExampleProvider(providers));
+            providers.Add(new ObjectExampleProvider(providers, counter));
 
             return providers.Select(Wrap).ToArray();
 
