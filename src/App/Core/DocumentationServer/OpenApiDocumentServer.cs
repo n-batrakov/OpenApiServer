@@ -22,7 +22,7 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
 
         private const string SpecsRequestPath = "/specs"; 
 
-        private const string SwaggerUiDirectory = "SwaggerUI";
+        private const string SwaggerUiDirectory = "swagger-ui";
         private const string SwaggerRequestPath = "";
 
         public static IApplicationBuilder UseOpenApiServer(this IApplicationBuilder app,
