@@ -20,11 +20,11 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
     {
         private OpenApiOperation Operation { get; }
 
-        private RequestValidator Validator { get; }
+        private IRequestValidator Validator { get; }
         private MockResponseGenerator Generator { get; }
 
         public MockRouteHandler(OpenApiOperation operation,
-                                RequestValidator validator,
+                                IRequestValidator validator,
                                 MockResponseGenerator generator)
         {
             Operation = operation;

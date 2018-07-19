@@ -14,8 +14,19 @@ using Newtonsoft.Json.Linq;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer
 {
+    public interface IRequestValidator
+    {
+        RequestValidationStatus Validate(HttpRequestValidationContext context, OpenApiOperation operation);
+    }
+
+    public class NullRequestValidator : IRequestValidator
+    {
+        public RequestValidationStatus Validate(HttpRequestValidationContext context, OpenApiOperation operation) =>
+                RequestValidationStatus.Success();
+    }
+
     //TODO: Refactoring
-    public class RequestValidator
+    public class RequestValidator : IRequestValidator
     {
         public RequestValidationStatus Validate(HttpRequestValidationContext context,
                                                 OpenApiOperation operation)

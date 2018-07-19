@@ -1,11 +1,9 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
 using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
@@ -24,16 +22,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Internals
                            : errors.Select(ValidationError.SchemaValidationError);
         }
 
-        private static JSchema ConvertToJSchema(this OpenApiSchema schema)
-        {
-            using (var stringWriter = new StringWriter())
-            {
-                var jsonWriter = new OpenApiJsonWriter(stringWriter);
-                schema.SerializeAsV3WithoutReference(jsonWriter);
-
-                var jsonSchema = stringWriter.ToString();
-                return JSchema.Parse(jsonSchema);
-            }
-        }
+        private static JSchema ConvertToJSchema(this OpenApiSchema schema) =>
+                JSchema.Parse(schema.ToJson());
     }
 }
