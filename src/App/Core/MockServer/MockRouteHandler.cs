@@ -34,20 +34,23 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 
         public Task InvokeAsync(HttpContext ctx)
         {
-            SetAccessControlHeaders(ctx);
-
             var requestCtx = GetRequestContext(ctx.Request);
             var validationStatus = Validator.Validate(requestCtx, Operation);
             if (validationStatus.IsFaulty)
             {
-                return RespondWithErrors(ctx.Response, validationStatus.Errors);
+                return RespondWithBadRequest(ctx.Response, validationStatus.Errors);
             }
 
             var responseSpec = ChooseResponse();
             var statusCode = int.Parse(responseSpec.Key, CultureInfo.InvariantCulture);
-            var mediaType = GetMediaType(responseSpec.Value);
-            var responseMock = Generator.MockResponse(mediaType);
 
+            var mediaType = GetMediaType(responseSpec.Value);
+            if (mediaType == null)
+            {
+                return RespondWithNothing(ctx.Response, statusCode);
+            }
+
+            var responseMock = Generator.MockResponse(mediaType);
             return RespondWithMock(ctx.Response, responseMock, statusCode);
         }
 
@@ -68,6 +71,11 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 
         private static OpenApiMediaType GetMediaType(OpenApiResponse response)
         {
+            if (response.Content.Count == 0)
+            {
+                return null;
+            }
+
             var hasJson = response.Content.TryGetValue("application/json", out var result);
             if (hasJson)
             {
@@ -99,19 +107,19 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             return response.WriteAsync(mock.Body, Encoding.UTF8);
         }
 
-        private static Task RespondWithErrors(HttpResponse response, IEnumerable<RequestValidationError> errors)
+        private static Task RespondWithNothing(HttpResponse response, int statusCode)
+        {
+            response.StatusCode = statusCode;
+            return Task.CompletedTask;
+        }
+
+        private static Task RespondWithBadRequest(HttpResponse response, IEnumerable<RequestValidationError> errors)
         {
             response.StatusCode = (int)HttpStatusCode.BadRequest;
             response.ContentType = "application/json";
             var json = JsonConvert.SerializeObject(errors);
             return response.WriteAsync(json, Encoding.UTF8);
         }
-
-        private static void SetAccessControlHeaders(HttpContext ctx)
-        {
-            ctx.Response.Headers["Access-Control-Allow-Origin"] = ctx.Request.Headers["Origin"];
-        }
-
 
         private static HttpRequestValidationContext GetRequestContext(HttpRequest request) =>
                 new HttpRequestValidationContext
@@ -131,10 +139,6 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 
         private static string ReadBody(HttpRequest request)
         {
-            // Note: reading the body without rewind makes it empty
-            // for any subsequent reads.
-            // Use `request.EnableRewind()` or similar.
-
             using (var reader = new StreamReader(request.Body))
             {
                 return reader.ReadToEnd();

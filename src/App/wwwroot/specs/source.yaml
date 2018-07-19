@@ -1,0 +1,451 @@
+openapi: 3.0.0
+info:
+  version: 0.6.0
+  title: Source
+  description: Service for unified basic data access.
+  contact:
+    name: n.batrakov
+    email: n.batrakov@itexpert.ru
+paths:
+  /update:
+    post:
+      tags:
+        - Commands
+      summary: Modifies existing entity instance in source. Id must be specified.
+      operationId: UpdatePost
+      responses:
+        '200':
+          description: Success
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequest'
+        description: The request.
+  /insert:
+    post:
+      tags:
+        - Commands
+      summary: Writes new entity instance in source.
+      operationId: InsertPost
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/EntityInstance'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntityInstance'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/EntityInstance'
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/InsertRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InsertRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/InsertRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/InsertRequest'
+        description: The request.
+  /delete:
+    post:
+      tags:
+        - Commands
+      summary: Removes existing entity instance in source. Id must be specified.
+      operationId: DeleteDelete
+      responses:
+        '200':
+          description: Success
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/DeleteRequest'
+        description: The request.
+  /query:
+    post:
+      tags:
+        - Queries
+      summary: Queries entity in source and returns found objects.
+      operationId: QueryPost
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/QueryResponse'
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/QueryRequest'
+        description: The request.
+  /metadata:
+    get:
+      tags:
+        - Queries
+      summary: Returns entity metadata.
+      operationId: MetadataGet
+      parameters:
+        - name: entity
+          in: query
+          description: Entity name.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/GetMetadataResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMetadataResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/GetMetadataResponse'
+  /available:
+    get:
+      tags:
+        - Queries
+      summary: Returns entities available to current user.
+      operationId: AvailableGet
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/GetAvailableEntitiesResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAvailableEntitiesResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/GetAvailableEntitiesResponse'
+  /count:
+    post:
+      tags:
+        - Queries
+      summary: Counts number of objects found in specified query
+      operationId: CountPost
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/PrimitiveValueResponse'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrimitiveValueResponse'
+            text/json:
+              schema:
+                $ref: '#/components/schemas/PrimitiveValueResponse'
+      requestBody:
+        content:
+          application/json-patch+json:
+            schema:
+              $ref: '#/components/schemas/CountRequest'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CountRequest'
+          text/json:
+            schema:
+              $ref: '#/components/schemas/CountRequest'
+          application/*+json:
+            schema:
+              $ref: '#/components/schemas/CountRequest'
+        description: The request.
+
+components:
+  schemas:
+    UpdateRequest:
+      required:
+        - entity
+        - value
+      type: object
+      properties:
+        entity:
+          description: Entity name.
+          type: string
+        value:
+          description: Entity instance to update.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/IncomingEntityPropertyValue'
+    IncomingEntityPropertyValue:
+      type: object
+      properties:
+        type:
+          description: Field type. Required only for fields with union types.
+          type: string
+        value:
+          description: Field value.
+          type: object
+    InsertRequest:
+      required:
+        - entity
+        - value
+      type: object
+      properties:
+        entity:
+          description: Entity name.
+          type: string
+        value:
+          description: Entity instance to insert.
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/IncomingEntityPropertyValue'
+    EntityInstance:
+      type: object
+      properties:
+        properties:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/PropertyValue'
+          readOnly: true
+    PropertyValue:
+      type: object
+      properties:
+        name:
+          type: string
+          readOnly: true
+        value:
+          type: object
+          readOnly: true
+    DeleteRequest:
+      required:
+        - entity
+        - value
+      type: object
+      properties:
+        entity:
+          description: Entity name
+          type: string
+        value:
+          description: Entity instance to delete
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/IncomingEntityPropertyValue'
+    QueryRequest:
+      required:
+        - entity
+      type: object
+      properties:
+        distinct:
+          description: Determines whether only distinct objects should be returned.
+          type: boolean
+        entity:
+          description: Entity name
+          type: string
+        fields:
+          description: Fields names to return. Lesser the better.
+          type: array
+          items:
+            type: string
+        filter:
+          $ref: '#/components/schemas/EntityFilter'
+        limit:
+          format: int32
+          description: Number of objects to return.
+          type: integer
+        offset:
+          format: int32
+          description: Number of objects to skip.
+          type: integer
+        sort:
+          description: Fields used for ordering.
+          type: array
+          items:
+            $ref: '#/components/schemas/QuerySortField'
+    EntityFilter:
+      type: object
+      properties:
+        isLogicalNode:
+          description: 'True if this node is logical, i.e. contains other nodes.'
+          type: boolean
+          readOnly: true
+        isNegative:
+          description: True if this node should be logically negated.
+          type: boolean
+        nodes:
+          description: Filter child nodes. Only valid for logical nodes.
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityFilter'
+        field:
+          description: Entity field to compare with value. Only valid for comparison nodes.
+          type: string
+        operator:
+          description: Comparison operator. Only valid for comparison nodes.
+          type: string
+        value:
+          description: Value compared to instance field. Only valid for comparison nodes.
+          type: object
+    QuerySortField:
+      type: object
+      properties:
+        field:
+          description: Entity field name.
+          type: string
+        isAscending:
+          description: True if sorting by the field should be ascending.
+          type: boolean
+    QueryResponse:
+      type: object
+      properties:
+        entities:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              $ref: '#/components/schemas/EntityPropertyValue'
+          readOnly: true
+    EntityPropertyValue:
+      type: object
+      properties:
+        referenceName:
+          description: >-
+            Display name for the object referenced by this field; null for value
+            types.
+          type: string
+          readOnly: true
+        value:
+          description: Field value.
+          type: object
+          readOnly: true
+        type:
+          description: Value type; present only for fields with union types.
+          type: string
+          readOnly: true
+    GetMetadataResponse:
+      type: object
+      properties:
+        primaryKey:
+          type: string
+          readOnly: true
+        properties:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MetadataResponseProperty'
+          readOnly: true
+    MetadataResponseProperty:
+      type: object
+      properties:
+        isNullable:
+          description: True if field can be null.
+          type: boolean
+        class:
+          description: >-
+            Field type class [Primitive, Reference, Union, Collection,
+            Enumeration].
+          enum:
+            - Primitive
+            - Reference
+            - Union
+            - Collection
+            - Enumeration
+          type: string
+        type:
+          description: Field type name. Present for Primitive and Reference types.
+          type: string
+        reference:
+          description: Name of entity referenced by the field. Present for Reference types.
+          type: string
+        id:
+          description: >-
+            String identifier for chosing one of possible types in Union type.
+            Present only inside PossibleTypes property.
+          type: string
+        possibleTypes:
+          description: All types the field value can be of. Present for Union types.
+          type: array
+          items:
+            $ref: '#/components/schemas/MetadataResponseProperty'
+        possibleValues:
+          description: >-
+            All values the field value can be equal to. Present for Enumeration
+            types.
+          type: array
+          items:
+            type: string
+        itemsType:
+          $ref: '#/components/schemas/MetadataResponseProperty'
+    GetAvailableEntitiesResponse:
+      type: object
+      properties:
+        entities:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityName'
+          readOnly: true
+    EntityName:
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          type: string
+    CountRequest:
+      required:
+        - entity
+      type: object
+      properties:
+        entity:
+          description: Entity name.
+          type: string
+        filter:
+          $ref: '#/components/schemas/EntityFilter'
+    PrimitiveValueResponse:
+      type: object
+      properties:
+        value:
+          format: int32
+          type: integer
+          readOnly: true
