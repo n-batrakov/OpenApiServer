@@ -33,31 +33,31 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
                 return reference;
             }
 
-            var jSchema =
-                    new JSchema
-                    {
-                        Type = ConvertType(oasSchema.Type),
-                        Format = oasSchema.Format,
-                        AdditionalProperties = Convert(oasSchema.AdditionalProperties),
-                        AllowAdditionalProperties = oasSchema.AdditionalPropertiesAllowed,
-                        Default = ConvertAny(oasSchema.Default),
-                        UniqueItems = oasSchema.UniqueItems ?? false,
-                        ExclusiveMaximum = oasSchema.ExclusiveMaximum ?? true,
-                        ExclusiveMinimum = oasSchema.ExclusiveMinimum ?? false,
-                        MultipleOf = (double?)oasSchema.MultipleOf,
-                        Maximum = (double?)oasSchema.Maximum,
-                        Minimum = (double?)oasSchema.Minimum,
-                        MaximumItems = oasSchema.MaxItems,
-                        MinimumItems = oasSchema.MinItems,
-                        MaximumLength = oasSchema.MaxLength,
-                        MinimumLength = oasSchema.MinLength,
-                        MaximumProperties = oasSchema.MaxProperties,
-                        MinimumProperties = oasSchema.MinProperties,
-                        Not = Convert(oasSchema.Not),
-                        Pattern = oasSchema.Pattern,
-                    };
-            FillCollections(jSchema, oasSchema);
+            var jSchema = new JSchema();
             ReferenceMap.Add(oasSchema, jSchema);
+
+            jSchema.Type = ConvertType(oasSchema.Type);
+            jSchema.Format = oasSchema.Format;
+            jSchema.AdditionalProperties = Convert(oasSchema.AdditionalProperties);
+            jSchema.AllowAdditionalProperties = oasSchema.AdditionalPropertiesAllowed;
+            jSchema.Default = ConvertAny(oasSchema.Default);
+            jSchema.UniqueItems = oasSchema.UniqueItems ?? false;
+            jSchema.ExclusiveMaximum = oasSchema.ExclusiveMaximum ?? true;
+            jSchema.ExclusiveMinimum = oasSchema.ExclusiveMinimum ?? false;
+            jSchema.MultipleOf = (double?)oasSchema.MultipleOf;
+            jSchema.Maximum = (double?)oasSchema.Maximum;
+            jSchema.Minimum = (double?)oasSchema.Minimum;
+            jSchema.MaximumItems = oasSchema.MaxItems;
+            jSchema.MinimumItems = oasSchema.MinItems;
+            jSchema.MaximumLength = oasSchema.MaxLength;
+            jSchema.MinimumLength = oasSchema.MinLength;
+            jSchema.MaximumProperties = oasSchema.MaxProperties;
+            jSchema.MinimumProperties = oasSchema.MinProperties;
+            jSchema.Not = Convert(oasSchema.Not);
+            jSchema.Pattern = oasSchema.Pattern;
+
+            FillCollections(jSchema, oasSchema);
+            
             return jSchema;
         }
 
