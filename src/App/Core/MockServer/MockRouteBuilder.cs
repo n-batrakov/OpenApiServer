@@ -88,7 +88,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 
         private static IEnumerable<MockServerRouteContext> GetRoutes(OpenApiDocument doc)
         {
-            var validator = new NullRequestValidator();
+            var validator = new MockServerRequestValidator();
             var generator = new MockResponseGenerator();
 
             return doc.Paths.SelectMany(
