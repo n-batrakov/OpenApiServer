@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetLatestRuntimePatch>True</TargetLatestRuntimePatch>
     <PackAsTool>True</PackAsTool>
     <OutputType>Exe</OutputType>
     <PackageVersion>0.1.0</PackageVersion>
