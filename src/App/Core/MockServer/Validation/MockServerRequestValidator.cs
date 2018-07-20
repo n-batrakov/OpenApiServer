@@ -19,7 +19,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
                                   Enumerable.Empty<RequestValidationError>();
 
             var bodyErrors = operation.RequestBody != null
-                                     ? VisitRequestBody(operation.RequestBody, context.Body, context.ContentType)
+                                     ? ValidateBody(operation.RequestBody, context.Body, context.ContentType)
                                      : Enumerable.Empty<RequestValidationError>();
 
             var errors = paramtersErrors.Concat(bodyErrors).ToArray();
@@ -30,13 +30,13 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
                 switch (x.In)
                 {
                     case ParameterLocation.Query:
-                        return VisitQueryParameter(x, context.Query);
+                        return ValidateQuery(x, context.Query);
                     case ParameterLocation.Header:
-                        return VisitHeaderParameter(x, context.Headers);
+                        return ValidateHeaders(x, context.Headers);
                     case ParameterLocation.Path:
-                        return VisitPathParameter(x, context.Route);
+                        return ValidatePath(x, context.Route);
                     case ParameterLocation.Cookie:
-                        return VisitCookieParameter(x);
+                        return ValidateCookie(x);
                     case null:
                         return Enumerable.Empty<RequestValidationError>();
                     default:
@@ -48,7 +48,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
         
 
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
-        private static IEnumerable<RequestValidationError> VisitHeaderParameter(
+        private static IEnumerable<RequestValidationError> ValidateHeaders(
                 OpenApiParameter parameter,
                 IHeaderDictionary headers)
         {
@@ -56,20 +56,20 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
         }
 
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
-        private static IEnumerable<RequestValidationError> VisitCookieParameter(OpenApiParameter parameter)
+        private static IEnumerable<RequestValidationError> ValidateCookie(OpenApiParameter parameter)
         {
             yield break;
         }
 
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
-        private static IEnumerable<RequestValidationError> VisitPathParameter(
+        private static IEnumerable<RequestValidationError> ValidatePath(
                 OpenApiParameter parameter,
                 RouteData routeData)
         {
             yield break;
         }
 
-        private static IEnumerable<RequestValidationError> VisitQueryParameter(
+        private static IEnumerable<RequestValidationError> ValidateQuery(
                 OpenApiParameter parameter,
                 IQueryCollection query)
         {
@@ -99,7 +99,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
             }
         }
 
-        private IEnumerable<RequestValidationError> VisitRequestBody(
+        private static IEnumerable<RequestValidationError> ValidateBody(
                 OpenApiRequestBody body,
                 string bodyString,
                 string contentType)
