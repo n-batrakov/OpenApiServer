@@ -39,7 +39,7 @@
 
       const httpRequest = new XMLHttpRequest();
       httpRequest.onreadystatechange = onDataReceived;
-      httpRequest.open('GET', '/specs');
+      httpRequest.open('GET', 'specs');
       httpRequest.send();
 
       function onDataReceived() {
