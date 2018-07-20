@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Types
 {
     public class HttpRequestValidationContext
     {
-        public string Route { get; set; }
+        public RouteData Route { get; set; }
 
         public IHeaderDictionary Headers { get; set; }
 

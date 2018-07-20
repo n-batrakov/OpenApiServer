@@ -6,13 +6,14 @@ using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
 
 namespace UnitTests.Utils
 {
     public class RequestBuilder
     {
-        private string Route { get; set; }
+        private RouteData Route { get; set; }
         private IHeaderDictionary Headers { get; set; }
         private IQueryCollection Query { get; set; }
         private IFormCollection Form { get; set; }
@@ -67,7 +68,7 @@ namespace UnitTests.Utils
         private static void ApplyRouteAndQuery(RequestBuilder builder, string url)
         {
             var split = url.Split("?");
-            builder.Route = split[0];
+            builder.Route = new RouteData();
             if (split.Length == 1)
             {
                 return;

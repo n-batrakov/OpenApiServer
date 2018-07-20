@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json;
@@ -32,13 +33,13 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             Generator = generator;
         }
 
-        public Task InvokeAsync(HttpContext ctx)
+        public Task InvokeAsync(HttpRequest request, HttpResponse response, RouteData routeData)
         {
-            var requestCtx = GetRequestContext(ctx.Request);
+            var requestCtx = GetRequestContext(request, routeData);
             var validationStatus = Validator.Validate(requestCtx, Operation);
             if (validationStatus.IsFaulty)
             {
-                return RespondWithBadRequest(ctx.Response, validationStatus.Errors);
+                return RespondWithBadRequest(response, validationStatus.Errors);
             }
 
             var responseSpec = ChooseResponse();
@@ -47,11 +48,11 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             var mediaType = GetMediaType(responseSpec.Value);
             if (mediaType == null)
             {
-                return RespondWithNothing(ctx.Response, statusCode);
+                return RespondWithNothing(response, statusCode);
             }
 
             var responseMock = Generator.MockResponse(mediaType);
-            return RespondWithMock(ctx.Response, responseMock, statusCode);
+            return RespondWithMock(response, responseMock, statusCode);
         }
 
 
@@ -121,10 +122,10 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             return response.WriteAsync(json, Encoding.UTF8);
         }
 
-        private static HttpRequestValidationContext GetRequestContext(HttpRequest request) =>
+        private static HttpRequestValidationContext GetRequestContext(HttpRequest request, RouteData routeData) =>
                 new HttpRequestValidationContext
                 {
-                        Route = request.Path,
+                        Route = routeData,
                         Headers = request.Headers,
                         Query = request.Query,
                         Form = ReadForm(request),
