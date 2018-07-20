@@ -1,13 +1,11 @@
 using System.Linq;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Generation;
-using ITExpert.OpenApi.Server.Core.MockServer.Types;
 using ITExpert.OpenApi.Utils;
 
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Writers;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer
+namespace ITExpert.OpenApi.Server.Core.MockServer.Generation
 {
     public class MockResponseGenerator
     {

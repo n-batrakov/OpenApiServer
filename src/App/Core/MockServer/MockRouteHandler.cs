@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Types;
+using ITExpert.OpenApi.Server.Core.MockServer.Generation;
 using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 
 using Microsoft.AspNetCore.Http;
