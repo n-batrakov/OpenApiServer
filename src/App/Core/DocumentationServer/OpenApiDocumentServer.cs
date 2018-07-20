@@ -20,7 +20,7 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
         private const string SpecsOutputDirectory = "out";
         private const string SpecFilename = "swagger.json";
 
-        private const string SpecsRequestPath = "/specs"; 
+        private const string SpecsRequestPath = "specs"; 
 
         private const string SwaggerUiDirectory = "swagger-ui";
         private const string SwaggerRequestPath = "";
@@ -47,7 +47,7 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
 
             app.UseStaticFiles(new StaticFileOptions
                                {
-                                       RequestPath = SpecsRequestPath,
+                                       RequestPath = $"/{SpecsRequestPath}",
                                        FileProvider = new PhysicalFileProvider(dir)
                                });
         }
@@ -71,7 +71,7 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
         {
             var availableSpecs = specs.Select(ToNameUrlMap);
             var json = JsonConvert.SerializeObject(availableSpecs);
-            app.Map(SpecsRequestPath, x => x.Run(HandleRequest));
+            app.Map($"/{SpecsRequestPath}", x => x.Run(HandleRequest));
 
             Task HandleRequest(HttpContext ctx)
             {
