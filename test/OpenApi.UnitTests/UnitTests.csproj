@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-
+    <TargetLatestRuntimePatch>True</TargetLatestRuntimePatch>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
