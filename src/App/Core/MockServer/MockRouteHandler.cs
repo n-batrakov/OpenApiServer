@@ -8,12 +8,14 @@ using System.Text;
 using System.Threading.Tasks;
 
 using ITExpert.OpenApi.Server.Core.MockServer.Types;
+using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer
 {
@@ -21,11 +23,11 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
     {
         private OpenApiOperation Operation { get; }
 
-        private IRequestValidator Validator { get; }
+        private IMockServerRequestValidator Validator { get; }
         private MockResponseGenerator Generator { get; }
 
         public MockRouteHandler(OpenApiOperation operation,
-                                IRequestValidator validator,
+                                IMockServerRequestValidator validator,
                                 MockResponseGenerator generator)
         {
             Operation = operation;
@@ -128,21 +130,26 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                         Route = routeData,
                         Headers = request.Headers,
                         Query = request.Query,
-                        Form = ReadForm(request),
-                        Body = ReadBody(request),
+                        Body = GetBody(request),
                         ContentType = request.ContentType
                 };
 
-        private static IFormCollection ReadForm(HttpRequest request)
+        private static string GetBody(HttpRequest request)
         {
-            return request.HasFormContentType ? request.Form : null;
-        }
+            return request.HasFormContentType ? ReadForm() : ReadBody();
 
-        private static string ReadBody(HttpRequest request)
-        {
-            using (var reader = new StreamReader(request.Body))
+            string ReadForm()
             {
-                return reader.ReadToEnd();
+                var dict = request.Form.ToDictionary(x => x.Key, x => JToken.Parse(x.Value));
+                return JsonConvert.SerializeObject(dict);
+            }
+
+            string ReadBody()
+            {
+                using (var reader = new StreamReader(request.Body))
+                {
+                    return reader.ReadToEnd();
+                }
             }
         }
     }

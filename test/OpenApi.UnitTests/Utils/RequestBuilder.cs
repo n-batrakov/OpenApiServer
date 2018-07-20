@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Types;
+using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
@@ -23,7 +23,7 @@ namespace UnitTests.Utils
         {
             Headers = new HeaderDictionary();
             Query = new QueryCollection();
-            Form = new FormCollection(new Dictionary<string, StringValues>());
+            Form = null;
             Body = string.Empty;
         }
 
@@ -40,8 +40,8 @@ namespace UnitTests.Utils
                         Route = Route,
                         Query = Query,
                         Body = Body,
-                        Form = Form,
-                        Headers = Headers
+                        Headers = Headers,
+                        ContentType = Form == null ? "application/json" : "multipart/form-data"
                 };
 
         public RequestBuilder WithBody(string body)

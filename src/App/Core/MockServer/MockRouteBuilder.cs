@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 using ITExpert.OpenApi.Utils;
 
 using Microsoft.AspNetCore.Builder;
@@ -107,7 +108,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             public string Path { get; set; }
             public OperationType OperationType { get; set; }
             public OpenApiOperation Operation { get; set; }
-            public IRequestValidator Validator { get; set; }
+            public IMockServerRequestValidator Validator { get; set; }
             public MockResponseGenerator Generator { get; set; }
         }
     }

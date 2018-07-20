@@ -1,6 +1,4 @@
-using ITExpert.OpenApi.Server.Core.MockServer;
-using ITExpert.OpenApi.Server.Core.MockServer.Internals;
-using ITExpert.OpenApi.Server.Core.MockServer.Types;
+using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 
 using UnitTests.Utils;
 
@@ -10,11 +8,11 @@ namespace UnitTests
 {
     public class RequestValidatorTests
     {
-        private RequestValidator Sut { get; }
+        private MockServerRequestValidator Sut { get; }
 
         public RequestValidatorTests()
         {
-            Sut = new RequestValidator();
+            Sut = new MockServerRequestValidator();
         }
 
         [Fact]

@@ -1,7 +1,6 @@
 using System.IO;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Internals;
-using ITExpert.OpenApi.Server.Core.MockServer.Types;
+using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
