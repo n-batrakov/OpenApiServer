@@ -2,6 +2,8 @@ using System.IO;
 using System.Linq;
 
 using ITExpert.OpenApi.Server.Core.DocumentationServer;
+using ITExpert.OpenApi.Server.Core.MockingProxy;
+using ITExpert.OpenApi.Server.Core.MockingProxy.Options;
 using ITExpert.OpenApi.Server.Core.MockServer;
 using ITExpert.OpenApi.Utils;
 
@@ -26,6 +28,16 @@ namespace ITExpert.OpenApi.Server.Configuration
         {
             var host = Configuration.GetValue<string>("host");
             services.AddMockServer(x => x.Host = host);
+
+            var routesConfig = new MockingProxyRouteOptions
+                               {
+                                       Path = "*",
+                                       Method = MockingProxyHttpMethod.Any,
+                                       Latency = 300,
+                                       Mock = true,
+                                       Validate = MockingProxyValidationMode.All
+                               };
+            services.AddMockingProxy(x => x.Routes.Add("*", routesConfig));
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -38,7 +50,8 @@ namespace ITExpert.OpenApi.Server.Configuration
             var specs = OpenApiDocumentsProvider.GetDocuments(specsDir).ToArray();
 
             app.UseMockServer(specs)
-               .UseOpenApiServer(specs, contentRoot);
+               .UseOpenApiServer(specs, contentRoot)
+               .UseMockingProxy();
         }
     }
 }
