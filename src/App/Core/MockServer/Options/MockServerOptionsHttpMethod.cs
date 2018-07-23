@@ -1,6 +1,6 @@
-namespace ITExpert.OpenApi.Server.Core.MockingProxy.Options
+namespace ITExpert.OpenApi.Server.Core.MockServer.Options
 {
-    public enum MockingProxyHttpMethod
+    public enum MockServerOptionsHttpMethod
     {
         Get = 0,
         Put = 1,

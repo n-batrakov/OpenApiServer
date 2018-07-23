@@ -21,7 +21,10 @@ namespace ITExpert.OpenApi.Server
 
             builder.UseContentRoot(Directory.GetCurrentDirectory());
             builder.UseKestrel(x => x.Configure());
-            builder.ConfigureAppConfiguration(x => x.AddEnvironmentVariables());
+            builder.ConfigureAppConfiguration(x => x.AddEnvironmentVariables()
+                                                    .AddJsonFile("appsettings.json",
+                                                                 optional: true,
+                                                                 reloadOnChange: true));
             builder.ConfigureLogging(x => x.AddConsole());
 
             builder.UseDefaultServiceProvider(

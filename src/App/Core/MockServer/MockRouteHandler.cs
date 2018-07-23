@@ -1,75 +1,53 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
 using ITExpert.OpenApi.Server.Core.MockServer.Generation;
-using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.OpenApi.Models;
-
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer
 {
     public class MockRouteHandler
     {
-        private OpenApiOperation Operation { get; }
-
-        private IMockServerRequestValidator Validator { get; }
         private MockResponseGenerator Generator { get; }
 
-        public MockRouteHandler(OpenApiOperation operation,
-                                IMockServerRequestValidator validator,
-                                MockResponseGenerator generator)
+        public MockRouteHandler(MockResponseGenerator generator)
         {
-            Operation = operation;
-            Validator = validator;
             Generator = generator;
         }
 
-        public Task InvokeAsync(HttpRequest request, HttpResponse response, RouteData routeData)
+        public Task InvokeAsync(HttpContext ctx)
         {
-            var requestCtx = GetRequestContext(request, routeData);
-            var validationStatus = Validator.Validate(requestCtx, Operation);
-            if (validationStatus.IsFaulty)
-            {
-                return RespondWithBadRequest(response, validationStatus.Errors);
-            }
-
-            var responseSpec = ChooseResponse();
+            var operation = ctx.GetMockContext().OperationSpec;
+            var responseSpec = ChooseResponse(operation);
             var statusCode = int.Parse(responseSpec.Key, CultureInfo.InvariantCulture);
 
             var mediaType = GetMediaType(responseSpec.Value);
             if (mediaType == null)
             {
-                return RespondWithNothing(response, statusCode);
+                return RespondWithNothing(ctx.Response, statusCode);
             }
 
             var responseMock = Generator.MockResponse(mediaType);
-            return RespondWithMock(response, responseMock, statusCode);
+            return RespondWithMock(ctx.Response, responseMock, statusCode);
         }
 
-
-
-        private KeyValuePair<string, OpenApiResponse> ChooseResponse()
+        private static KeyValuePair<string, OpenApiResponse> ChooseResponse(OpenApiOperation operation)
         {
-            if (Operation.Responses.Count == 0)
+            if (operation.Responses.Count == 0)
             {
                 throw new Exception("Invalid OpenApi Specification. Responses should be defined");
             }
 
-            var success = Operation
+            var success = operation
                           .Responses
                           .FirstOrDefault(x => x.Key.StartsWith("2", StringComparison.Ordinal));
-            return string.IsNullOrEmpty(success.Key) ? Operation.Responses.First() : success;
+            return string.IsNullOrEmpty(success.Key) ? operation.Responses.First() : success;
         }
 
         private static OpenApiMediaType GetMediaType(OpenApiResponse response)
@@ -94,8 +72,6 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             throw new NotSupportedException("MockServer only supports 'application/json' or '*/*' for now.");
         }
 
-
-
         private static Task RespondWithMock(HttpResponse response, MockHttpResponse mock, int statusCode)
         {
             response.StatusCode = statusCode;
@@ -114,43 +90,6 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
         {
             response.StatusCode = statusCode;
             return Task.CompletedTask;
-        }
-
-        private static Task RespondWithBadRequest(HttpResponse response, IEnumerable<RequestValidationError> errors)
-        {
-            response.StatusCode = (int)HttpStatusCode.BadRequest;
-            response.ContentType = "application/json";
-            var json = JsonConvert.SerializeObject(errors);
-            return response.WriteAsync(json, Encoding.UTF8);
-        }
-
-        private static HttpRequestValidationContext GetRequestContext(HttpRequest request, RouteData routeData) =>
-                new HttpRequestValidationContext
-                {
-                        Route = routeData,
-                        Headers = request.Headers,
-                        Query = request.Query,
-                        Body = GetBody(request),
-                        ContentType = request.ContentType
-                };
-
-        private static string GetBody(HttpRequest request)
-        {
-            return request.HasFormContentType ? ReadForm() : ReadBody();
-
-            string ReadForm()
-            {
-                var dict = request.Form.ToDictionary(x => x.Key, x => JToken.Parse(x.Value));
-                return JsonConvert.SerializeObject(dict);
-            }
-
-            string ReadBody()
-            {
-                using (var reader = new StreamReader(request.Body))
-                {
-                    return reader.ReadToEnd();
-                }
-            }
         }
     }
 }

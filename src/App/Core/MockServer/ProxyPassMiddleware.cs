@@ -3,10 +3,12 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+using ITExpert.OpenApi.Server.Core.MockServer.Validation;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 
-namespace ITExpert.OpenApi.Server.Core.MockingProxy
+namespace ITExpert.OpenApi.Server.Core.MockServer
 {
     public class ProxyPassMiddleware
     {
@@ -14,12 +16,15 @@ namespace ITExpert.OpenApi.Server.Core.MockingProxy
 
         private RequestDelegate Next { get; }
         private IHttpClientFactory ClientFactory { get; }
+        private IResponseValidator Validator { get; }
 
         public ProxyPassMiddleware(RequestDelegate next,
-                                   IHttpClientFactory clientFactory)
+                                   IHttpClientFactory clientFactory,
+                                   IResponseValidator validator)
         {
             Next = next;
             ClientFactory = clientFactory;
+            Validator = validator;
         }
 
         public Task InvokeAsync(HttpContext ctx)
@@ -85,9 +90,6 @@ namespace ITExpert.OpenApi.Server.Core.MockingProxy
                 {
                     targetResponse.Headers.Add(k, v.ToArray());
                 }
-
-                //proxyResponse.ContentType = forwardResponse.Content.Headers.ContentType.ToString();
-                //proxyResponse.ContentLength = forwardResponse.Content.Headers.ContentLength;
             }
 
             Task CopyBody() =>

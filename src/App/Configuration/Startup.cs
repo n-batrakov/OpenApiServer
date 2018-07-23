@@ -2,9 +2,8 @@ using System.IO;
 using System.Linq;
 
 using ITExpert.OpenApi.Server.Core.DocumentationServer;
-using ITExpert.OpenApi.Server.Core.MockingProxy;
-using ITExpert.OpenApi.Server.Core.MockingProxy.Options;
 using ITExpert.OpenApi.Server.Core.MockServer;
+using ITExpert.OpenApi.Server.Core.MockServer.Options;
 using ITExpert.OpenApi.Utils;
 
 using Microsoft.AspNetCore.Builder;
@@ -27,17 +26,21 @@ namespace ITExpert.OpenApi.Server.Configuration
         public void ConfigureServices(IServiceCollection services)
         {
             var host = Configuration.GetValue<string>("host");
-            services.AddMockServer(x => x.Host = host);
-
-            var routesConfig = new MockingProxyRouteOptions
+            var routesConfig = new MockServerOptionsRoute
                                {
                                        Path = "*",
-                                       Method = MockingProxyHttpMethod.Any,
+                                       Method = MockServerOptionsHttpMethod.Any,
                                        Latency = 300,
                                        Mock = true,
-                                       Validate = MockingProxyValidationMode.All
+                                       Validate = MockServerOptionsValidationMode.All
                                };
-            services.AddMockingProxy(x => x.Routes.Add("*", routesConfig));
+            services.AddMockServer(x =>
+                                   {
+                                       x.Host = host;
+                                       x.Routes.Add("*", routesConfig);
+                                   });
+
+
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -50,8 +53,7 @@ namespace ITExpert.OpenApi.Server.Configuration
             var specs = OpenApiDocumentsProvider.GetDocuments(specsDir).ToArray();
 
             app.UseMockServer(specs)
-               .UseOpenApiServer(specs, contentRoot)
-               .UseMockingProxy();
+               .UseOpenApiServer(specs, contentRoot);
         }
     }
 }

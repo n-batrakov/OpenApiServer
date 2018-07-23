@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Generation;
-using ITExpert.OpenApi.Server.Core.MockServer.Validation;
+using ITExpert.OpenApi.Server.Core.MockServer.Options;
 using ITExpert.OpenApi.Utils;
 
 using Microsoft.AspNetCore.Builder;
@@ -22,8 +21,12 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
         private string HostUrl { get; }
         private Func<OpenApiDocument, string> GetRoutePrefix { get; }
 
+        private MockRouteHandler RouteHandler { get; }
+
         public MockRouteBuilder(IApplicationBuilder app, IEnumerable<OpenApiDocument> specs)
         {
+            RouteHandler = ActivatorUtilities.CreateInstance<MockRouteHandler>(app.ApplicationServices);
+
             var options = app.ApplicationServices.GetService<IOptions<MockServerOptions>>();
             GetRoutePrefix = options.Value.GetRoutePrefix ?? GetDefaultRoutePrefix;
             HostUrl = options.Value.Host;
@@ -43,6 +46,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             return RouteBuilder.Build();
         }
 
+        // TODO: Move away
         private void AddMockServer(OpenApiDocument spec)
         {
             if (string.IsNullOrEmpty(HostUrl))
@@ -58,14 +62,13 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                              };
             spec.Servers.Add(mockServer);
         }
-
+        
         private void MapSpec(OpenApiDocument spec)
         {
             foreach (var route in GetRoutes(spec))
             {
                 var template = GetRouteTemplate(route.Path, spec);
-                var handler = new MockRouteHandler(route.Operation, route.Validator, route.Generator);
-                RouteBuilder.MapVerb(route.OperationType.ToString(), template, handler.InvokeAsync);
+                RouteBuilder.MapVerb(route.Verb, template, RouteHandler.InvokeAsync);
             }
         }
 
@@ -87,30 +90,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             return $"{prefix}{openApiRoute}";
         }
 
-        private static IEnumerable<MockServerRouteContext> GetRoutes(OpenApiDocument doc)
-        {
-            var validator = new MockServerRequestValidator();
-            var generator = new MockResponseGenerator();
-
-            return doc.Paths.SelectMany(
-                    path => path.Value.Operations.Select(
-                            verb => new MockServerRouteContext
-                                    {
-                                            Path = path.Key,
-                                            Operation = verb.Value,
-                                            OperationType = verb.Key,
-                                            Validator = validator,
-                                            Generator = generator
-                                    }));
-        }
-
-        private class MockServerRouteContext
-        {
-            public string Path { get; set; }
-            public OperationType OperationType { get; set; }
-            public OpenApiOperation Operation { get; set; }
-            public IMockServerRequestValidator Validator { get; set; }
-            public MockResponseGenerator Generator { get; set; }
-        }
+        private static IEnumerable<(string Path, string Verb)> GetRoutes(OpenApiDocument doc) =>
+                doc.Paths.SelectMany(path => path.Value.Operations.Select(verb => (path.Key, verb.Key.ToString())));
     }
 }
