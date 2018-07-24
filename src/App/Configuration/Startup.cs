@@ -1,59 +1,49 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
 using ITExpert.OpenApi.Server.Core.DocumentationServer;
 using ITExpert.OpenApi.Server.Core.MockServer;
-using ITExpert.OpenApi.Server.Core.MockServer.Options;
 using ITExpert.OpenApi.Utils;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 
 namespace ITExpert.OpenApi.Server.Configuration
 {
     public class Startup
     {
         private IConfiguration Configuration { get; }
+
+        private string ContentRoot { get; }
+        private OpenApiDocument[] Specs { get; }
         
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+
+            ContentRoot = Path.Combine(env.ContentRootPath, "wwwroot");
+
+            var defaultDir = Path.Combine(ContentRoot, "specs");
+            var specsDir = Configuration.GetValue("specs", defaultDir);
+            Specs = OpenApiDocumentsProvider.GetDocuments(specsDir).ToArray();
         }
 
         // ReSharper disable once UnusedMember.Global
         public void ConfigureServices(IServiceCollection services)
         {
-            var host = Configuration.GetValue<string>("host");
-            var routesConfig = new MockServerOptionsRoute
-                               {
-                                       Path = "*",
-                                       Method = MockServerOptionsHttpMethod.Any,
-                                       Latency = 300,
-                                       Mock = true,
-                                       Validate = MockServerOptionsValidationMode.All
-                               };
-            services.AddMockServer(x =>
-                                   {
-                                       x.Host = host;
-                                       x.Routes.Add("*", routesConfig);
-                                   });
-
-
+            services.AddSingleton<IEnumerable<OpenApiDocument>>(Specs);
+            services.AddMockServer(Configuration);
         }
 
         // ReSharper disable once UnusedMember.Global
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            var contentRoot = Path.Combine(env.ContentRootPath, "wwwroot");
-
-            var defaultDir = Path.Combine(contentRoot, "specs");
-            var specsDir = Configuration.GetValue("specs", defaultDir);
-            var specs = OpenApiDocumentsProvider.GetDocuments(specsDir).ToArray();
-
-            app.UseMockServer(specs)
-               .UseOpenApiServer(specs, contentRoot);
+            app.UseMockServer(Specs)
+               .UseOpenApiServer(Specs, ContentRoot);
         }
     }
 }

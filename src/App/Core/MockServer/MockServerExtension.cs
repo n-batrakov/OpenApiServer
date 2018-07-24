@@ -5,6 +5,7 @@ using ITExpert.OpenApi.Server.Core.MockServer.Options;
 using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
@@ -12,6 +13,13 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 {
     public static class MockServerExtension
     {
+        public static IServiceCollection AddMockServer(this IServiceCollection services,
+                                                       IConfiguration config)
+        {
+            services.Configure<MockServerOptions>(config);
+            return AddMockServer(services);
+        }
+
         public static IServiceCollection AddMockServer(this IServiceCollection services)
         {
             return AddMockServer(services, _ => { });
@@ -24,8 +32,10 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             services.AddHttpClient();
             services.AddOptions<MockServerOptions>().Configure(configure);
             services.AddSingleton<IMockServerRequestValidator, MockServerRequestValidator>();
-            services.AddSingleton<IResponseValidator, NullResponseValidator>();
+            services.AddSingleton<IMockServerResponseValidator, NullResponseValidator>();
             services.AddSingleton<MockResponseGenerator>();
+
+            services.AddSingleton<IOpenApiOperationPathProvider, ConfigOperationPathProvider>();
 
             return services;
         }

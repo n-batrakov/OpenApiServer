@@ -28,7 +28,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             RouteHandler = ActivatorUtilities.CreateInstance<MockRouteHandler>(app.ApplicationServices);
 
             var options = app.ApplicationServices.GetService<IOptions<MockServerOptions>>();
-            GetRoutePrefix = options.Value.GetRoutePrefix ?? GetDefaultRoutePrefix;
+            GetRoutePrefix = GetDefaultRoutePrefix;
             HostUrl = options.Value.Host;
 
             RouteBuilder = new RouteBuilder(app);

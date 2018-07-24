@@ -1,6 +1,6 @@
 ﻿namespace ITExpert.OpenApi.Server.Core.MockServer.Options
 {
-    public class MockServerOptionsRoute
+    public class MockServerRouteOptions
     {
         public string Path { get; set; }
         public MockServerOptionsHttpMethod Method { get; set; }

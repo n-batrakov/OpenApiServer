@@ -16,11 +16,11 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 
         private RequestDelegate Next { get; }
         private IHttpClientFactory ClientFactory { get; }
-        private IResponseValidator Validator { get; }
+        private IMockServerResponseValidator Validator { get; }
 
         public ProxyPassMiddleware(RequestDelegate next,
                                    IHttpClientFactory clientFactory,
-                                   IResponseValidator validator)
+                                   IMockServerResponseValidator validator)
         {
             Next = next;
             ClientFactory = clientFactory;
