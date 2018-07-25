@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using ITExpert.OpenApi.Server.Core.MockServer.Options;
+using ITExpert.OpenApi.Server.Core.MockServer.PathProviders;
+using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

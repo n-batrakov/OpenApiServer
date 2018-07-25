@@ -1,3 +1,5 @@
+using ITExpert.OpenApi.Server.Core.MockServer.Types;
+
 using Microsoft.OpenApi.Models;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Validation

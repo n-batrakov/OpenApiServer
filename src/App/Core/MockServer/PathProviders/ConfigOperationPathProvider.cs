@@ -1,4 +1,5 @@
 using ITExpert.OpenApi.Server.Core.MockServer.Options;
+using ITExpert.OpenApi.Server.Core.MockServer.PathProviders;
 using ITExpert.OpenApi.Utils;
 
 using Microsoft.Extensions.Options;

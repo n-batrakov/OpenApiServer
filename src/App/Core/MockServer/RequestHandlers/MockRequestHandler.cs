@@ -5,11 +5,12 @@ using System.Net;
 using System.Threading.Tasks;
 
 using ITExpert.OpenApi.Server.Core.MockServer.Generation;
+using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer
+namespace ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers
 {
     public class MockRequestHandler : IMockServerRequestHandler
     {

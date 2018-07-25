@@ -2,7 +2,7 @@ using ITExpert.OpenApi.Utils;
 
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer
+namespace ITExpert.OpenApi.Server.Core.MockServer.PathProviders
 {
     public class DefaultOperationPathProvider : IOpenApiOperationPathProvider
     {

@@ -3,9 +3,9 @@ using System.Net;
 
 using Microsoft.Extensions.Primitives;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer
+namespace ITExpert.OpenApi.Server.Core.MockServer.Types
 {
-    public class MockServerResponseContext : IMockServerResponseContext
+    internal class MockServerResponseContext : IMockServerResponseContext
     {
         public HttpStatusCode StatusCode { get; set; }
 

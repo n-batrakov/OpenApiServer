@@ -2,6 +2,8 @@ using System;
 
 using ITExpert.OpenApi.Server.Core.MockServer.Generation;
 using ITExpert.OpenApi.Server.Core.MockServer.Options;
+using ITExpert.OpenApi.Server.Core.MockServer.PathProviders;
+using ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers;
 using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 
 using Microsoft.AspNetCore.Builder;
