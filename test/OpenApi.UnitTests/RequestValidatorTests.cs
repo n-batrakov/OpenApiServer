@@ -18,10 +18,13 @@ namespace UnitTests
         [Fact]
         public void CanValidateRequest()
         {
-            var ctx = RequestBuilder.FromUrl("/pets").Build();
-            var spec = TestData.Petstore.Get("/pets");
+            var ctx = RequestBuilder
+                      .FromUrl("/pets")
+                      .WithSpec(TestData.Petstore.Get("/pets"))
+                      .Build();
+            
 
-            var actual = Sut.Validate(ctx, spec);
+            var actual = Sut.Validate(ctx);
             var expected = RequestValidationStatus.Success();
 
             Assert.Equal(expected, actual);
@@ -30,10 +33,11 @@ namespace UnitTests
         [Fact]
         public void CanInvalidateRequestWithoutRequiredQueryParameter()
         {
-            var ctx = RequestBuilder.FromUrl("/pets").Build();
             var spec = TestData.Petstore.Get("/pets").ConfiugureParameter("tags", x => x.Required = true);
+            var ctx = RequestBuilder.FromUrl("/pets").WithSpec(spec).Build();
+            
 
-            var actual = Sut.Validate(ctx, spec);
+            var actual = Sut.Validate(ctx);
             var expected = ValidationError.ParameterRequired("tags").AsStatus();
 
             Assert.Equal(expected, actual);
@@ -42,10 +46,10 @@ namespace UnitTests
         [Fact]
         public void CanValidateRequestWithRequiredQueryParameter()
         {
-            var ctx = RequestBuilder.FromUrl("/pets?tags=test").Build();
             var spec = TestData.Petstore.Get("/pets").ConfiugureParameter("tags", x => x.Required = true);
+            var ctx = RequestBuilder.FromUrl("/pets?tags=test").WithSpec(spec).Build();
 
-            var actual = Sut.Validate(ctx, spec);
+            var actual = Sut.Validate(ctx);
             var expected = RequestValidationStatus.Success();
 
             Assert.Equal(expected, actual);
@@ -54,10 +58,10 @@ namespace UnitTests
         [Fact]
         public void CanInvalidateRequestWithMistypedParameter()
         {
-            var ctx = RequestBuilder.FromUrl("/pets?limit=false").Build();
             var spec = TestData.Petstore.Get("/pets");
+            var ctx = RequestBuilder.FromUrl("/pets?limit=false").WithSpec(spec).Build();
 
-            var actual = Sut.Validate(ctx, spec);
+            var actual = Sut.Validate(ctx);
             var expected = TestData
                            .GetInvalidParameterTypeSchemaError("Integer", "String")
                            .Wrap(x => ValidationError.InvalidParameter("limit", x))
@@ -70,10 +74,10 @@ namespace UnitTests
         public void CanValidateRequestWithBody()
         {
             var body = "{\"name\": \"name\", \"tag\": \"tag\"}";
-            var ctx = RequestBuilder.FromUrl("/pets").WithBody(body).Build();
             var spec = TestData.Petstore.Post("/pets");
+            var ctx = RequestBuilder.FromUrl("/pets").WithBody(body).WithSpec(spec).Build();
 
-            var actual = Sut.Validate(ctx, spec);
+            var actual = Sut.Validate(ctx);
             var expected = RequestValidationStatus.Success();
 
             Assert.Equal(expected, actual);
@@ -83,10 +87,10 @@ namespace UnitTests
         public void CanInvalidateRequestWithInvalidBody()
         {
             var body = "{\"tag\": \"tag\"}";
-            var ctx = RequestBuilder.FromUrl("/pets").WithBody(body).Build();
             var spec = TestData.Petstore.Post("/pets");
-
-            var actual = Sut.Validate(ctx, spec);
+            var ctx = RequestBuilder.FromUrl("/pets").WithBody(body).WithSpec(spec).Build();
+            
+            var actual = Sut.Validate(ctx);
             var expected = TestData.GetMissingParameterSchemaError("name")
                                    .Wrap(x => ValidationError.InvalidBody(x))
                                    .AsStatus();
@@ -97,10 +101,10 @@ namespace UnitTests
         [Fact]
         public void CanInvalidateRequestWithoutRequiredBody()
         {
-            var ctx = RequestBuilder.FromUrl("/pets").Build();
             var spec = TestData.Petstore.Post("/pets");
+            var ctx = RequestBuilder.FromUrl("/pets").WithSpec(spec).Build();
 
-            var actual = Sut.Validate(ctx, spec);
+            var actual = Sut.Validate(ctx);
             var expected = ValidationError.BodyRequired().AsStatus();
 
             Assert.Equal(expected, actual);

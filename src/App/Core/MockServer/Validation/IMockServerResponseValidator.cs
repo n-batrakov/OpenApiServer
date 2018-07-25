@@ -4,12 +4,12 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
 {
     public interface IMockServerResponseValidator
     {
-        RequestValidationStatus Validate(string response, OpenApiSchema schema);
+        RequestValidationStatus Validate(IMockServerResponseContext context, OpenApiResponses responsesSpec);
     }
 
     public class NullResponseValidator : IMockServerResponseValidator
     {
-        public RequestValidationStatus Validate(string response, OpenApiSchema schema)
+        public RequestValidationStatus Validate(IMockServerResponseContext context, OpenApiResponses responsesSpec)
         {
             return RequestValidationStatus.Success();
         }

@@ -13,8 +13,9 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
 {
     public class MockServerRequestValidator : IMockServerRequestValidator
     {
-        public RequestValidationStatus Validate(HttpRequestValidationContext context, OpenApiOperation operation)
+        public RequestValidationStatus Validate(IMockServerRequestContext context)
         {
+            var operation = context.OperationSpec;
             var paramtersErrors = operation.Parameters?.SelectMany(ValidateParameter) ??
                                   Enumerable.Empty<RequestValidationError>();
 

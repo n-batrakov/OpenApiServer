@@ -2,22 +2,29 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ITExpert.OpenApi.Server.Core.MockServer;
+using ITExpert.OpenApi.Server.Core.MockServer.Options;
 using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Primitives;
+using Microsoft.OpenApi.Models;
 
 namespace UnitTests.Utils
 {
     public class RequestBuilder
     {
+        private string Path { get; set; }
+        private HttpMethod Method { get; set; }
         private RouteData Route { get; set; }
         private IHeaderDictionary Headers { get; set; }
         private IQueryCollection Query { get; set; }
         private IFormCollection Form { get; set; }
         private string Body { get; set; }
+        private OpenApiOperation Spec { get; set; }
 
         private RequestBuilder()
         {
@@ -27,22 +34,31 @@ namespace UnitTests.Utils
             Body = string.Empty;
         }
 
-        public static RequestBuilder FromUrl(string url)
+        public static RequestBuilder FromUrl(string url, HttpMethod method = HttpMethod.Get)
         {
             var builder = new RequestBuilder();
             ApplyRouteAndQuery(builder, url);
             return builder;
         }
 
-        public HttpRequestValidationContext Build() =>
-                new HttpRequestValidationContext
+        public IMockServerRequestContext Build() =>
+                new MockServerRequestContext
                 {
                         Route = Route,
+                        Method = Method,
                         Query = Query,
                         Body = Body,
                         Headers = Headers,
-                        ContentType = Form == null ? "application/json" : "multipart/form-data"
+                        ContentType = Form == null ? "application/json" : "multipart/form-data",
+                        PathAndQuery = Path,
+                        OperationSpec = Spec
                 };
+
+        public RequestBuilder WithSpec(OpenApiOperation spec)
+        {
+            Spec = spec;
+            return this;
+        }
 
         public RequestBuilder WithBody(string body)
         {
@@ -101,6 +117,27 @@ namespace UnitTests.Utils
             }
 
             return new QueryCollection(dict);
+        }
+
+        private class MockServerRequestContext : IMockServerRequestContext
+        {
+            public string PathAndQuery { get; set; }
+
+            public HttpMethod Method { get; set; }
+
+            public RouteData Route { get; set; }
+
+            public IHeaderDictionary Headers { get; set; }
+
+            public IQueryCollection Query { get; set; }
+
+            public string Body { get; set; }
+
+            public string ContentType { get; set; }
+
+            public OpenApiOperation OperationSpec { get; set; }
+
+            public MockServerRouteOptions Options { get; set; }
         }
     }
 }

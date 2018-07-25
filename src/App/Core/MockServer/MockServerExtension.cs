@@ -5,6 +5,7 @@ using ITExpert.OpenApi.Server.Core.MockServer.Options;
 using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -30,24 +31,36 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
         {
             services.AddRouting();
             services.AddHttpClient();
+
             services.AddOptions<MockServerOptions>().Configure(configure);
+
             services.AddSingleton<IMockServerRequestValidator, MockServerRequestValidator>();
             services.AddSingleton<IMockServerResponseValidator, NullResponseValidator>();
             services.AddSingleton<MockResponseGenerator>();
 
+            services.AddSingleton<ProxyRequestHandler>();
+            services.AddSingleton<MockRequestHandler>();
+            services.AddSingleton<IMockServerRequestHandler, MockServerRequestHandler>();
+
+            
             services.AddSingleton<IOpenApiOperationPathProvider, ConfigOperationPathProvider>();
+            services.AddSingleton<MockServerRequestContextProvider>();
 
             return services;
         }
 
         public static IApplicationBuilder UseMockServer(this IApplicationBuilder app, params OpenApiDocument[] specs)
         {
-            app.UseMiddleware<MockServerContextProviderMiddleware>();
-            app.UseMiddleware<ValidateRequestMiddleware>();
-            app.UseMiddleware<ProxyPassMiddleware>();
+            var ctxProvider = app.ApplicationServices.GetRequiredService<MockServerRequestContextProvider>();
+            var reqValidator = app.ApplicationServices.GetRequiredService<IMockServerRequestValidator>();
+            var respValidator = app.ApplicationServices.GetRequiredService<IMockServerResponseValidator>();
+            var handler = app.ApplicationServices.GetRequiredService<IMockServerRequestHandler>();
+            var builder = new MockServerBuilder(ctxProvider, reqValidator, respValidator, handler);
 
-            var routeBuilder = new MockRouteBuilder(app, specs);
-            app.UseRouter(routeBuilder.Build());
+            var routeBuilder = new RouteBuilder(app);
+            var router = builder.BuildRouter(routeBuilder);
+
+            app.UseRouter(router);
 
             return app;
         }
