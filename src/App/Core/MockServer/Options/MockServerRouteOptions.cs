@@ -6,7 +6,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Options
         public MockServerOptionsHttpMethod Method { get; set; }
         public bool Mock { get; set; }
         public MockServerOptionsValidationMode Validate { get; set; }
-        public ushort Latency { get; set; }
+        public ushort Delay { get; set; }
         public string Host { get; set; }
 
         public bool ShouldValidateRequest => Validate == MockServerOptionsValidationMode.All ||
@@ -20,7 +20,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Options
                 {
                         Path = ".*",
                         Method = MockServerOptionsHttpMethod.Any,
-                        Latency = 0,
+                        Delay = 0,
                         Mock = false,
                         Validate = MockServerOptionsValidationMode.Undefined
                 };

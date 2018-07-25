@@ -148,9 +148,9 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                             Path = second.Path,
                             Method = second.Method,
                             Mock = second.Mock,
-                            Latency = second.Latency == 0
-                                              ? first.Latency
-                                              : second.Latency,
+                            Delay = second.Delay == 0
+                                              ? first.Delay
+                                              : second.Delay,
                             Validate = second.Validate == MockServerOptionsValidationMode.Undefined
                                                ? first.Validate
                                                : second.Validate

@@ -14,8 +14,8 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.PathProviders
 
         public ConfigOperationPathProvider(IOptions<MockServerOptions> options)
         {
-            PathFormatString = options.Value.Route?.ToLowerInvariant();
-            UseDefault = string.IsNullOrEmpty(options.Value.Route);
+            PathFormatString = options.Value.PathPattern?.ToLowerInvariant();
+            UseDefault = string.IsNullOrEmpty(options.Value.PathPattern);
         }
 
         public string GetPath(OpenApiDocument spec, OpenApiOperation operation, string operationPath)

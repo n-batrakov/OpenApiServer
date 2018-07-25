@@ -17,7 +17,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers
 
         public Task<IMockServerResponseContext> HandleAsync(IMockServerRequestContext context)
         {
-            var delayTask = Task.Delay(context.Options.Latency);
+            var delayTask = Task.Delay(context.Options.Delay);
             var responseTask = context.Options.Mock
                                        ? MockHandler.HandleAsync(context)
                                        : ProxyHandler.HandleAsync(context);
