@@ -56,7 +56,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             var hasConfig = RouteConfigs.TryGetValue(key, out var config);
             if (!hasConfig)
             {
-                throw new Exception($"Unable to find config for {key}");
+                config = MockServerRouteOptions.Default;
             }
 
             return CreateRequestContext(ctx, spec, config);
@@ -85,25 +85,25 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                 MockServerOptions options,
                 IDictionary<RouteId, OpenApiOperation> availableRoutes)
         {
-            return new Dictionary<RouteId, MockServerRouteOptions>(Generator());
+            var result = new Dictionary<RouteId, MockServerRouteOptions>();
 
-            IEnumerable<KeyValuePair<RouteId, MockServerRouteOptions>> Generator()
+            foreach (var routeConfig in options.Routes.Reverse())
             {
-                foreach (var routeConfig in options.Routes)
-                {
-                    var regexp = new Regex(routeConfig.Path);
-                    var matchedRoutes = availableRoutes.Keys.Where(x => regexp.IsMatch(x.Path));
-                    foreach (var id in matchedRoutes)
-                    {
-                        if (!IsMethodsMatch(id.Verb, routeConfig.Method))
-                        {
-                            continue;
-                        }
+                var regexp = new Regex(routeConfig.Path);
+                var matchedRoutes = availableRoutes.Keys.Where(x => regexp.IsMatch(x.Path)).ToArray();
 
-                        yield return new KeyValuePair<RouteId, MockServerRouteOptions>(id, routeConfig);
+                foreach (var id in matchedRoutes)
+                {
+                    if (!IsMethodsMatch(id.Verb, routeConfig.Method))
+                    {
+                        continue;
                     }
+
+                    result[id] = routeConfig;
                 }
             }
+
+            return result;
 
             bool IsMethodsMatch(HttpMethod specMethod, MockServerOptionsHttpMethod configMethod)
             {
@@ -137,25 +137,34 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 
         private IDictionary<RouteId, OpenApiOperation> GetAvailableRoutes(IEnumerable<OpenApiDocument> specs)
         {
-            var items = Generator().ToArray();
-            return new Dictionary<RouteId, OpenApiOperation>(items);
+            var result = new Dictionary<RouteId, OpenApiOperation>();
 
-            IEnumerable<KeyValuePair<RouteId, OpenApiOperation>> Generator()
+            foreach (var spec in specs)
             {
-                foreach (var spec in specs)
+                foreach (var (path, routeSpec) in spec.Paths)
                 {
-                    foreach (var (path, routeSpec) in spec.Paths)
+                    foreach (var (verb, operation) in routeSpec.Operations)
                     {
-                        foreach (var (verb, operation) in routeSpec.Operations)
+                        var route = PathProvider.GetPath(spec, operation, path).ToLowerInvariant();
+                        var method = ConvertVerb(verb);
+                        var key = new RouteId(route, method);
+                        var value = operation;
+
+                        if (result.ContainsKey(key))
                         {
-                            var route = PathProvider.GetPath(spec, operation, path).ToLowerInvariant();
-                            var method = ConvertVerb(verb);
-                            var value = operation;
-                            yield return new KeyValuePair<RouteId, OpenApiOperation>(new RouteId(route, method), value);
+                            throw new Exception(
+                                    $"Unable to map path {path} ({verb}) " +
+                                    $"from {spec.Info.Title} ({spec.Info.Version}) " +
+                                    "because it overrides path from another spec. " +
+                                    "Try configuring route template to resolve the ambiguity.");
                         }
+
+                        result[key] = value;
                     }
                 }
             }
+
+            return result;
 
             HttpMethod ConvertVerb(OperationType type)
             {

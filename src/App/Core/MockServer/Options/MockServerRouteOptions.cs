@@ -13,5 +13,15 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Options
 
         public bool ShouldValidateResponse => Validate == MockServerOptionsValidationMode.All ||
                                                 Validate == MockServerOptionsValidationMode.Response;
+
+        public static MockServerRouteOptions Default =>
+                new MockServerRouteOptions
+                {
+                        Path = ".*",
+                        Method = MockServerOptionsHttpMethod.Any,
+                        Latency = 0,
+                        Mock = false,
+                        Validate = MockServerOptionsValidationMode.None
+                };
     }
 }
