@@ -12,6 +12,8 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Types
         string PathAndQuery { get; }
         HttpMethod Method { get; }
 
+        string Host { get; }
+
         RouteData Route { get; }
         IHeaderDictionary Headers { get; }
         IQueryCollection Query { get; }

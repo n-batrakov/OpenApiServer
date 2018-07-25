@@ -3,6 +3,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
+using ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers;
 using ITExpert.OpenApi.Server.Core.MockServer.Types;
 using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 
@@ -97,9 +98,9 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             response.StatusCode = (int)responseContext.StatusCode;
             response.ContentType = responseContext.ContentType;
 
-            foreach (var header in responseContext.Headers)
+            foreach (var (key, value) in responseContext.Headers)
             {
-                response.Headers.Add(header);
+                response.Headers[key] = value;
             }
 
             return response.WriteAsync(responseContext.Body);

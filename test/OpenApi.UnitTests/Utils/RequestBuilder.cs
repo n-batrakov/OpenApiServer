@@ -126,6 +126,8 @@ namespace UnitTests.Utils
 
             public HttpMethod Method { get; set; }
 
+            public string Host { get; } = null;
+
             public RouteData Route { get; set; }
 
             public IHeaderDictionary Headers { get; set; }

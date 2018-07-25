@@ -7,6 +7,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Options
         public bool Mock { get; set; }
         public MockServerOptionsValidationMode Validate { get; set; }
         public ushort Latency { get; set; }
+        public string Host { get; set; }
 
         public bool ShouldValidateRequest => Validate == MockServerOptionsValidationMode.All ||
                                                Validate == MockServerOptionsValidationMode.Request;

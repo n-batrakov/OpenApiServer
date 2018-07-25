@@ -1,11 +1,10 @@
 using ITExpert.OpenApi.Server.Core.MockServer.Options;
-using ITExpert.OpenApi.Server.Core.MockServer.PathProviders;
 using ITExpert.OpenApi.Utils;
 
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer
+namespace ITExpert.OpenApi.Server.Core.MockServer.PathProviders
 {
     public class ConfigOperationPathProvider : IOpenApiOperationPathProvider
     {

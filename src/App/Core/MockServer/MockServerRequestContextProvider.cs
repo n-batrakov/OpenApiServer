@@ -172,13 +172,19 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                         var key = new RouteId(route, method);
                         var value = operation;
 
+                        if (value.Servers.Count == 0)
+                        {
+                            value.Servers = spec.Servers;
+                        }
+
                         if (result.ContainsKey(key))
                         {
-                            throw new Exception(
-                                    $"Unable to map path {path} ({verb}) " +
-                                    $"from {spec.Info.Title} ({spec.Info.Version}) " +
-                                    "because it overrides path from another spec. " +
-                                    "Try configuring route template to resolve the ambiguity.");
+                            continue;
+                            //throw new Exception(
+                            //        $"Unable to map path {path} ({verb}) " +
+                            //        $"from {spec.Info.Title} ({spec.Info.Version}) " +
+                            //        "because it overrides path from another spec. " +
+                            //        "Try configuring route template to resolve the ambiguity.");
                         }
 
                         result[key] = value;
@@ -222,6 +228,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                    {
                            PathAndQuery = ctx.Request.Path,
                            Method = Enum.Parse<HttpMethod>(ctx.Request.Method, ignoreCase: true),
+                           Host = GetHost(),
                            ContentType = ctx.Request.ContentType,
                            Query = ctx.Request.Query,
                            Headers = ctx.Request.Headers,
@@ -230,6 +237,23 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                            Options = routeOptions,
                            OperationSpec = operation
                    };
+
+            string GetHost()
+            {
+                const string proxyHeaderName = "X-Forwarded-Host";
+                var hasProxyHeader = ctx.Request.Headers.TryGetValue(proxyHeaderName, out var header);
+                if (hasProxyHeader)
+                {
+                    return header.ToString();
+                }
+
+                if (!string.IsNullOrEmpty(routeOptions.Host))
+                {
+                    return routeOptions.Host;
+                }
+
+                return operation.Servers.FirstOrDefault()?.Url;
+            }
 
             string ReadForm()
             {
@@ -246,11 +270,17 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             }
         }
 
+
+
+
+
         private class MockServerRequestContext : IMockServerRequestContext
         {
             public string PathAndQuery { get; set; }
 
             public HttpMethod Method { get; set; }
+
+            public string Host { get; set; }
 
             public RouteData Route { get; set; }
 
