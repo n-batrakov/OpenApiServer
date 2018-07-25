@@ -78,7 +78,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 
             }
 
-            WriteResponse(ctx.Response, responseContext);
+            await WriteResponse(ctx.Response, responseContext);
         }
 
         private static Task RespondWithValidationErrorAsync(HttpResponse response,
@@ -91,16 +91,17 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             return response.WriteAsync(json, Encoding.UTF8);
         }
 
-        private static void WriteResponse(HttpResponse response, IMockServerResponseContext responseContext)
+        private static Task WriteResponse(HttpResponse response, IMockServerResponseContext responseContext)
         {
             response.StatusCode = (int)responseContext.StatusCode;
             response.ContentType = responseContext.ContentType;
-            response.Body = responseContext.Body;
 
             foreach (var header in responseContext.Headers)
             {
                 response.Headers.Add(header);
             }
+
+            return response.WriteAsync(responseContext.Body);
         }
     }
 }

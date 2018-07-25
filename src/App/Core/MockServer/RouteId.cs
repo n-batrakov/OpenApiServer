@@ -27,6 +27,11 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             Verb = methodEnum;
         }
 
+        public override string ToString()
+        {
+            return $"{Path} ({Verb})";
+        }
+
         public bool Equals(RouteId other)
         {
             return string.Equals(Path, other.Path) && Verb == other.Verb;

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 
 using Microsoft.Extensions.Primitives;
@@ -10,7 +9,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
     {
         public HttpStatusCode StatusCode { get; set; }
 
-        public Stream Body { get; set; }
+        public string Body { get; set; }
 
         public string ContentType { get; set; }
 

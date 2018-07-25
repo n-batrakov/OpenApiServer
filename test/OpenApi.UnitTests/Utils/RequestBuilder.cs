@@ -4,7 +4,6 @@ using System.Linq;
 
 using ITExpert.OpenApi.Server.Core.MockServer;
 using ITExpert.OpenApi.Server.Core.MockServer.Options;
-using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
@@ -38,6 +37,8 @@ namespace UnitTests.Utils
         {
             var builder = new RequestBuilder();
             ApplyRouteAndQuery(builder, url);
+            builder.Path = url;
+            builder.Method = method;
             return builder;
         }
 
@@ -137,7 +138,7 @@ namespace UnitTests.Utils
 
             public OpenApiOperation OperationSpec { get; set; }
 
-            public MockServerRouteOptions Options { get; set; }
+            public MockServerRouteOptions Options { get; } = null;
         }
     }
 }

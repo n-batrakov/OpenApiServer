@@ -15,7 +15,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
         {
             var service = spec.Info.Title.Replace(" ", "");
             var path = operationPath;
-            var version = $"/{spec.Info.GetMajorVersion()}";
+            var version = $"/v{spec.Info.GetMajorVersion()}";
             return $"{service}{version}{path}";
         }
     }

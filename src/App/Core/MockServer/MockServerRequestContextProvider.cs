@@ -24,6 +24,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
         private IOpenApiOperationPathProvider PathProvider { get; }
 
         private IDictionary<RouteId, OpenApiOperation> AvailableRoutes { get; }
+
         private IDictionary<RouteId, MockServerRouteOptions> RouteConfigs { get; set; }
 
         public MockServerRequestContextProvider(IOpenApiOperationPathProvider pathProvider,
@@ -33,7 +34,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             PathProvider = pathProvider;
 
             options.OnChange(OnOptionsChange);
-            
+
             AvailableRoutes = GetAvailableRoutes(specs);
             Routes = AvailableRoutes.Keys;
 
@@ -42,12 +43,35 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 
         public IMockServerRequestContext GetContext(HttpContext ctx)
         {
-            var path = ctx.Request.Path.ToString().ToLowerInvariant();
-            var verb = ctx.Request.Method.ToLowerInvariant();
-            var key = new RouteId(path, verb);
-            var spec = AvailableRoutes[key];
-            var config = RouteConfigs[key];
+            var key = GetRouteId(ctx);
+
+            var hasSpec = AvailableRoutes.TryGetValue(key, out var spec);
+            if (!hasSpec)
+            {
+                throw new Exception($"Unable to find spec for {key}");
+            }
+
+            var hasConfig = RouteConfigs.TryGetValue(key, out var config);
+            if (!hasConfig)
+            {
+                throw new Exception($"Unable to find config for {key}");
+            }
+
             return CreateRequestContext(ctx, spec, config);
+        }
+
+        private static RouteId GetRouteId(HttpContext ctx)
+        {
+            var routeData = ctx.GetRouteData();
+            var route = routeData.Routers.OfType<Route>().FirstOrDefault();
+            if (route == null)
+            {
+                throw new Exception($"Unable to find route for {ctx.Request.Path} ({ctx.Request.Method})");
+            }
+
+            var template = route.RouteTemplate;
+            var verb = ctx.Request.Method.ToLowerInvariant();
+            return new RouteId(template, verb);
         }
 
         private void OnOptionsChange(MockServerOptions options)
@@ -111,7 +135,8 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 
         private IDictionary<RouteId, OpenApiOperation> GetAvailableRoutes(IEnumerable<OpenApiDocument> specs)
         {
-            return new Dictionary<RouteId, OpenApiOperation>(Generator());
+            var items = Generator().ToArray();
+            return new Dictionary<RouteId, OpenApiOperation>(items);
 
             IEnumerable<KeyValuePair<RouteId, OpenApiOperation>> Generator()
             {
@@ -163,7 +188,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             return new MockServerRequestContext
                    {
                            PathAndQuery = ctx.Request.Path,
-                           Method = Enum.Parse<HttpMethod>(ctx.Request.Method, ignoreCase:true),
+                           Method = Enum.Parse<HttpMethod>(ctx.Request.Method, ignoreCase: true),
                            ContentType = ctx.Request.ContentType,
                            Query = ctx.Request.Query,
                            Headers = ctx.Request.Headers,
@@ -206,7 +231,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 
             public OpenApiOperation OperationSpec { get; set; }
 
-            public MockServerRouteOptions Options {get; set; }
+            public MockServerRouteOptions Options { get; set; }
         }
     }
 }

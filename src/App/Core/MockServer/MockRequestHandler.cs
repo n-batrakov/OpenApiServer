@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -69,18 +68,12 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                                                                   string contentType,
                                                                   string statusCode)
         {
-            var ms = new MemoryStream();
-            using (var sw = new StreamWriter(ms))
-            {
-                sw.Write(mock.Body);
-            }
-
             return new MockServerResponseContext
                    {
                            ContentType = contentType,
                            StatusCode = Enum.Parse<HttpStatusCode>(statusCode, ignoreCase: true),
                            Headers = mock.Headers.ToDictionary(x => x.Key, x => new StringValues(x.Value)),
-                           Body = ms
+                           Body = mock.Body
                    };
         }
 
@@ -88,8 +81,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
         {
             return new MockServerResponseContext
                    {
-                           StatusCode = Enum.Parse<HttpStatusCode>(statusCode, ignoreCase: true),
-                           Body = new MemoryStream()
+                           StatusCode = Enum.Parse<HttpStatusCode>(statusCode, ignoreCase: true)
                    };
         }
     }

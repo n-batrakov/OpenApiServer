@@ -1,5 +1,3 @@
-using System.Linq;
-
 using ITExpert.OpenApi.Server.Core.MockServer.Options;
 using ITExpert.OpenApi.Utils;
 
@@ -28,7 +26,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             }
 
             var service = spec.Info.Title.Replace(" ", "");
-            var path = operationPath.Skip(1);
+            var path = operationPath.Substring(1);
             var version = spec.Info.GetMajorVersion();
 
             return Format(PathFormatString, ("service", service), ("path", path), ("version", version));

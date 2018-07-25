@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -31,13 +30,13 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             return Proxy(context, host);
         }
 
-        private Task<IMockServerResponseContext> Proxy(IMockServerRequestContext ctx, string host)
+        private async Task<IMockServerResponseContext> Proxy(IMockServerRequestContext ctx, string host)
         {
             var client = ClientFactory.CreateClient();
             var request = CreateRequest(ctx, host);
-            var response = client.SendAsync(request);
+            var response = await client.SendAsync(request).ConfigureAwait(false);
 
-            return response.ContinueWith(x => CreateResponse(x.Result));
+            return await CreateResponseAsync(response).ConfigureAwait(false);
         }
 
         private static HttpRequestMessage CreateRequest(IMockServerRequestContext ctx, string forwardHost)
@@ -68,18 +67,18 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             }
         }
 
-        private static IMockServerResponseContext CreateResponse(HttpResponseMessage sourceResponse)
+        private static Task<IMockServerResponseContext> CreateResponseAsync(HttpResponseMessage sourceResponse)
         {
-            var body = new MemoryStream();
-            sourceResponse.Content.CopyToAsync(body);
+            return sourceResponse.Content.ReadAsStringAsync().ContinueWith(CreateContext);
 
-            return new MockServerResponseContext
-                   {
-                           ContentType = sourceResponse.Content.Headers.ContentType.ToString(),
-                           StatusCode = sourceResponse.StatusCode,
-                           Body = body,
-                           Headers = GetHeaders()
-                   };
+            IMockServerResponseContext CreateContext(Task<string> body) =>
+                    new MockServerResponseContext
+                    {
+                            ContentType = sourceResponse.Content.Headers.ContentType.ToString(),
+                            StatusCode = sourceResponse.StatusCode,
+                            Body = body.Result,
+                            Headers = GetHeaders()
+                    };
 
             IDictionary<string, StringValues> GetHeaders()
             {
