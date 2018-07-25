@@ -99,7 +99,15 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                         continue;
                     }
 
-                    result[id] = routeConfig;
+                    if (result.TryGetValue(id, out var firstOptions))
+                    {
+                        result[id] = Merge(firstOptions, routeConfig);
+                    }
+                    else
+                    {
+                        result[id] = routeConfig;
+                    }
+                    
                 }
             }
 
@@ -133,6 +141,20 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                         throw new ArgumentOutOfRangeException(nameof(configMethod), configMethod, null);
                 }
             }
+
+            MockServerRouteOptions Merge(MockServerRouteOptions first, MockServerRouteOptions second) =>
+                    new MockServerRouteOptions
+                    {
+                            Path = second.Path,
+                            Method = second.Method,
+                            Mock = second.Mock,
+                            Latency = second.Latency == 0
+                                              ? first.Latency
+                                              : second.Latency,
+                            Validate = second.Validate == MockServerOptionsValidationMode.Undefined
+                                               ? first.Validate
+                                               : second.Validate
+                    };
         }
 
         private IDictionary<RouteId, OpenApiOperation> GetAvailableRoutes(IEnumerable<OpenApiDocument> specs)

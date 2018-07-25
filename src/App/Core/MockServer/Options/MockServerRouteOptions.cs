@@ -21,7 +21,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Options
                         Method = MockServerOptionsHttpMethod.Any,
                         Latency = 0,
                         Mock = false,
-                        Validate = MockServerOptionsValidationMode.None
+                        Validate = MockServerOptionsValidationMode.Undefined
                 };
     }
 }
