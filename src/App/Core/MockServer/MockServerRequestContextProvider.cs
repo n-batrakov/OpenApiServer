@@ -9,6 +9,7 @@ using ITExpert.OpenApi.Server.Core.MockServer.PathProviders;
 using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Options;
@@ -29,12 +30,15 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
 
         private IDictionary<RouteId, MockServerRouteOptions> RouteConfigs { get; set; }
 
+        private string DefaultHost { get; }
+
         public MockServerRequestContextProvider(IOpenApiOperationPathProvider pathProvider,
                                                 IOptionsMonitor<MockServerOptions> options,
                                                 IEnumerable<OpenApiDocument> specs)
         {
             PathProvider = pathProvider;
 
+            DefaultHost = options.CurrentValue.MockServerHost;
             options.OnChange(OnOptionsChange);
 
             AvailableRoutes = GetAvailableRoutes(specs);
@@ -107,7 +111,6 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                     {
                         result[id] = routeConfig;
                     }
-                    
                 }
             }
 
@@ -149,8 +152,8 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                             Method = second.Method,
                             Mock = second.Mock,
                             Delay = second.Delay == 0
-                                              ? first.Delay
-                                              : second.Delay,
+                                            ? first.Delay
+                                            : second.Delay,
                             Validate = second.Validate == MockServerOptionsValidationMode.Undefined
                                                ? first.Validate
                                                : second.Validate
@@ -180,6 +183,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                         if (result.ContainsKey(key))
                         {
                             continue;
+
                             //throw new Exception(
                             //        $"Unable to map path {path} ({verb}) " +
                             //        $"from {spec.Info.Title} ({spec.Info.Version}) " +
@@ -220,15 +224,16 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             }
         }
 
-        private static IMockServerRequestContext CreateRequestContext(HttpContext ctx,
-                                                                      OpenApiOperation operation,
-                                                                      MockServerRouteOptions routeOptions)
+        private IMockServerRequestContext CreateRequestContext(HttpContext ctx,
+                                                               OpenApiOperation operation,
+                                                               MockServerRouteOptions routeOptions)
         {
             return new MockServerRequestContext
                    {
-                           PathAndQuery = ctx.Request.Path,
+                           PathAndQuery = ctx.Request.GetEncodedPathAndQuery(),
                            Method = Enum.Parse<HttpMethod>(ctx.Request.Method, ignoreCase: true),
                            Host = GetHost(),
+
                            ContentType = ctx.Request.ContentType,
                            Query = ctx.Request.Query,
                            Headers = ctx.Request.Headers,
@@ -244,15 +249,16 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                 var hasProxyHeader = ctx.Request.Headers.TryGetValue(proxyHeaderName, out var header);
                 if (hasProxyHeader)
                 {
-                    return header.ToString();
+                    return UrlHelper.GetHost(header.ToString(), DefaultHost);
                 }
 
                 if (!string.IsNullOrEmpty(routeOptions.Host))
                 {
-                    return routeOptions.Host;
+                    return UrlHelper.GetHost(routeOptions.Host, DefaultHost);
                 }
 
-                return operation.Servers.FirstOrDefault()?.Url;
+                var specUrl = operation.Servers.FirstOrDefault()?.Url;
+                return specUrl == null ? default : UrlHelper.GetHost(specUrl, DefaultHost);
             }
 
             string ReadForm()
@@ -269,10 +275,6 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
                 }
             }
         }
-
-
-
-
 
         private class MockServerRequestContext : IMockServerRequestContext
         {

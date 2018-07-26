@@ -24,7 +24,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers
 
         public Task<IMockServerResponseContext> HandleAsync(IMockServerRequestContext context)
         {
-            if (context.Host == null)
+            if (context.Host == default)
             {
                 throw new Exception("Unable to find host to proxy the request.");
             }
@@ -46,29 +46,17 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers
         {
             var targetRequest = new HttpRequestMessage
                                 {
-                                        RequestUri = GetUri(),
+                                        RequestUri = new Uri($"{ctx.Host}{ctx.PathAndQuery}"),
                                         Method = new HttpMethod(ctx.Method.ToString().ToUpperInvariant()),
-                                        Content = GetContent()
+                                        Content = new StringContent(ctx.Body, Encoding.UTF8, ctx.ContentType)
                                 };
-            
-            CopyHeaders(targetRequest);
+
+            foreach (var (k, v) in ctx.Headers)
+            {
+                targetRequest.Headers.TryAddWithoutValidation(k, v.ToArray());
+            }
 
             return targetRequest;
-
-            Uri GetUri() => new Uri($"{ctx.Host}{ctx.PathAndQuery}");
-
-            HttpContent GetContent()
-            {
-                return new StringContent(ctx.Body, Encoding.UTF8, ctx.ContentType);
-            }
-
-            void CopyHeaders(HttpRequestMessage x)
-            {
-                foreach (var (k, v) in ctx.Headers)
-                {
-                    x.Headers.TryAddWithoutValidation(k, v.ToArray());
-                }
-            }
         }
 
         private static Task<IMockServerResponseContext> CreateResponseAsync(HttpResponseMessage sourceResponse)
@@ -78,7 +66,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers
             IMockServerResponseContext CreateContext(Task<string> body) =>
                     new MockServerResponseContext
                     {
-                            ContentType = sourceResponse.Content.Headers.ContentType.ToString(),
+                            ContentType = sourceResponse.Content.Headers.ContentType?.ToString(),
                             StatusCode = sourceResponse.StatusCode,
                             Body = body.Result,
                             Headers = GetHeaders()
