@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 
 using ITExpert.OpenApi.Server.Core.MockServer.Context.Types;
 using ITExpert.OpenApi.Server.Core.MockServer.Options;
-using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -119,11 +118,6 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Context
             {
                 return null;
             }
-        }
-
-        private static string GetHostFromConfig(RequestContextConfig config)
-        {
-            return string.IsNullOrEmpty(config.Host) ? null : UrlHelper.GetHost(config.Host);
         }
 
         private static string GetHostFromOperation(RequestContextSpec spec)
