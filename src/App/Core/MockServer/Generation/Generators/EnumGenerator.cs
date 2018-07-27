@@ -1,7 +1,9 @@
 using System;
 
-using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Writers;
+
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
 {
@@ -14,7 +16,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
             Random = random;
         }
 
-        public bool TryWriteValue(IOpenApiWriter writer, OpenApiSchema schema)
+        public bool TryWriteValue(IOpenApiWriter writer, JSchema schema)
         {
             var isEnum = schema.Enum != null && schema.Enum.Count > 0;
             if (!isEnum)
@@ -24,9 +26,27 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
 
             var valueIndex = Random.Next(0, schema.Enum.Count);
             var value = schema.Enum[valueIndex];
-            value.Write(writer);
+            WriteJToken(writer, value);
 
             return true;
+        }
+
+        public void WriteJToken(IOpenApiWriter writer, JToken token)
+        {
+            switch (token.Type)
+            {
+                
+                case JTokenType.String:
+                case JTokenType.Date:
+                case JTokenType.Guid:
+                case JTokenType.TimeSpan:
+                case JTokenType.Uri:
+                    writer.WriteValue(token.ToString());
+                    break;
+                default:
+                    writer.WriteRaw(token.ToString());
+                    break;
+            }
         }
     }
 }

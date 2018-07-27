@@ -5,7 +5,8 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Types;
+using ITExpert.OpenApi.Server.Core.MockServer.Context.Types;
+using ITExpert.OpenApi.Server.Core.MockServer.Exceptions;
 
 using Microsoft.Extensions.Primitives;
 
@@ -22,17 +23,17 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers
             ClientFactory = clientFactory;
         }
 
-        public Task<IMockServerResponseContext> HandleAsync(IMockServerRequestContext context)
+        public Task<MockServerResponseContext> HandleAsync(RequestContext context)
         {
-            if (context.Host == default)
+            if (context.Config.Host == default)
             {
-                throw new Exception("Unable to find host to proxy the request.");
+                throw new MockServerConfigurationException("Unable to find host to proxy the request.");
             }
 
             return Proxy(context);
         }
 
-        private async Task<IMockServerResponseContext> Proxy(IMockServerRequestContext ctx)
+        private async Task<MockServerResponseContext> Proxy(RequestContext ctx)
         {
             var client = ClientFactory.CreateClient();
             var request = CreateRequest(ctx);
@@ -42,16 +43,16 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers
             return await CreateResponseAsync(response).ConfigureAwait(false);
         }
 
-        private static HttpRequestMessage CreateRequest(IMockServerRequestContext ctx)
+        private static HttpRequestMessage CreateRequest(RequestContext ctx)
         {
             var targetRequest = new HttpRequestMessage
                                 {
-                                        RequestUri = new Uri($"{ctx.Host}{ctx.PathAndQuery}"),
-                                        Method = new HttpMethod(ctx.Method.ToString().ToUpperInvariant()),
-                                        Content = new StringContent(ctx.Body, Encoding.UTF8, ctx.ContentType)
+                                        RequestUri = new Uri($"{ctx.Config.Host}{ctx.Request.PathAndQuery}"),
+                                        Method = new HttpMethod(ctx.Request.Method.ToString().ToUpperInvariant()),
+                                        Content = new StringContent(ctx.Request.Body, Encoding.UTF8, ctx.Request.ContentType)
                                 };
 
-            foreach (var (k, v) in ctx.Headers)
+            foreach (var (k, v) in ctx.Request.Headers)
             {
                 targetRequest.Headers.TryAddWithoutValidation(k, v.ToArray());
             }
@@ -59,11 +60,11 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers
             return targetRequest;
         }
 
-        private static Task<IMockServerResponseContext> CreateResponseAsync(HttpResponseMessage sourceResponse)
+        private static Task<MockServerResponseContext> CreateResponseAsync(HttpResponseMessage sourceResponse)
         {
             return sourceResponse.Content.ReadAsStringAsync().ContinueWith(CreateContext);
 
-            IMockServerResponseContext CreateContext(Task<string> body) =>
+            MockServerResponseContext CreateContext(Task<string> body) =>
                     new MockServerResponseContext
                     {
                             ContentType = sourceResponse.Content.Headers.ContentType?.ToString(),

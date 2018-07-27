@@ -4,11 +4,11 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
+using ITExpert.OpenApi.Server.Core.MockServer.Context.Types;
 using ITExpert.OpenApi.Server.Core.MockServer.Generation;
 using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
 using Microsoft.Extensions.Primitives;
-using Microsoft.OpenApi.Models;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers
 {
@@ -21,69 +21,44 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers
             Generator = generator;
         }
 
-        public Task<IMockServerResponseContext> HandleAsync(IMockServerRequestContext context)
+        public Task<MockServerResponseContext> HandleAsync(RequestContext context)
         {
-            var operation = context.OperationSpec;
-            var (statusCode, responseSpec) = ChooseResponse(operation);
-
-            var (contentType, mediaType) = GetMediaType(responseSpec);
-            if (mediaType == null)
+            var responseSpec = ChooseResponse(context.Spec.Responses);
+            if (responseSpec == null)
             {
-                return Task.FromResult(RespondWithNothing(statusCode));
+                return Task.FromResult(RespondWithNothing(HttpStatusCode.NoContent));
             }
 
-            var responseMock = Generator.MockResponse(mediaType);
-            return Task.FromResult(RespondWithMock(responseMock, contentType, statusCode));
+            var responseMock = Generator.MockResponse(responseSpec);
+            return Task.FromResult(RespondWithMock(responseMock, responseSpec));
         }
 
-        private static KeyValuePair<string, OpenApiResponse> ChooseResponse(OpenApiOperation operation)
+        private static RequestContextResponse ChooseResponse(IEnumerable<RequestContextResponse> responseSpec)
         {
-            if (operation.Responses.Count == 0)
-            {
-                throw new Exception("Invalid OpenApi Specification. Responses should be defined");
-            }
-
-            var success = operation
-                          .Responses
-                          .FirstOrDefault(x => x.Key.StartsWith("2", StringComparison.Ordinal));
-            return string.IsNullOrEmpty(success.Key) ? operation.Responses.First() : success;
-        }
-
-        private static KeyValuePair<string, OpenApiMediaType> GetMediaType(OpenApiResponse response)
-        {
-            if (response.Content.Count == 0)
-            {
-                return default;
-            }
-
-            var result = response.Content.FirstOrDefault(x => x.Key == "*/*" || x.Key == "application/json");
-            if (string.IsNullOrEmpty(result.Key))
+            var filterMediaType =
+                    responseSpec.Where(x => x.ContentType == "*/*" || x.ContentType == "application/json").ToArray();
+            if (filterMediaType.Length == 0)
             {
                 throw new NotSupportedException("MockServer only supports 'application/json' or '*/*' for now.");
             }
 
-            return result;
+            var comparison = StringComparison.OrdinalIgnoreCase;
+            var successResponse = filterMediaType.FirstOrDefault(x => x.StatusCode.StartsWith("2", comparison) ||
+                                                                      x.StatusCode.Equals("default", comparison));
+
+            return successResponse ?? filterMediaType.FirstOrDefault();
         }
 
-        private static IMockServerResponseContext RespondWithMock(MockHttpResponse mock,
-                                                                  string contentType,
-                                                                  string statusCode)
-        {
-            return new MockServerResponseContext
-                   {
-                           ContentType = contentType,
-                           StatusCode = Enum.Parse<HttpStatusCode>(statusCode, ignoreCase: true),
-                           Headers = mock.Headers.ToDictionary(x => x.Key, x => new StringValues(x.Value)),
-                           Body = mock.Body
-                   };
-        }
+        private static MockServerResponseContext RespondWithMock(MockHttpResponse mock, RequestContextResponse spec) =>
+                new MockServerResponseContext
+                {
+                        ContentType = spec.ContentType,
+                        StatusCode = spec.StatusCodeParsed,
+                        Headers = mock.Headers.ToDictionary(x => x.Key, x => new StringValues(x.Value)),
+                        Body = mock.Body
+                };
 
-        private static IMockServerResponseContext RespondWithNothing(string statusCode)
-        {
-            return new MockServerResponseContext
-                   {
-                           StatusCode = Enum.Parse<HttpStatusCode>(statusCode, ignoreCase: true)
-                   };
-        }
+        private static MockServerResponseContext RespondWithNothing(HttpStatusCode code) =>
+                new MockServerResponseContext {StatusCode = code};
     }
 }

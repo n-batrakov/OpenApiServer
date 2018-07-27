@@ -1,27 +1,73 @@
+using System.Net;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Types;
+using ITExpert.OpenApi.Server.Core.MockServer.Context.Types;
+using ITExpert.OpenApi.Server.Core.MockServer.Validation;
+
+using Newtonsoft.Json;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers
 {
     public class MockServerRequestHandler : IMockServerRequestHandler
     {
+        private IMockServerRequestValidator RequestValidator { get; }
+        private IMockServerResponseValidator ResponseValidator { get; }
+
         private MockRequestHandler MockHandler { get; }
         private ProxyRequestHandler ProxyHandler { get; }
 
-        public MockServerRequestHandler(MockRequestHandler mockHandler, ProxyRequestHandler proxyHandler)
+        public MockServerRequestHandler(IMockServerRequestValidator requestValidator,
+                                        IMockServerResponseValidator responseValidator,
+                                        MockRequestHandler mockHandler,
+                                        ProxyRequestHandler proxyHandler)
         {
+            RequestValidator = requestValidator;
+            ResponseValidator = responseValidator;
             MockHandler = mockHandler;
             ProxyHandler = proxyHandler;
         }
 
-        public Task<IMockServerResponseContext> HandleAsync(IMockServerRequestContext context)
+        public async Task<MockServerResponseContext> HandleAsync(RequestContext context)
         {
-            var delayTask = Task.Delay(context.Options.Delay);
-            var responseTask = context.Options.Mock
+            if (context.Config.ValidateRequest)
+            {
+                var requestValidationStatus = RequestValidator.Validate(context);
+                if (!requestValidationStatus.IsSuccess)
+                {
+                    return Error(requestValidationStatus, HttpStatusCode.BadRequest);
+                }
+            }
+
+            var delayTask = Task.Delay(context.Config.Delay);
+            var responseTask = context.Config.Mock
                                        ? MockHandler.HandleAsync(context)
                                        : ProxyHandler.HandleAsync(context);
-            return Task.WhenAll(delayTask, responseTask).ContinueWith(_ => responseTask.Result);
+            await Task.WhenAll(delayTask, responseTask);
+
+            if (context.Config.ValidateResponse)
+            {
+                var responseValidationStatus = ResponseValidator.Validate(responseTask.Result, context);
+                if (!responseValidationStatus.IsSuccess)
+                {
+                    return Error(responseValidationStatus,
+                                                            HttpStatusCode.InternalServerError);
+                }
+
+            }
+
+            return responseTask.Result;
+        }
+
+        private static MockServerResponseContext Error(
+                RequestValidationStatus validationStatus,
+                HttpStatusCode statusCode)
+        {
+            return new MockServerResponseContext
+                   {
+                           StatusCode = statusCode,
+                           ContentType = "application/json",
+                           Body = JsonConvert.SerializeObject(validationStatus)
+                   };
         }
     }
 }

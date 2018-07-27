@@ -8,8 +8,6 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
     {
         public bool IsSuccess { get; }
 
-        public bool IsFaulty => !IsSuccess;
-
         public IEnumerable<RequestValidationError> Errors { get; }
 
         public RequestValidationStatus(IReadOnlyCollection<RequestValidationError> errors)

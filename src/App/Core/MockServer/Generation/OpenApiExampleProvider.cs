@@ -4,8 +4,9 @@ using System.Linq;
 
 using ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators;
 
-using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Writers;
+
+using Newtonsoft.Json.Schema;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Generation
 {
@@ -13,7 +14,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation
     {
         private static readonly IOpenApiExampleProvider[] Providers = GetProviders(new Random());
 
-        public bool TryWriteValue(IOpenApiWriter writer, OpenApiSchema schema)
+        public bool TryWriteValue(IOpenApiWriter writer, JSchema schema)
         {
             return Providers.Any(x => x.TryWriteValue(writer, schema));
         }
@@ -39,10 +40,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation
             providers.Add(new CombinedGenerator(providers));
             providers.Add(new ObjectGenerator(providers, counter));
 
-            return providers.Select(Wrap).ToArray();
-
-            IOpenApiExampleProvider Wrap(IOpenApiExampleProvider x) =>
-                    new SchemaExampleGenerator(x);
+            return providers.ToArray();
         }
     }
 }

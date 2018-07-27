@@ -1,8 +1,8 @@
 using System;
 
+using ITExpert.OpenApi.Server.Core.MockServer.Context;
 using ITExpert.OpenApi.Server.Core.MockServer.Generation;
 using ITExpert.OpenApi.Server.Core.MockServer.Options;
-using ITExpert.OpenApi.Server.Core.MockServer.PathProviders;
 using ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers;
 using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 
@@ -37,32 +37,26 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             services.AddOptions<MockServerOptions>().Configure(configure);
 
             services.AddSingleton<IMockServerRequestValidator, MockServerRequestValidator>();
-            services.AddSingleton<IMockServerResponseValidator, NullResponseValidator>();
+            services.AddSingleton<IMockServerResponseValidator, MockServerResponseValidator>();
             services.AddSingleton<MockResponseGenerator>();
 
             services.AddSingleton<ProxyRequestHandler>();
             services.AddSingleton<MockRequestHandler>();
             services.AddSingleton<IMockServerRequestHandler, MockServerRequestHandler>();
 
-            
-            services.AddSingleton<IOpenApiOperationPathProvider, ConfigOperationPathProvider>();
-            services.AddSingleton<MockServerRequestContextProvider>();
+
+            services.AddSingleton<ContextProvider>();
 
             return services;
         }
 
         public static IApplicationBuilder UseMockServer(this IApplicationBuilder app, params OpenApiDocument[] specs)
         {
-            var ctxProvider = app.ApplicationServices.GetRequiredService<MockServerRequestContextProvider>();
-            var reqValidator = app.ApplicationServices.GetRequiredService<IMockServerRequestValidator>();
-            var respValidator = app.ApplicationServices.GetRequiredService<IMockServerResponseValidator>();
-            var handler = app.ApplicationServices.GetRequiredService<IMockServerRequestHandler>();
-            var builder = new MockServerBuilder(ctxProvider, reqValidator, respValidator, handler);
-
+            var builder = ActivatorUtilities.CreateInstance<MockServerBuilder>(app.ApplicationServices);
             var routeBuilder = new RouteBuilder(app);
-            var router = builder.BuildRouter(routeBuilder);
+            var router = builder.MapMockServerRoutes(routeBuilder);
 
-            app.UseRouter(router);
+            app.UseRouter(router.Build());
 
             return app;
         }

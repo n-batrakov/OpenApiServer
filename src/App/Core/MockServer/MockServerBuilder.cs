@@ -1,99 +1,60 @@
-using System.Collections.Generic;
-using System.Net;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 
+using ITExpert.OpenApi.Server.Core.MockServer.Context;
+using ITExpert.OpenApi.Server.Core.MockServer.Context.Types;
 using ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers;
-using ITExpert.OpenApi.Server.Core.MockServer.Types;
-using ITExpert.OpenApi.Server.Core.MockServer.Validation;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-
-using Newtonsoft.Json;
+using Microsoft.Extensions.Logging;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer
 {
     public class MockServerBuilder
     {
-        private MockServerRequestContextProvider ContextProvider { get; }
-
-        private IMockServerRequestValidator RequestValidator { get; }
-        private IMockServerResponseValidator ResponseValidator { get; }
-
+        private ContextProvider ContextProvider { get; }
+        private ILogger Logger { get; }
         private IMockServerRequestHandler RequestHandler { get; }
 
-        public MockServerBuilder(MockServerRequestContextProvider contextProvider,
-                                 IMockServerRequestValidator requestValidator,
-                                 IMockServerResponseValidator responseValidator,
-                                 IMockServerRequestHandler requestHandler)
+        public MockServerBuilder(ContextProvider contextProvider,
+                                 IMockServerRequestHandler requestHandler,
+                                 ILoggerFactory loggerFactory)
         {
             ContextProvider = contextProvider;
-            RequestValidator = requestValidator;
-            ResponseValidator = responseValidator;
             RequestHandler = requestHandler;
+            Logger = loggerFactory.CreateLogger(nameof(MockServerBuilder));
         }
 
-        public IRouter BuildRouter(IRouteBuilder builder)
+        public IRouteBuilder MapMockServerRoutes(IRouteBuilder builder)
         {
             foreach (var id in ContextProvider.Routes)
             {
                 builder.MapVerb(id.Verb.ToString(), id.Path, HandleRequest);
             }
 
-            return builder.Build();
+            return builder;
         }
 
         private async Task HandleRequest(HttpContext ctx)
         {
             var requestContext = ContextProvider.GetContext(ctx);
-            var config = requestContext.Options;
             ctx.Features.Set(requestContext);
 
-            if (config.ShouldValidateRequest)
+            try
             {
-                var requestValidationStatus = RequestValidator.Validate(requestContext);
-                if (requestValidationStatus.IsFaulty)
-                {
-                    await RespondWithValidationErrorAsync(ctx.Response,
-                                                          HttpStatusCode.BadRequest,
-                                                          requestValidationStatus.Errors);
-                    return;
-                }
+                var response = await RequestHandler.HandleAsync(requestContext).ConfigureAwait(false);
+                await WriteResponse(ctx.Response, response).ConfigureAwait(false);
             }
-
-            var responseContext = await RequestHandler.HandleAsync(requestContext);
-
-            if (config.ShouldValidateResponse)
+            catch (Exception e)
             {
-                var responseValidationStatus = ResponseValidator.Validate(
-                        responseContext,
-                        requestContext.OperationSpec.Responses);
-
-                if (responseValidationStatus.IsFaulty)
-                {
-                    await RespondWithValidationErrorAsync(ctx.Response,
-                                                          HttpStatusCode.InternalServerError,
-                                                          responseValidationStatus.Errors);
-                    return;
-                }
-
+                await WriteException(ctx.Response, e);
+                Logger.LogError(e, "An exception occured while handling request.");
             }
-
-            await WriteResponse(ctx.Response, responseContext);
         }
 
-        private static Task RespondWithValidationErrorAsync(HttpResponse response,
-                                                            HttpStatusCode status,
-                                                            IEnumerable<RequestValidationError> errors)
-        {
-            response.StatusCode = (int)status;
-            response.ContentType = "application/json";
-            var json = JsonConvert.SerializeObject(errors);
-            return response.WriteAsync(json, Encoding.UTF8);
-        }
-
-        private static Task WriteResponse(HttpResponse response, IMockServerResponseContext responseContext)
+        private static Task WriteResponse(HttpResponse response, MockServerResponseContext responseContext)
         {
             response.StatusCode = (int)responseContext.StatusCode;
             response.ContentType = responseContext.ContentType;
@@ -104,6 +65,31 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             }
 
             return response.WriteAsync(responseContext.Body);
+        }
+
+        private static Task WriteException(HttpResponse response, Exception exception)
+        {
+            response.StatusCode = 500;
+            response.ContentType = "text/plain";
+            var msg = $"[{GetExceptionPrettyName(exception)}]: {exception.Message}";
+            return response.WriteAsync(msg, Encoding.UTF8);
+        }
+
+        private static string GetExceptionPrettyName(Exception e)
+        {
+            var fullName = e.GetType().Name;
+            if (fullName == "Exception")
+            {
+                return "Generic";
+            }
+
+            if (fullName.EndsWith("Exception", StringComparison.Ordinal))
+            {
+                const int exceptionPostfixLength = 9;
+                return fullName.Substring(0, fullName.Length - exceptionPostfixLength);
+            }
+
+            return fullName;
         }
     }
 }

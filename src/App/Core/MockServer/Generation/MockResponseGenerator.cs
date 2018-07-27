@@ -1,8 +1,8 @@
 using System.Linq;
 
+using ITExpert.OpenApi.Server.Core.MockServer.Types;
 using ITExpert.OpenApi.Utils;
 
-using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Writers;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Generation
@@ -16,7 +16,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation
             ExampleProvider = new OpenApiExampleProvider();
         }
 
-        public MockHttpResponse MockResponse(OpenApiMediaType mediaType)
+        public MockHttpResponse MockResponse(RequestContextResponse mediaType)
         {
             var body = OpenApiSerializer.Serialize(WriteBody);
 
@@ -28,18 +28,12 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation
             }
         }
 
-        private static bool TryWriteExample(IOpenApiWriter writer, OpenApiMediaType mediaType)
+        private static bool TryWriteExample(IOpenApiWriter writer, RequestContextResponse mediaType)
         {
-            if (mediaType.Example != null)
-            {
-                mediaType.Example.Write(writer);
-                return true;
-            }
-
             if (mediaType.Examples?.Count > 0)
             {
-                var example = mediaType.Examples.First().Value.Value;
-                example.Write(writer);
+                var example = mediaType.Examples.First();
+                writer.WriteRaw(example);
                 return true;
             }
 

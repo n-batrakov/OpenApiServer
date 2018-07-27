@@ -3,9 +3,9 @@ using System.Net;
 
 using Microsoft.Extensions.Primitives;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Types
+namespace ITExpert.OpenApi.Server.Core.MockServer.Context.Types
 {
-    internal class MockServerResponseContext : IMockServerResponseContext
+    public class MockServerResponseContext
     {
         public HttpStatusCode StatusCode { get; set; }
 
@@ -13,6 +13,6 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Types
 
         public string ContentType { get; set; }
 
-        public IDictionary<string, StringValues> Headers { get; set; }
+        public IDictionary<string, StringValues> Headers { get; set; } = new Dictionary<string, StringValues>();
     }
 }

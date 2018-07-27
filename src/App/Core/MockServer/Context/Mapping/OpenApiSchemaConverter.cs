@@ -11,9 +11,9 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
+namespace ITExpert.OpenApi.Server.Core.MockServer.Context.Mapping
 {
-    internal class OpenApiSchemaConverter
+    public class OpenApiSchemaConverter
     {
         private Dictionary<OpenApiSchema, JSchema> ReferenceMap { get; }
 

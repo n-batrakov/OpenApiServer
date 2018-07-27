@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ITExpert.OpenApi.Server.Core.MockServer.Context.Types;
 using ITExpert.OpenApi.Server.Core.MockServer.Generation;
 
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
+
+using Newtonsoft.Json.Schema;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
 {
@@ -14,20 +17,15 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
         private const string ObjectNotSupported =
                 "Object parameters are not supported just yet for query, header, cookie and path parameters.";
 
-        public static object GetValue(this OpenApiParameter parameter, StringValues values)
+        public static object GetValue(this RequestContextParameter parameter, StringValues values)
         {
-            if (parameter.In == null)
-            {
-                throw new FormatException("Unable to find required 'In' property for parameter.");
-            }
-
             if (parameter.In == ParameterLocation.Path)
             {
                 throw new NotImplementedException("Path parameters validation are not implemented just yet.");
             }
 
             
-            var style = parameter.Style ?? GetDefaultStyle(parameter.In.Value);
+            var style = parameter.Style ?? GetDefaultStyle(parameter.In);
             var delimeter = GetDelimeter(style);
             var explode = values.Count > 1;
             var type = parameter.Schema.ConvertTypeToEnum();
@@ -53,15 +51,15 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
             }
         }
 
-        private static object ParseScalarValue(string value, OpenApiSchema schema)
+        private static object ParseScalarValue(string value, JSchema schema)
         {
             var hasResult = TryParseToRequiredType(value, schema, out var result);
             return hasResult ? result : value;
         }
 
-        private static IEnumerable<object> ParseArrayValue(IEnumerable<string> values, OpenApiSchema schema)
+        private static IEnumerable<object> ParseArrayValue(IEnumerable<string> values, JSchema schema)
         {
-            return values.Select(x => ParseScalarValue(x, schema.Items)).ToArray();
+            return values.Select(x => ParseScalarValue(x, schema.Items.Single())).ToArray();
         }
 
         private static ParameterStyle GetDefaultStyle(ParameterLocation location)
@@ -102,7 +100,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
             }
         }
 
-        private static bool TryParseToRequiredType(string value, OpenApiSchema schema, out object result)
+        private static bool TryParseToRequiredType(string value, JSchema schema, out object result)
         {
             var type = schema.ConvertTypeToEnum();
             switch (type)

@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Options;
+using ITExpert.OpenApi.Server.Core.MockServer.Context.Mapping;
+using ITExpert.OpenApi.Server.Core.MockServer.Context.Types;
 using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
 using Microsoft.AspNetCore.Http;
@@ -42,18 +43,23 @@ namespace UnitTests.Utils
             return builder;
         }
 
-        public IMockServerRequestContext Build() =>
-                new MockServerRequestContext
-                {
-                        Route = Route,
-                        Method = Method,
-                        Query = Query,
-                        Body = Body,
-                        Headers = Headers,
-                        ContentType = Form == null ? "application/json" : "multipart/form-data",
-                        PathAndQuery = Path,
-                        OperationSpec = Spec
-                };
+        public RequestContext Build()
+        {
+            var config = new RequestContextConfig();
+            var spec = RequestContextSpecConverter.ConvertSpec(Spec, new OpenApiServer[0]);
+            var callCtx = new RequestContextCall
+                          {
+                                  Route = Route,
+                                  Method = Method,
+                                  Query = Query,
+                                  Body = Body,
+                                  Headers = Headers,
+                                  ContentType = Form == null ? "application/json" : "multipart/form-data",
+                                  PathAndQuery = Path,
+                          };
+
+            return new RequestContext(config, spec, callCtx);
+        }
 
         public RequestBuilder WithSpec(OpenApiOperation spec)
         {
@@ -118,29 +124,6 @@ namespace UnitTests.Utils
             }
 
             return new QueryCollection(dict);
-        }
-
-        private class MockServerRequestContext : IMockServerRequestContext
-        {
-            public string PathAndQuery { get; set; }
-
-            public HttpMethod Method { get; set; }
-
-            public string Host { get; } = null;
-
-            public RouteData Route { get; set; }
-
-            public IHeaderDictionary Headers { get; set; }
-
-            public IQueryCollection Query { get; set; }
-
-            public string Body { get; set; }
-
-            public string ContentType { get; set; }
-
-            public OpenApiOperation OperationSpec { get; set; }
-
-            public MockServerRouteOptions Options { get; } = null;
         }
     }
 }

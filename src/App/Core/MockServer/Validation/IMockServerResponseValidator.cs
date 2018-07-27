@@ -1,17 +1,15 @@
-using ITExpert.OpenApi.Server.Core.MockServer.Types;
-
-using Microsoft.OpenApi.Models;
+using ITExpert.OpenApi.Server.Core.MockServer.Context.Types;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
 {
     public interface IMockServerResponseValidator
     {
-        RequestValidationStatus Validate(IMockServerResponseContext context, OpenApiResponses responsesSpec);
+        RequestValidationStatus Validate(MockServerResponseContext response, RequestContext context);
     }
 
-    public class NullResponseValidator : IMockServerResponseValidator
+    public class MockServerResponseValidator : IMockServerResponseValidator
     {
-        public RequestValidationStatus Validate(IMockServerResponseContext context, OpenApiResponses responsesSpec)
+        public RequestValidationStatus Validate(MockServerResponseContext response, RequestContext context)
         {
             return RequestValidationStatus.Success();
         }
