@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using ITExpert.OpenApi.Utils;
+using ITExpert.OpenApi.Server.Utils;
 
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;

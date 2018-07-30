@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-using ITExpert.OpenApi.Server.Core.MockServer.Types;
+using System.Collections.Generic;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Context.Types
 {

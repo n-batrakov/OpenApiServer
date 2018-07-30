@@ -1,6 +1,6 @@
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Utils
+namespace ITExpert.OpenApi.Server.Utils
 {
     public static class OpenApiDocumentExtensions
     {

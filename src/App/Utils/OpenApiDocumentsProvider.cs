@@ -8,7 +8,7 @@ using Microsoft.OpenApi.Readers;
 
 using Newtonsoft.Json.Linq;
 
-namespace ITExpert.OpenApi.Utils
+namespace ITExpert.OpenApi.Server.Utils
 {
     public static class OpenApiDocumentsProvider
     {

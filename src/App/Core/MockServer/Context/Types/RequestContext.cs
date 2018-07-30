@@ -1,5 +1,3 @@
-using ITExpert.OpenApi.Server.Core.MockServer.Types;
-
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 

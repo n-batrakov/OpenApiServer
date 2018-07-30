@@ -1,4 +1,4 @@
-﻿namespace ITExpert.OpenApi.Server.Core.MockServer.Types
+namespace ITExpert.OpenApi.Server.Core.MockServer.Context.Types
 {
     public class RequestContextConfig
     {

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Utils;
+using ITExpert.OpenApi.Server.Utils;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

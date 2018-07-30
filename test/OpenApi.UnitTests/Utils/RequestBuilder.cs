@@ -4,7 +4,6 @@ using System.Linq;
 
 using ITExpert.OpenApi.Server.Core.MockServer.Context.Mapping;
 using ITExpert.OpenApi.Server.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Server.Core.MockServer.Types;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
