@@ -22,13 +22,16 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
         private IApplicationBuilder ApplicationBuilder { get; }
         private RequestContextProvider ContextProvider { get; }
         private ILogger Logger { get; }
-        private IMockServerRequestHandler RequestHandler { get; }
+
+        private IMockServerRequestHandler GeneralRequestHandler { get; }
+        private MockRequestHandler MockRequestHandler { get; }
 
         public MockServerBuilder(IApplicationBuilder app, IEnumerable<OpenApiDocument> specs)
         {
             ApplicationBuilder = app;
             ContextProvider = ActivatorUtilities.CreateInstance<RequestContextProvider>(app.ApplicationServices, specs);
-            RequestHandler = app.ApplicationServices.GetRequiredService<IMockServerRequestHandler>();
+            GeneralRequestHandler = app.ApplicationServices.GetRequiredService<IMockServerRequestHandler>();
+            MockRequestHandler = app.ApplicationServices.GetRequiredService<MockRequestHandler>();
             Logger = app.ApplicationServices.GetService<ILoggerFactory>()?.CreateLogger(nameof(MockServerBuilder)) ??
                      NullLogger.Instance;
         }
@@ -38,25 +41,45 @@ namespace ITExpert.OpenApi.Server.Core.MockServer
             var builder = new RouteBuilder(ApplicationBuilder);
             foreach (var id in ContextProvider.Routes)
             {
-                builder.MapVerb(id.Verb.ToString(), id.Path, HandleRequest);
+                var verb = id.Verb.ToString();
+
+                builder.MapVerb(verb, id.Path, HandleGeneralRequest);
+                builder.MapVerb(verb, $"/mock/{id.Path}", HandleMockRequest);
             }
 
             return builder.Build();
         }
 
-        private async Task HandleRequest(HttpContext ctx)
+        private Task HandleMockRequest(HttpContext ctx)
+        {
+            var mockId = ctx.GetRouteId();
+
+            var path = mockId.Path.Substring(6);
+            var id = new RouteId(path, mockId.Verb);
+
+            var requestContext = ContextProvider.GetContext(id, ctx);
+
+            return HandleRequest(requestContext, ctx.Response, MockRequestHandler);
+        }
+
+        private Task HandleGeneralRequest(HttpContext ctx)
         {
             var requestContext = ContextProvider.GetContext(ctx);
             ctx.Features.Set(requestContext);
 
+            return HandleRequest(requestContext, ctx.Response, GeneralRequestHandler);
+        }
+
+        private async Task HandleRequest(RequestContext requestContext, HttpResponse httpResponse, IMockServerRequestHandler handler)
+        {
             try
             {
-                var response = await RequestHandler.HandleAsync(requestContext).ConfigureAwait(false);
-                await WriteResponse(ctx.Response, response).ConfigureAwait(false);
+                var response = await handler.HandleAsync(requestContext).ConfigureAwait(false);
+                await WriteResponse(httpResponse, response).ConfigureAwait(false);
             }
             catch (Exception e)
             {
-                await WriteException(ctx.Response, e);
+                await WriteException(httpResponse, e);
                 Logger.LogError(e, "An exception occured while handling request.");
             }
         }

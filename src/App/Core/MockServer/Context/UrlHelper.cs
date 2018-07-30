@@ -8,6 +8,8 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Context
         public static string Join(params string[] segments) =>
                 string.Join("/", segments.Select(x => x == "/" ? "" : x.Trim('/')));
 
+        public static string GetDefaultPathPrefix(string service) => $"api/{service}";
+
         public static string GetPathPrefix(string url)
         {
             var uri = new Uri(url, UriKind.RelativeOrAbsolute);

@@ -7,6 +7,8 @@ using ITExpert.OpenApi.Server.Utils;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 
+using Newtonsoft.Json.Schema;
+
 namespace ITExpert.OpenApi.Server.Core.MockServer.Context.Mapping
 {
     public static class RequestContextSpecConverter
@@ -66,6 +68,12 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Context.Mapping
         {
             foreach (var (statusCode, responseSpec) in operation.Responses)
             {
+                if (responseSpec.Content.Count == 0)
+                {
+                    yield return new RequestContextResponse("*/*", statusCode, new JSchema(), new string[0]);
+                    yield break;
+                }
+
                 foreach (var (contentType, mediaTypeSpec) in responseSpec.Content)
                 {
                     var schema = schemaConverter.Convert(mediaTypeSpec.Schema);

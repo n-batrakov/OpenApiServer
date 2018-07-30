@@ -43,7 +43,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Context
                     foreach (var (verb, operation) in pathSpec.Operations)
                     {
                         var key = GetRouteId(spec, operation, verb, path);
-                        var config = options.Routes.Where(x => RequestContextExtensions.IsMatch(x, key)).Aggregate((acc, x) => x.Merge(acc));
+                        var config = options.Routes.Where(x => x.IsMatch(key)).Aggregate((acc, x) => x.Merge(acc));
                         var configCtx = MapConfig(config, options.MockServerHost);
                         var specCtx = RequestContextSpecConverter.ConvertSpec(operation, spec.Servers);
 
@@ -75,7 +75,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Context
         {
             var server = operation.Servers.FirstOrDefault() ?? spec.Servers.FirstOrDefault();
             var prefix = server == null
-                                 ? $"api/{spec.Info.GetServiceName()}"
+                                 ? UrlHelper.GetDefaultPathPrefix(spec.Info.GetServiceName())
                                  : UrlHelper.GetPathPrefix(server.FormatUrl());
 
             var route = UrlHelper.Join(prefix, operationPath);

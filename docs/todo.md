@@ -3,10 +3,6 @@
 
 ## Fixes and updates
 
-* Remove Utils assembly
-* Break ContextProivder to RequestContextCollection, RequestContextCollectionBuilder, RequestContextProvider
-* Do not store `OpenApiDocument`s after startup
-* Add MockServer spec to SwaggerUI
 * Improve Text generation quality
 * Finish `oas`-cli
 

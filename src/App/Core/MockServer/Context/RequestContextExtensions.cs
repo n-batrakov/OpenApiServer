@@ -20,6 +20,20 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Context
 {
     internal static class RequestContextExtensions
     {
+        public static RouteId GetRouteId(this HttpContext ctx)
+        {
+            var routeData = ctx.GetRouteData();
+            var route = routeData.Routers.OfType<Route>().FirstOrDefault();
+            if (route == null)
+            {
+                throw new Exception($"Unable to find route for {ctx.Request.Path} ({ctx.Request.Method})");
+            }
+
+            var template = route.RouteTemplate;
+            var verb = ctx.Request.Method.ToLowerInvariant();
+            return new RouteId(template, verb);
+        }
+
         public static RequestContextBody GetBodySpec(this RequestContext context)
         {
             if (context.Request == null)
