@@ -3,8 +3,8 @@
 
 ## Fixes and updates
 
-* Improve Text generation quality
 * Finish `oas`-cli
+* Improve Text generation quality
 
 ## OpenAPI Specification compliance
 

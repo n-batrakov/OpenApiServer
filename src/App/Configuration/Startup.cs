@@ -5,7 +5,6 @@ using System.Linq;
 
 using ITExpert.OpenApi.Server.Core.DocumentationServer;
 using ITExpert.OpenApi.Server.Core.MockServer;
-using ITExpert.OpenApi.Server.Core.MockServer.Context;
 using ITExpert.OpenApi.Server.Utils;
 
 using Microsoft.AspNetCore.Builder;
@@ -20,25 +19,34 @@ namespace ITExpert.OpenApi.Server.Configuration
     {
         private IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration)
+        private string ContentRoot { get; }
+
+        public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
+
+            ContentRoot = Path.Combine(env.ContentRootPath, "wwwroot");
         }
 
         // ReSharper disable once UnusedMember.Global
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMockServer(Configuration);
+
+            var hasProvider = services.Any(x => x.ServiceType == typeof(IOpenApiDocumentProvider));
+            if (!hasProvider)
+            {
+                AddDefaultDocumentsProvider(services);
+            }
         }
 
         // ReSharper disable once UnusedMember.Global
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            var contentRoot = Path.Combine(env.ContentRootPath, "wwwroot");
-
-            var defaultDir = Path.Combine(contentRoot, "specs");
-            var specsDir = Configuration.GetValue("specs", defaultDir);
-            var specs = OpenApiDocumentsProvider.GetDocuments(specsDir).ToArray();
+            var specs = app.ApplicationServices
+                           .GetRequiredService<IOpenApiDocumentProvider>()
+                           .GetDocuments()
+                           .ToArray();
 
             var mockServerHost = Configuration["mockServerHost"];
             if (mockServerHost != null)
@@ -48,7 +56,15 @@ namespace ITExpert.OpenApi.Server.Configuration
             
 
             app.UseMockServer(specs)
-               .UseOpenApiServer(specs, contentRoot);
+               .UseOpenApiServer(specs, ContentRoot);
+        }
+
+        private void AddDefaultDocumentsProvider(IServiceCollection services)
+        {
+            var defaultDir = Path.Combine(ContentRoot, "specs");
+            var specsDir = Configuration.GetValue("specs", defaultDir);
+            var provider = new OpenApiDocumentsProvider(specsDir);
+            services.AddSingleton<IOpenApiDocumentProvider>(provider);
         }
 
         private static void AddMockServer(IEnumerable<OpenApiDocument> specs, string mockServerHost)
@@ -79,3 +95,4 @@ namespace ITExpert.OpenApi.Server.Configuration
         }
     }
 }
+

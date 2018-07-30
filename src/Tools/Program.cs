@@ -16,11 +16,11 @@ namespace ITExpert.OpenApi.Tools
                       };
             app.HelpOption("--help");
             app.Command("merge", MergeConfiguration.Configure);
-            app.Command("server", LaunchServerConfiguration.Configure);
+            app.Command("run", LaunchServerConfiguration.Configure);
 
             if (args == null || args.Length == 0)
             {
-                args = new[] {"server"};
+                args = new[] { "run" };
             }
 
             return app.Execute(args);

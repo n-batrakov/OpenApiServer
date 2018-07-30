@@ -1,10 +1,11 @@
-using System.Collections.Generic;
+using System.Net.Http;
 
 using ITExpert.OpenApi.Server.Configuration;
+using ITExpert.OpenApi.Server.Utils;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace ITExpert.OpenApi.Tools.Commands.Server
@@ -12,14 +13,21 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
     public class LaunchServerCommand
     {
         private int Port { get; }
-        private string SpecsDirectory { get; }
         private LogLevel LogLevel { get; }
+
+        private string ConfigFile { get; }
+        private string[] Sources { get; }
+        private bool TreatSourcesAsDiscoveryFiles { get; }
+        private string DiscovertyKey { get; }
 
         public LaunchServerCommand(LaunchServerCommandOptions options)
         {
-            Port = options.Port == default ? 5000 : options.Port;
-            SpecsDirectory = options.SpecsDirectory ?? ".";
-            LogLevel = options.Verbose ? LogLevel.Information : LogLevel.Error;
+            Port = options.Port;
+            Sources = options.Sources;
+            LogLevel = options.MinLogLevel;
+            TreatSourcesAsDiscoveryFiles = options.TreatSourcesAsDiscoveryFiles;
+            DiscovertyKey = options.DiscoveryKey;
+            ConfigFile = options.ConfigPath;
         }
 
         public int Execute()
@@ -27,22 +35,32 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
             OpenApi.Server.Program
                    .CreateHostBuilder()
                    .UseStartup<Startup>()
-                   .UseConfiguration(GetServerConfiguration(SpecsDirectory))
-                   .ConfigureLogging(x => x.SetMinimumLevel(LogLevel))
+                   .ConfigureAppConfiguration(ConfigureConfiguration)
+                   .ConfigureServices(ConfigureServices)
+                   .ConfigureLogging(ConfigureLogging)
                    .UseUrls($"http://*:{Port}")
                    .Build()
                    .Run();
             return 0;
         }
 
-        private static IConfiguration GetServerConfiguration(string specsDirectory)
+        private void ConfigureLogging(ILoggingBuilder logging)
         {
-            var data = new Dictionary<string, string>
-                       {
-                               ["specs"] = specsDirectory
-                       };
-            var source = new MemoryConfigurationSource { InitialData = data };
-            return new ConfigurationBuilder().Add(source).Build();
+            logging.SetMinimumLevel(LogLevel);
+        }
+
+        private void ConfigureConfiguration(IConfigurationBuilder config)
+        {
+            config.AddJsonFile(ConfigFile, optional: true, reloadOnChange: true);
+        }
+
+        private void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IOpenApiDocumentProvider>(
+                    x => new CliOpenApiDocumentProvider(Sources,
+                                                        TreatSourcesAsDiscoveryFiles,
+                                                        DiscovertyKey,
+                                                        x.GetRequiredService<IHttpClientFactory>()));
         }
     }
 }

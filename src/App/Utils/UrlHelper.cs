@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Context
+namespace ITExpert.OpenApi.Server.Utils
 {
     internal static class UrlHelper
     {
