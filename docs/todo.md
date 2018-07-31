@@ -3,7 +3,6 @@
 
 ## Fixes and updates
 
-* Finish `oas`-cli
 * Improve Text generation quality
 
 ## OpenAPI Specification compliance
@@ -16,7 +15,6 @@
 
 ### Small
 
-* Load specs from disk and web
 * Response validation
 
 ### Medium
