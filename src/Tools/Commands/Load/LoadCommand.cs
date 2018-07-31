@@ -108,7 +108,14 @@ namespace ITExpert.OpenApi.Tools.Commands.Load
 
         private class HttpClientFactory : IHttpClientFactory
         {
-            public HttpClient CreateClient(string name) => new HttpClient();
+            private HttpClient Client { get; }
+
+            public HttpClientFactory(HttpClient client)
+            {
+                Client = client;
+            }
+
+            public HttpClient CreateClient(string name) => Client;
         }
     }
 }
