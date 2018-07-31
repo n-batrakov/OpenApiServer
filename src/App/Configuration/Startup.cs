@@ -5,6 +5,7 @@ using System.Linq;
 
 using ITExpert.OpenApi.Server.Core.DocumentationServer;
 using ITExpert.OpenApi.Server.Core.MockServer;
+using ITExpert.OpenApi.Server.Core.MockServer.Options;
 using ITExpert.OpenApi.Server.Utils;
 
 using Microsoft.AspNetCore.Builder;
@@ -20,18 +21,22 @@ namespace ITExpert.OpenApi.Server.Configuration
         private IConfiguration Configuration { get; }
 
         private string ContentRoot { get; }
+        private string Host { get; }
 
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
             Configuration = configuration;
 
             ContentRoot = Path.Combine(env.ContentRootPath, "wwwroot");
+
+            Host = Configuration[nameof(MockServerOptions.MockServerHost)];
         }
 
         // ReSharper disable once UnusedMember.Global
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMockServer(Configuration);
+            services.AddMockServer(Configuration)
+                    .AddOpenApiServer(Configuration, ContentRoot);
 
             var hasProvider = services.Any(x => x.ServiceType == typeof(IOpenApiDocumentProvider));
             if (!hasProvider)
@@ -48,15 +53,14 @@ namespace ITExpert.OpenApi.Server.Configuration
                            .GetDocuments()
                            .ToArray();
 
-            var mockServerHost = Configuration["mockServerHost"];
-            if (mockServerHost != null)
+            if (Host != null)
             {
-                AddMockServer(specs, mockServerHost);
+                AddMockServer(specs, Host);
             }
             
 
             app.UseMockServer(specs)
-               .UseOpenApiServer(specs, ContentRoot);
+               .UseOpenApiServer(specs);
         }
 
         private void AddDefaultDocumentsProvider(IServiceCollection services)

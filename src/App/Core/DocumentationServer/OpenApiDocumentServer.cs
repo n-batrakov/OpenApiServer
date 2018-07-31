@@ -4,12 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Options;
 using ITExpert.OpenApi.Server.Utils;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
@@ -21,64 +21,71 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
 {
     public static class OpenApiDocumentServer
     {
-        private const string SpecsOutputDirectory = "out";
-        private const string SpecFilename = "openapi.json";
+        public static IServiceCollection AddOpenApiServer(this IServiceCollection services,
+                                                          IConfiguration config,
+                                                          string contentRoot = default)
+        {
+            services.Configure<OpenApiDocumentServerOptions>(config);
+            services.PostConfigure<OpenApiDocumentServerOptions>(
+                    x =>
+                    {
+                        if (string.IsNullOrEmpty(contentRoot))
+                        {
+                            return;
+                        }
 
-        private const string SpecsRequestPath = "specs"; 
+                        x.SwaggerUi = x.SwaggerUi ?? Path.Join(contentRoot, "swagger-ui");
+                        x.SpecsDirectory = x.SpecsDirectory ?? Path.Join(contentRoot, "out");
+                    });
 
-        private const string SwaggerUiDirectory = "swagger-ui";
-        private const string SwaggerRequestPath = "";
+            return services;
+        }
 
         public static IApplicationBuilder UseOpenApiServer(this IApplicationBuilder app,
-                                                           IReadOnlyCollection<OpenApiDocument> specs,
-                                                           string contentRoot)
+                                                           IReadOnlyCollection<OpenApiDocument> specs)
         {
-            Directory.CreateDirectory(contentRoot);
+            var options = app.ApplicationServices.GetService<IOptions<OpenApiDocumentServerOptions>>().Value;
 
-            var options = app.ApplicationServices.GetService<IOptions<MockServerOptions>>();
-            var serverUrl = options?.Value.MockServerHost;
-
-            WriteSpecs(contentRoot, specs);
+            if (!options.SkipWrite)
+            {
+                WriteSpecs(options, specs);
+            }
             
-            AddSpecsDownload(app, contentRoot);
-            AddSwaggerUI(app, contentRoot);
-            AddSpecsDiscoveryEndpoint(app, specs, serverUrl);
-
-            
+            UseSpecsDownload(app, options);
+            UseSwaggerUI(app, options);
+            UseSpecsDiscoveryEndpoint(app, options, specs);
 
             return app;
         }
 
-        private static void AddSpecsDownload(IApplicationBuilder app, string contentRoot)
+        private static void UseSpecsDownload(IApplicationBuilder app, OpenApiDocumentServerOptions options)
         {
-            var dir = Path.Combine(contentRoot, SpecsOutputDirectory);
-            Directory.CreateDirectory(dir);
+            Directory.CreateDirectory(options.SpecsDirectory);
 
             app.UseStaticFiles(new StaticFileOptions
                                {
-                                       RequestPath = $"/{SpecsRequestPath}",
-                                       FileProvider = new PhysicalFileProvider(dir)
+                                       RequestPath = $"/{options.SpecsUrl}",
+                                       FileProvider = new PhysicalFileProvider(options.SpecsDirectory)
                                });
         }
 
-        private static void AddSwaggerUI(IApplicationBuilder app, string contentRoot)
+        private static void UseSwaggerUI(IApplicationBuilder app, OpenApiDocumentServerOptions options)
         {
-            var dir = Path.Combine(contentRoot, SwaggerUiDirectory);
-            Directory.CreateDirectory(dir);
+            Directory.CreateDirectory(options.SwaggerUi);
 
-            var options = new SharedOptions
+            var filesOptions = new SharedOptions
                           {
-                                  FileProvider = new PhysicalFileProvider(dir),
-                                  RequestPath = SwaggerRequestPath
+                                  FileProvider = new PhysicalFileProvider(options.SwaggerUi),
+                                  RequestPath = options.SwaggerUrl
                           };
 
-            app.UseDefaultFiles(new DefaultFilesOptions(options));
-            app.UseStaticFiles(new StaticFileOptions(options));
+            app.UseDefaultFiles(new DefaultFilesOptions(filesOptions));
+            app.UseStaticFiles(new StaticFileOptions(filesOptions));
         }
 
-        private static void AddSpecsDiscoveryEndpoint(IApplicationBuilder app,
-                                                      IEnumerable<OpenApiDocument> specs,
-                                                      string serverUrl)
+        private static void UseSpecsDiscoveryEndpoint(IApplicationBuilder app,
+                                                      OpenApiDocumentServerOptions options,
+                                                      IEnumerable<OpenApiDocument> specs)
         {
             var availableSpecs = specs.Select(ToNameUrlMap);
             var json = JsonConvert.SerializeObject(availableSpecs);
@@ -87,8 +94,8 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
             bool IsDiscoveryRequest(HttpContext x)
             {
                 var comparison = StringComparison.OrdinalIgnoreCase;
-                return x.Request.Path.Equals($"/{SpecsRequestPath}", comparison) ||
-                       x.Request.Path.Equals($"/{SpecsRequestPath}/", comparison);
+                return x.Request.Path.Equals($"/{options.SpecsUrl}", comparison) ||
+                       x.Request.Path.Equals($"/{options.SpecsUrl}/", comparison);
             }
 
             Task HandleRequest(HttpContext ctx)
@@ -101,14 +108,19 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
                     new Dictionary<string, string>
                     {
                             ["name"] = $"{x.Info.Title}_{x.Info.GetMajorVersion()}",
-                            ["url"] = GetSpecUrl(serverUrl, x)
+                            ["url"] = GetSpecUrl(options.MockServerHost, x)
                     };
+
+            string GetSpecUrl(string serverAddress, OpenApiDocument spec)
+            {
+                var ver = $"v{spec.Info.GetMajorVersion()}";
+                var name = spec.Info.Title.Replace(" ", "").ToLowerInvariant();
+                return UrlHelper.Join(serverAddress, options.SpecsUrl, name, ver, options.SpecFilename);
+            }
         }
 
-        private static void WriteSpecs(string contentRoot, IEnumerable<OpenApiDocument> specs)
+        private static void WriteSpecs(OpenApiDocumentServerOptions options, IEnumerable<OpenApiDocument> specs)
         {
-            var dir = Path.Combine(contentRoot, SpecsOutputDirectory);
-
             foreach (var spec in specs)
             {
                 WriteOneSpec(spec);
@@ -116,7 +128,7 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
 
             void WriteOneSpec(OpenApiDocument spec)
             {
-                var path = GetSpecFilePath(dir, spec);
+                var path = GetSpecFilePath(spec);
                 var content = OpenApiSerializer.Serialize(spec);
                 
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
@@ -126,22 +138,13 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
                     writer.Write(content);
                 }
             }
-        }
 
-        
-
-        private static string GetSpecFilePath(string dir, OpenApiDocument spec)
-        {
-            var ver = $"v{spec.Info.GetMajorVersion()}";
-            var name = spec.Info.Title.Replace(" ", "").ToLowerInvariant();
-            return Path.Combine(dir, name, ver, SpecFilename);
-        }
-
-        private static string GetSpecUrl(string serverAddress, OpenApiDocument spec)
-        {
-            var ver = $"v{spec.Info.GetMajorVersion()}";
-            var name = spec.Info.Title.Replace(" ", "").ToLowerInvariant();
-            return UrlHelper.Join(serverAddress, SpecsRequestPath, name, ver, SpecFilename);
+            string GetSpecFilePath(OpenApiDocument spec)
+            {
+                var ver = $"v{spec.Info.GetMajorVersion()}";
+                var name = spec.Info.Title.Replace(" ", "").ToLowerInvariant();
+                return Path.Combine(options.SpecsDirectory, name, ver, options.SpecFilename);
+            }
         }
     }
 }
