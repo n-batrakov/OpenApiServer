@@ -1,14 +1,18 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
+using ITExpert.OpenApi.Server.Core.MockServer.Options;
 using ITExpert.OpenApi.Server.Utils;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json;
@@ -18,7 +22,7 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
     public static class OpenApiDocumentServer
     {
         private const string SpecsOutputDirectory = "out";
-        private const string SpecFilename = "swagger.json";
+        private const string SpecFilename = "openapi.json";
 
         private const string SpecsRequestPath = "specs"; 
 
@@ -31,11 +35,16 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
         {
             Directory.CreateDirectory(contentRoot);
 
+            var options = app.ApplicationServices.GetService<IOptions<MockServerOptions>>();
+            var serverUrl = options?.Value.MockServerHost;
+
             WriteSpecs(contentRoot, specs);
             
             AddSpecsDownload(app, contentRoot);
             AddSwaggerUI(app, contentRoot);
-            AddSpecsDiscoveryEndpoint(app, specs);
+            AddSpecsDiscoveryEndpoint(app, specs, serverUrl);
+
+            
 
             return app;
         }
@@ -67,11 +76,20 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
             app.UseStaticFiles(new StaticFileOptions(options));
         }
 
-        private static void AddSpecsDiscoveryEndpoint(IApplicationBuilder app, IEnumerable<OpenApiDocument> specs)
+        private static void AddSpecsDiscoveryEndpoint(IApplicationBuilder app,
+                                                      IEnumerable<OpenApiDocument> specs,
+                                                      string serverUrl)
         {
             var availableSpecs = specs.Select(ToNameUrlMap);
             var json = JsonConvert.SerializeObject(availableSpecs);
-            app.Map($"/{SpecsRequestPath}", x => x.Run(HandleRequest));
+            app.MapWhen(IsDiscoveryRequest, x => x.Run(HandleRequest));
+
+            bool IsDiscoveryRequest(HttpContext x)
+            {
+                var comparison = StringComparison.OrdinalIgnoreCase;
+                return x.Request.Path.Equals($"/{SpecsRequestPath}", comparison) ||
+                       x.Request.Path.Equals($"/{SpecsRequestPath}/", comparison);
+            }
 
             Task HandleRequest(HttpContext ctx)
             {
@@ -83,7 +101,7 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
                     new Dictionary<string, string>
                     {
                             ["name"] = $"{x.Info.Title}_{x.Info.GetMajorVersion()}",
-                            ["url"] = GetSpecUrl(SpecsRequestPath, x)
+                            ["url"] = GetSpecUrl(serverUrl, x)
                     };
         }
 
@@ -119,11 +137,11 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
             return Path.Combine(dir, name, ver, SpecFilename);
         }
 
-        private static string GetSpecUrl(string basePath, OpenApiDocument spec)
+        private static string GetSpecUrl(string serverAddress, OpenApiDocument spec)
         {
             var ver = $"v{spec.Info.GetMajorVersion()}";
             var name = spec.Info.Title.Replace(" ", "").ToLowerInvariant();
-            return $"{basePath}/{name}/{ver}/{SpecFilename}";
+            return UrlHelper.Join(serverAddress, SpecsRequestPath, name, ver, SpecFilename);
         }
     }
 }
