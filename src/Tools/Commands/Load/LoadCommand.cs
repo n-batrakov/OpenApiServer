@@ -110,9 +110,9 @@ namespace ITExpert.OpenApi.Tools.Commands.Load
         {
             private HttpClient Client { get; }
 
-            public HttpClientFactory(HttpClient client)
+            public HttpClientFactory()
             {
-                Client = client;
+                Client = new HttpClient();
             }
 
             public HttpClient CreateClient(string name) => Client;
