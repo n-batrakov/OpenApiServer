@@ -100,11 +100,6 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
             Console.WriteLine();
         }
 
-        private static string GetFullPath(string path)
-        {
-            return Path.GetFullPath(path);
-        }
-
         private static void PrintStartupError(Exception e)
         {
             Console.BackgroundColor = ConsoleColor.Red;

@@ -23,7 +23,4 @@
   <ItemGroup>
     <None Include="wwwroot\**" CopyToOutputDirectory="Always" LinkBase="wwwroot\" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Remove="wwwroot\specs\source.yaml" />
-  </ItemGroup>
 </Project>
