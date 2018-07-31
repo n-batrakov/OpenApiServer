@@ -69,8 +69,8 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Context
                    {
                            Delay = option.Delay,
                            Mock = option.Mock ?? false,
-                           ValidateRequest = option.ShouldValidateRequest,
-                           ValidateResponse = option.ShouldValidateResponse,
+                           ValidateRequest = option.ShouldValidateRequest(),
+                           ValidateResponse = option.ShouldValidateResponse(),
                            Host = UrlHelper.GetHost(option.Host, defaultHost)
                    };
         }

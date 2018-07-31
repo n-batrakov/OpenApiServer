@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Http;
 
 using ITExpert.OpenApi.Server.Configuration;
+using ITExpert.OpenApi.Server.Core.MockServer.Options;
 using ITExpert.OpenApi.Server.Utils;
 using ITExpert.OpenApi.Tools.Commands.Server.DocumentProviders;
 
@@ -10,6 +11,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 namespace ITExpert.OpenApi.Tools.Commands.Server
 {
@@ -35,6 +40,8 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
 
         public int Execute()
         {
+            CreateConfig();
+
             var host = OpenApi.Server.Program
                               .CreateHostBuilder()
                               .UseStartup<Startup>()
@@ -109,6 +116,40 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
             Console.WriteLine(e.Message);
             Console.WriteLine();
             Console.WriteLine("Exiting...");
+        }
+
+        private void CreateConfig()
+        {
+            if (File.Exists(ConfigFile))
+            {
+                return;
+            }
+
+            var dir = Path.GetDirectoryName(ConfigFile);
+            Directory.CreateDirectory(dir);
+
+            var optionsText = GetDefaultOptions();
+            using (var writer = File.CreateText(ConfigFile))
+            {
+                writer.Write(optionsText);
+            }
+        }
+
+        private string GetDefaultOptions()
+        {
+            var settings = new JsonSerializerSettings
+                           {
+                                   Formatting = Formatting.Indented,
+                                   ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                           };
+            settings.Converters.Add(new StringEnumConverter(camelCaseText: true));
+
+            var options = new MockServerOptions
+                          {
+                                  MockServerHost = $"http://localhost:{Port}",
+                                  Routes = new[] { MockServerRouteOptions.Default }
+                          };
+            return JsonConvert.SerializeObject(options, settings);
         }
     }
 }

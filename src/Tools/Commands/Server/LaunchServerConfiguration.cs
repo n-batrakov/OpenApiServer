@@ -24,10 +24,10 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
             var config = cmd.Option("-c|--config",
                                     "Path to config file.",
                                     CommandOptionType.SingleValue);
-            var discrover = cmd.Option("-D|--discover",
+            var discover = cmd.Option("-D|--discover",
                                        "If set, `source` argument treated as discovery file.",
                                        CommandOptionType.NoValue);
-            var discoverKey = cmd.Option("--discover-key",
+            var discoverKey = cmd.Option("-k|--discover-key",
                                          "If discovery file is an object, this parameter sets the name of the property used for discovery.",
                                          CommandOptionType.SingleValue);
 
@@ -35,10 +35,10 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
                                   new LaunchServerCommandOptions
                                   {
                                           Port = port.GetIntValue(5000),
-                                          Sources = sources.GetStringValues(".").ToArray(),
+                                          Sources = sources.GetStringValues("./.oas").ToArray(),
                                           MinLogLevel = minLogLevel.GetEnumValue(LogLevel.Information),
-                                          ConfigPath = config.GetStringValue("./oas/oas.config.json"),
-                                          TreatSourcesAsDiscoveryFiles = discrover.GetBooleanValue(),
+                                          ConfigPath = config.GetStringValue("./.oas/oas.config.json"),
+                                          TreatSourcesAsDiscoveryFiles = discover.GetBooleanValue(),
                                           DiscoveryKey = discoverKey.GetStringValue()
                                   }).Execute());
         }

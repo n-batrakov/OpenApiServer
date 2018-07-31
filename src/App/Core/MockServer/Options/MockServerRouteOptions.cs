@@ -1,19 +1,25 @@
 namespace ITExpert.OpenApi.Server.Core.MockServer.Options
 {
+    public static class MockServerRouteOptionsExtensions
+    {
+        public static bool ShouldValidateRequest(this MockServerRouteOptions x) =>
+                x.Validate == MockServerOptionsValidationMode.All ||
+                x.Validate == MockServerOptionsValidationMode.Request;
+
+        public static bool ShouldValidateResponse(this MockServerRouteOptions x) =>
+                x.Validate == MockServerOptionsValidationMode.All ||
+                x.Validate == MockServerOptionsValidationMode.Response;
+    }
+
     public class MockServerRouteOptions
     {
         public string Path { get; set; }
         public MockServerOptionsHttpMethod Method { get; set; }
         public bool? Mock { get; set; }
+
         public MockServerOptionsValidationMode Validate { get; set; }
         public ushort Delay { get; set; }
         public string Host { get; set; }
-
-        public bool ShouldValidateRequest => Validate == MockServerOptionsValidationMode.All ||
-                                               Validate == MockServerOptionsValidationMode.Request;
-
-        public bool ShouldValidateResponse => Validate == MockServerOptionsValidationMode.All ||
-                                                Validate == MockServerOptionsValidationMode.Response;
 
         public static MockServerRouteOptions Default =>
                 new MockServerRouteOptions
@@ -22,7 +28,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Options
                         Method = MockServerOptionsHttpMethod.Any,
                         Delay = 0,
                         Mock = false,
-                        Validate = MockServerOptionsValidationMode.Undefined
+                        Validate = MockServerOptionsValidationMode.None
                 };
 
         public MockServerRouteOptions Merge(MockServerRouteOptions options) =>
