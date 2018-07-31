@@ -3,10 +3,15 @@ using System.Linq;
 
 namespace ITExpert.OpenApi.Server.Utils
 {
-    internal static class UrlHelper
+    public static class UrlHelper
     {
-        public static string Join(params string[] segments) =>
-                string.Join("/", segments.Select(x => x == "/" ? "" : x.Trim('/')));
+        public static string Join(params string[] segments)
+        {
+            var sanitizedSegments = segments
+                                    .Where(x => !string.IsNullOrEmpty(x))
+                                    .Select(x => x == "/" ? "" : x.Trim('/'));
+            return string.Join("/", sanitizedSegments);
+        }
 
         public static string GetDefaultPathPrefix(string service) => $"api/{service}";
 
