@@ -21,7 +21,7 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
         private string ConfigFile { get; }
         private string[] Sources { get; }
         private bool TreatSourcesAsDiscoveryFiles { get; }
-        private string DiscovertyKey { get; }
+        private string DiscoveryKey { get; }
 
         public LaunchServerCommand(LaunchServerCommandOptions options)
         {
@@ -29,7 +29,7 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
             Sources = options.Sources;
             LogLevel = options.MinLogLevel;
             TreatSourcesAsDiscoveryFiles = options.TreatSourcesAsDiscoveryFiles;
-            DiscovertyKey = options.DiscoveryKey;
+            DiscoveryKey = options.DiscoveryKey;
             ConfigFile = options.ConfigPath;
         }
 
@@ -79,7 +79,7 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
             services.AddSingleton<IOpenApiDocumentProvider>(
                     x => new CliOpenApiDocumentProvider(Sources,
                                                         TreatSourcesAsDiscoveryFiles,
-                                                        DiscovertyKey,
+                                                        DiscoveryKey,
                                                         x.GetRequiredService<IHttpClientFactory>(),
                                                         x.GetRequiredService<ILoggerFactory>()));
         }
@@ -95,7 +95,7 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
             Console.WriteLine($"* Verbosity: {LogLevel}");
             Console.WriteLine($"* Config: {Path.GetFullPath(ConfigFile)}");
             Console.WriteLine($"* Sources: {string.Join(", ", Sources)}");
-            Console.WriteLine($"* Discovery: {(TreatSourcesAsDiscoveryFiles ? "Yes" : "No")} (key: '{DiscovertyKey}')");
+            Console.WriteLine($"* Discovery: {(TreatSourcesAsDiscoveryFiles ? "Yes" : "No")} (key: '{DiscoveryKey}')");
             Console.WriteLine("".PadRight(60, '*'));
             Console.WriteLine();
         }
