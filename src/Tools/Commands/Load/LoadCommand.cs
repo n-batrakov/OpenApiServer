@@ -90,6 +90,8 @@ namespace ITExpert.OpenApi.Tools.Commands.Load
                     $"* Discovery: {(Options.TreatSourcesAsDiscoveryFiles ? "Yes" : "No")} (key: '{Options.DiscoveryKey}')");
             
             Console.WriteLine();
+
+            Console.WriteLine("Stand by...");
         }
 
         private static void PrintFinish()

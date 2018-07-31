@@ -1,3 +1,4 @@
+using ITExpert.OpenApi.Tools.Commands.Load;
 using ITExpert.OpenApi.Tools.Commands.Merge;
 using ITExpert.OpenApi.Tools.Commands.Server;
 
@@ -12,16 +13,18 @@ namespace ITExpert.OpenApi.Tools
             var app = new CommandLineApplication
                       {
                               Name = "oas",
-                              Description = "Tools for OpenAPI specification."
+                              FullName = "OpenAPI Server tools",
+                              Description = "Tools for OpenAPI specification.",
                       };
-            app.HelpOption("--help");
+
+            app.HelpOption("-h|--help");
+            app.VersionOption("-v|--version", "0.1.0");
+
             app.Command("merge", MergeConfiguration.Configure);
             app.Command("run", LaunchServerConfiguration.Configure);
+            app.Command("load", LoadCommandConfiguration.Configure);
 
-            if (args == null || args.Length == 0)
-            {
-                args = new[] { "run" };
-            }
+            
 
             return app.Execute(args);
         }
