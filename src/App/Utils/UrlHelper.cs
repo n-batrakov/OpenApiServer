@@ -13,7 +13,8 @@ namespace ITExpert.OpenApi.Server.Utils
         public static string GetPathPrefix(string url)
         {
             var uri = new Uri(url, UriKind.RelativeOrAbsolute);
-            return GetLocalPath(uri);
+            var prefix = GetLocalPath(uri);
+            return Sanitize(prefix);
         }
 
         public static string GetHost(string url, string defaultHost = null)
@@ -28,5 +29,10 @@ namespace ITExpert.OpenApi.Server.Utils
         }
 
         private static string GetLocalPath(Uri uri) => uri.IsAbsoluteUri ? uri.LocalPath : uri.OriginalString;
+
+        private static string Sanitize(string url)
+        {
+            return url.Replace("//", "/");
+        }
     }
 }
