@@ -34,7 +34,7 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
                                   {
                                           Port = port.GetIntValue(5000),
                                           Sources = sources.GetStringValues(".").ToArray(),
-                                          MinLogLevel = minLogLevel.GetEnumValue(LogLevel.Error),
+                                          MinLogLevel = minLogLevel.GetEnumValue(LogLevel.Information),
                                           ConfigPath = config.GetStringValue("./oas/oas.config.json"),
                                           TreatSourcesAsDiscoveryFiles = discrover.GetBooleanValue(),
                                           DiscoveryKey = discoverKey.GetStringValue()

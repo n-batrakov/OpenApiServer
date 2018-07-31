@@ -1,7 +1,9 @@
+using System;
 using System.Net.Http;
 
 using ITExpert.OpenApi.Server.Configuration;
 using ITExpert.OpenApi.Server.Utils;
+using ITExpert.OpenApi.Tools.Commands.Server.DocumentProviders;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -32,21 +34,38 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
 
         public int Execute()
         {
-            OpenApi.Server.Program
-                   .CreateHostBuilder()
-                   .UseStartup<Startup>()
-                   .ConfigureAppConfiguration(ConfigureConfiguration)
-                   .ConfigureServices(ConfigureServices)
-                   .ConfigureLogging(ConfigureLogging)
-                   .UseUrls($"http://*:{Port}")
-                   .Build()
-                   .Run();
+            var host = OpenApi.Server.Program
+                              .CreateHostBuilder()
+                              .UseStartup<Startup>()
+                              .ConfigureAppConfiguration(ConfigureConfiguration)
+                              .ConfigureServices(ConfigureServices)
+                              .ConfigureLogging(ConfigureLogging)
+                              .UseUrls($"http://*:{Port}")
+                              .CaptureStartupErrors(false)
+                              .SuppressStatusMessages(suppressStatusMessages: true)
+                              .Build();
+            try
+            {
+                host.Start();
+            }
+            catch (Exception e)
+            {
+                PrintStartupError(e);
+                return 1;
+            }
+            
+            PrintStartupMessage();
+            host.WaitForShutdown();
+
             return 0;
         }
 
         private void ConfigureLogging(ILoggingBuilder logging)
         {
+            logging.AddFilter("Microsoft.AspNetCore.Hosting.Internal.WebHost", LogLevel.None);
+            logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Error);
             logging.SetMinimumLevel(LogLevel);
+            
         }
 
         private void ConfigureConfiguration(IConfigurationBuilder config)
@@ -60,7 +79,35 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
                     x => new CliOpenApiDocumentProvider(Sources,
                                                         TreatSourcesAsDiscoveryFiles,
                                                         DiscovertyKey,
-                                                        x.GetRequiredService<IHttpClientFactory>()));
+                                                        x.GetRequiredService<IHttpClientFactory>(),
+                                                        x.GetRequiredService<ILoggerFactory>()));
+        }
+
+        private void PrintStartupMessage()
+        {
+            Console.WriteLine();
+            Console.WriteLine($"OpenAPI Server is running on http://localhost:{Port}".PadRight(60));
+            Console.WriteLine("Press Ctrl+C to terminate.".PadRight(60));
+
+            Console.WriteLine();
+            Console.WriteLine("Parameters:");
+            Console.WriteLine($"* Verbosity: {LogLevel}");
+            Console.WriteLine($"* Config: {ConfigFile}");
+            Console.WriteLine($"* Sources: {string.Join(", ", Sources)}");
+            Console.WriteLine($"* Discovery: {(TreatSourcesAsDiscoveryFiles ? "Yes" : "No")} (key: '{DiscovertyKey}')");
+            Console.WriteLine("".PadRight(60, '*'));
+            Console.WriteLine();
+        }
+
+        private static void PrintStartupError(Exception e)
+        {
+            Console.BackgroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("Critical startup error:");
+            Console.ResetColor();
+            Console.WriteLine(e.Message);
+            Console.WriteLine();
+            Console.WriteLine("Exiting...");
         }
     }
 }

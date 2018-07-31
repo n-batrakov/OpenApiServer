@@ -1,39 +1,48 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 
 using ITExpert.OpenApi.Server.Utils;
-using ITExpert.OpenApi.Tools.Commands.Server.DocumentProviders;
 
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Tools.Commands.Server
+namespace ITExpert.OpenApi.Tools.Commands.Server.DocumentProviders
 {
     public class CliOpenApiDocumentProvider : IOpenApiDocumentProvider
     {
         private IHttpClientFactory ClientFactory { get; }
         private IOpenApiDocumentProvider[] Providers { get; }
+        private ILogger Logger { get; }
 
         public CliOpenApiDocumentProvider(IEnumerable<string> uris,
                                           bool treatUriAsDiscovery,
                                           string discoveryKey,
-                                          IHttpClientFactory clientFactory)
+                                          IHttpClientFactory clientFactory,
+                                          ILoggerFactory loggerFactory)
         {
             ClientFactory = clientFactory;
-            Providers = GetProviders(uris, treatUriAsDiscovery, discoveryKey).ToArray();
+            Logger = loggerFactory.CreateLogger("DocumentProvider");
+            Providers = GetProviders(uris, treatUriAsDiscovery, discoveryKey, Logger).ToArray();
         }
 
-        public IEnumerable<OpenApiDocument> GetDocuments() =>
-                Providers.SelectMany(x => x.GetDocuments()).Where(x => x != null).ToArray();
+        public IEnumerable<OpenApiDocument> GetDocuments()
+        {
+            var specs = Providers.SelectMany(x => x.GetDocuments()).Where(x => x != null).ToArray();
+            LogLoadedSpecs(specs);
+            return specs;
+        }
 
-
-        private IEnumerable<IOpenApiDocumentProvider> GetProviders(IEnumerable<string> uris, bool treatUriAsDiscovery, string discoveryKey)
+        private IEnumerable<IOpenApiDocumentProvider> GetProviders(IEnumerable<string> uris,
+                                                                   bool treatUriAsDiscovery,
+                                                                   string discoveryKey,
+                                                                   ILogger logger)
         {
             return treatUriAsDiscovery
-                           ? uris.Select(x => new DiscoveryOpenApiDocumentProvider(ClientFactory, x, discoveryKey))
-                           : uris.Select(x => GetProvider(GetSourceType(x), x));
+                           ? uris.Select(
+                                   x => new DiscoveryOpenApiDocumentProvider(ClientFactory, x, discoveryKey, logger))
+                           : uris.Select(x => GetProvider(DocumentSourceTypeProvider.GetSourceType(x), x));
         }
 
         private IOpenApiDocumentProvider GetProvider(DocumentSourceType type, string uri)
@@ -51,36 +60,11 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
             }
         }
 
-        private static DocumentSourceType GetSourceType(string uri)
+        private void LogLoadedSpecs(IEnumerable<OpenApiDocument> specs)
         {
-            var comparison = StringComparison.OrdinalIgnoreCase;
-            if (uri.StartsWith("http://", comparison) || uri.StartsWith("https://", comparison))
-            {
-                return DocumentSourceType.Web;
-            }
-
-            if (Directory.Exists(uri))
-            {
-                return DocumentSourceType.Directory;
-            }
-
-            if (File.Exists(uri))
-            {
-                return DocumentSourceType.File;
-            }
-
-            throw new ArgumentException(
-                    $"Unable to determine type for given URI ('{uri}'). " +
-                    "If it is file or directory, make sure it exists. " +
-                    "In case of web URI make sure protocol specified " +
-                    "correctly (only http(-s) is supported.");
-        }
-
-        private enum DocumentSourceType
-        {
-            File,
-            Directory,
-            Web
+            var loadedSpecs = string.Join(", ", specs.Select(x => $"{x.Info.Title} (v{x.Info.Version})"));
+            var msg = $"Specs loaded: {loadedSpecs}";
+            Logger.LogInformation(msg);
         }
     }
 }
