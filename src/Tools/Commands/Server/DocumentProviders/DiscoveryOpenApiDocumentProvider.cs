@@ -100,9 +100,15 @@ namespace ITExpert.OpenApi.Tools.Commands.Server.DocumentProviders
                          .Where(x => x != null);
         }
 
-        private Task<string> LoadSpecsAsync(string uri)
+        private Task<string> LoadSpecsAsync(string specUrl)
         {
             var client = ClientFactory.CreateClient();
+            var hasAbsoluteUri = TryGetAbsoluteSpecUri(specUrl, out var uri);
+            if (!hasAbsoluteUri)
+            {
+                return Task.FromResult((string)null);
+            }
+
             var response = client.GetAsync(uri);
             return response.ContinueWith(GetResponseContent).Unwrap();
 
@@ -114,10 +120,36 @@ namespace ITExpert.OpenApi.Tools.Commands.Server.DocumentProviders
                 }
                 else
                 {
-                    LogSpecLoadingError(uri, x.Result.StatusCode);
+                    LogSpecLoadingError(uri.ToString(), x.Result.StatusCode);
                     return Task.FromResult((string)null);
                 }
             }
+        }
+
+        private bool TryGetAbsoluteSpecUri(string url, out Uri result)
+        {
+            var uri = new Uri(url, UriKind.RelativeOrAbsolute);
+            if (uri.IsAbsoluteUri)
+            {
+                result = uri;
+                return true;
+            }
+
+            if (!string.IsNullOrEmpty(Uri))
+            {
+                result = url.StartsWith('/')
+                                 ? new Uri(UrlHelper.Join(UrlHelper.GetHost(Uri), url), UriKind.Absolute)
+                                 : new Uri(UrlHelper.Join(Uri, url), UriKind.Absolute);
+
+                return true;
+            }
+
+            var msg =
+                    $"Unable to request spec from discovery file ('{url}'). Spec URL must be either absolute or discovery file must come from web.";
+            Logger.LogWarning(msg);
+
+            result = null;
+            return false;
         }
 
         private void LogSpecLoadingError(string uri, HttpStatusCode statusCode)
