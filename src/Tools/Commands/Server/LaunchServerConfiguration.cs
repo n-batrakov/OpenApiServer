@@ -12,7 +12,9 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
             cmd.Description = "Launches OpenAPI server.";
             cmd.HelpOption("--help");
 
-            var sources = cmd.Argument("[sources]", "Input directory", multipleValues: true);
+            var sources = cmd.Argument("[sources]",
+                                       "Files | Directories | URLs with OpenAPI specification documents.",
+                                       multipleValues: true);
             var port = cmd.Option("-p|--port",
                                   "Specifies port listened by the server",
                                   CommandOptionType.SingleValue);
@@ -25,8 +27,8 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
             var discrover = cmd.Option("-D|--discover",
                                        "If set, `source` argument treated as discovery file.",
                                        CommandOptionType.NoValue);
-            var discoverKey = cmd.Option("--discover-key", 
-                                         "???", 
+            var discoverKey = cmd.Option("--discover-key",
+                                         "If discovery file is an object, this parameter sets the name of the property used for discovery.",
                                          CommandOptionType.SingleValue);
 
             cmd.OnExecute(() => new LaunchServerCommand(

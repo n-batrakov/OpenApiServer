@@ -63,8 +63,17 @@ namespace ITExpert.OpenApi.Tools.Commands.Server.DocumentProviders
         private void LogLoadedSpecs(IEnumerable<OpenApiDocument> specs)
         {
             var loadedSpecs = string.Join(", ", specs.Select(x => $"{x.Info.Title} (v{x.Info.Version})"));
-            var msg = $"Specs loaded: {loadedSpecs}";
-            Logger.LogInformation(msg);
+
+            if (loadedSpecs == string.Empty)
+            {
+                var msg = "No specs were loaded";
+                Logger.LogWarning(msg);
+            }
+            else
+            {
+                var msg = $"Specs loaded: {loadedSpecs}";
+                Logger.LogInformation(msg);
+            }
         }
     }
 }

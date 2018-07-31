@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net.Http;
 
 using ITExpert.OpenApi.Server.Configuration;
@@ -92,11 +93,16 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
             Console.WriteLine();
             Console.WriteLine("Parameters:");
             Console.WriteLine($"* Verbosity: {LogLevel}");
-            Console.WriteLine($"* Config: {ConfigFile}");
+            Console.WriteLine($"* Config: {Path.GetFullPath(ConfigFile)}");
             Console.WriteLine($"* Sources: {string.Join(", ", Sources)}");
             Console.WriteLine($"* Discovery: {(TreatSourcesAsDiscoveryFiles ? "Yes" : "No")} (key: '{DiscovertyKey}')");
             Console.WriteLine("".PadRight(60, '*'));
             Console.WriteLine();
+        }
+
+        private static string GetFullPath(string path)
+        {
+            return Path.GetFullPath(path);
         }
 
         private static void PrintStartupError(Exception e)
