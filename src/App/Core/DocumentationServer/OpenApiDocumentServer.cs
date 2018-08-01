@@ -73,8 +73,10 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
 
         private static void UseSwaggerUI(IApplicationBuilder app)
         {
-            var provider = new EmbeddedFileProvider(typeof(OpenApiDocumentServer).Assembly,
-                                                    "ITExpert.OpenApi.Server.Resources.SwaggerUI");
+            var assm = typeof(OpenApiDocumentServer).Assembly;
+            var name = assm.GetName().Name;
+            var provider = new EmbeddedFileProvider(assm, $"{name}.Resources.SwaggerUI");
+
             var filesOptions = new SharedOptions
                                {
                                        FileProvider = provider,
