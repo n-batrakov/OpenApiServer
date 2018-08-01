@@ -21,6 +21,9 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
 {
     public static class OpenApiDocumentServer
     {
+        private const string SpecsUrl = "specs";
+        private const string SpecFilename = "openapi.json";
+
         public static IServiceCollection AddOpenApiServer(this IServiceCollection services,
                                                           IConfiguration config,
                                                           string contentRoot = default)
@@ -34,7 +37,6 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
                             return;
                         }
 
-                        x.SwaggerUi = x.SwaggerUi ?? Path.Join(contentRoot, "swagger-ui");
                         x.SpecsDirectory = x.SpecsDirectory ?? Path.Join(contentRoot, "out");
                     });
 
@@ -50,9 +52,9 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
             {
                 WriteSpecs(options, specs);
             }
-            
+
             UseSpecsDownload(app, options);
-            UseSwaggerUI(app, options);
+            UseSwaggerUI(app);
             UseSpecsDiscoveryEndpoint(app, options, specs);
 
             return app;
@@ -64,20 +66,20 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
 
             app.UseStaticFiles(new StaticFileOptions
                                {
-                                       RequestPath = $"/{options.SpecsUrl}",
+                                       RequestPath = $"/{SpecsUrl}",
                                        FileProvider = new PhysicalFileProvider(options.SpecsDirectory)
                                });
         }
 
-        private static void UseSwaggerUI(IApplicationBuilder app, OpenApiDocumentServerOptions options)
+        private static void UseSwaggerUI(IApplicationBuilder app)
         {
-            Directory.CreateDirectory(options.SwaggerUi);
-
+            var provider = new EmbeddedFileProvider(typeof(OpenApiDocumentServer).Assembly,
+                                                    "ITExpert.OpenApi.Server.Resources.SwaggerUI");
             var filesOptions = new SharedOptions
-                          {
-                                  FileProvider = new PhysicalFileProvider(options.SwaggerUi),
-                                  RequestPath = options.SwaggerUrl
-                          };
+                               {
+                                       FileProvider = provider,
+                                       RequestPath = ""
+                               };
 
             app.UseDefaultFiles(new DefaultFilesOptions(filesOptions));
             app.UseStaticFiles(new StaticFileOptions(filesOptions));
@@ -94,8 +96,8 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
             bool IsDiscoveryRequest(HttpContext x)
             {
                 var comparison = StringComparison.OrdinalIgnoreCase;
-                return x.Request.Path.Equals($"/{options.SpecsUrl}", comparison) ||
-                       x.Request.Path.Equals($"/{options.SpecsUrl}/", comparison);
+                return x.Request.Path.Equals($"/{SpecsUrl}", comparison) ||
+                       x.Request.Path.Equals($"/{SpecsUrl}/", comparison);
             }
 
             Task HandleRequest(HttpContext ctx)
@@ -115,7 +117,7 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
             {
                 var ver = $"v{spec.Info.GetMajorVersion()}";
                 var name = spec.Info.Title.Replace(" ", "").ToLowerInvariant();
-                return UrlHelper.Join(serverAddress, options.SpecsUrl, name, ver, options.SpecFilename);
+                return UrlHelper.Join(serverAddress, SpecsUrl, name, ver, SpecFilename);
             }
         }
 
@@ -130,7 +132,7 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
             {
                 var path = GetSpecFilePath(spec);
                 var content = OpenApiSerializer.Serialize(spec);
-                
+
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
 
                 using (var writer = File.CreateText(path))
@@ -143,7 +145,7 @@ namespace ITExpert.OpenApi.Server.Core.DocumentationServer
             {
                 var ver = $"v{spec.Info.GetMajorVersion()}";
                 var name = spec.Info.Title.Replace(" ", "").ToLowerInvariant();
-                return Path.Combine(options.SpecsDirectory, name, ver, options.SpecFilename);
+                return Path.Combine(options.SpecsDirectory, name, ver, SpecFilename);
             }
         }
     }
