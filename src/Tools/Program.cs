@@ -1,3 +1,5 @@
+using System;
+
 using ITExpert.OpenApi.Tools.Commands.Load;
 using ITExpert.OpenApi.Tools.Commands.Merge;
 using ITExpert.OpenApi.Tools.Commands.Server;
@@ -24,9 +26,23 @@ namespace ITExpert.OpenApi.Tools
             app.Command("run", LaunchServerConfiguration.Configure);
             app.Command("load", LoadCommandConfiguration.Configure);
 
-            
+            if (args.Length == 0)
+            {
+                app.ShowHelp();
+                return -1;
+            }
 
-            return app.Execute(args);
+            try
+            {
+                return app.Execute(args);
+            }
+            catch (CommandParsingException e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine();
+                app.ShowHelp();
+                return -1;
+            }
         }
     }
 }
