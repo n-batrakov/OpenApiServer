@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 
-using ITExpert.OpenApi.Server.Utils;
+using ITExpert.OpenApi.Server.DocumentProviders;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
@@ -52,7 +52,7 @@ namespace ITExpert.OpenApi.Tools.Commands.Server.DocumentProviders
                 case DocumentSourceType.File:
                     return new FileOpenApiDocumentProvider(uri);
                 case DocumentSourceType.Directory:
-                    return new OpenApiDocumentsProvider(uri);
+                    return new DirectoryOpenApiDocumentsProvider(uri);
                 case DocumentSourceType.Web:
                     return new WebOpenApiDocumentProvider(ClientFactory, uri);
                 default:

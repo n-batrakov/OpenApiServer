@@ -4,7 +4,7 @@ using System.Net.Http;
 
 using ITExpert.OpenApi.Server.Configuration;
 using ITExpert.OpenApi.Server.Core.MockServer.Options;
-using ITExpert.OpenApi.Server.Utils;
+using ITExpert.OpenApi.Server.DocumentProviders;
 using ITExpert.OpenApi.Tools.Commands.Server.DocumentProviders;
 
 using Microsoft.AspNetCore.Hosting;

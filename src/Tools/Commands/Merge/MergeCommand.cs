@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using ITExpert.OpenApi.Server.DocumentProviders;
 using ITExpert.OpenApi.Server.Utils;
 
 using Microsoft.OpenApi;
@@ -47,7 +48,7 @@ namespace ITExpert.OpenApi.Tools.Commands.Merge
 
         public int Execute()
         {
-            var docs = OpenApiDocumentsProvider.GetDocuments(RootDirectory, GetFilesRecursivly);
+            var docs = new DirectoryOpenApiDocumentsProvider(RootDirectory, GetFilesRecursivly).GetDocuments();
             WriteSpecs(docs);
             return 0;
         }

@@ -14,7 +14,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.1.1" />
     <PackageReference Include="Microsoft.OpenApi" Version="1.0.1" />
@@ -22,10 +21,9 @@
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.10" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="wwwroot\**" CopyToOutputDirectory="Always" LinkBase="wwwroot\" />
+    <None Include="specs\**" CopyToOutputDirectory="Always" LinkBase="specs\" />
   </ItemGroup>
   <ItemGroup>  
     <EmbeddedResource Include="Resources\**" />
   </ItemGroup>
-  
 </Project>

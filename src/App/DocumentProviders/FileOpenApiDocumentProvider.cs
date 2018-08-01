@@ -5,7 +5,7 @@ using ITExpert.OpenApi.Server.Utils;
 
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Tools.Commands.Server.DocumentProviders
+namespace ITExpert.OpenApi.Server.DocumentProviders
 {
     public class FileOpenApiDocumentProvider : IOpenApiDocumentProvider
     {

@@ -3,6 +3,8 @@
 
 ## Fixes and updates
 
+* Print help when CLI command not specified
+* Print help when CLI command is unknown
 * Improve Text generation quality
 
 ## OpenAPI Specification compliance

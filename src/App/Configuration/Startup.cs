@@ -6,6 +6,7 @@ using System.Linq;
 using ITExpert.OpenApi.Server.Core.DocumentationServer;
 using ITExpert.OpenApi.Server.Core.MockServer;
 using ITExpert.OpenApi.Server.Core.MockServer.Options;
+using ITExpert.OpenApi.Server.DocumentProviders;
 using ITExpert.OpenApi.Server.Utils;
 
 using Microsoft.AspNetCore.Builder;
@@ -27,7 +28,7 @@ namespace ITExpert.OpenApi.Server.Configuration
         {
             Configuration = configuration;
 
-            ContentRoot = Path.Combine(env.ContentRootPath, "wwwroot");
+            ContentRoot = env.ContentRootPath;
 
             Host = Configuration[nameof(MockServerOptions.MockServerHost)];
         }
@@ -35,8 +36,7 @@ namespace ITExpert.OpenApi.Server.Configuration
         // ReSharper disable once UnusedMember.Global
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMockServer(Configuration)
-                    .AddOpenApiServer(Configuration, ContentRoot);
+            services.AddMockServer(Configuration);
 
             var hasProvider = services.Any(x => x.ServiceType == typeof(IOpenApiDocumentProvider));
             if (!hasProvider)
@@ -55,23 +55,24 @@ namespace ITExpert.OpenApi.Server.Configuration
 
             if (Host != null)
             {
-                AddMockServer(specs, Host);
+                AddMockServerToSpecs(specs);
             }
-            
+
 
             app.UseMockServer(specs)
-               .UseOpenApiServer(specs);
+               .UseOpenApiDocumentServer(specs, Host)
+               .UseSwaggerUI();
         }
 
         private void AddDefaultDocumentsProvider(IServiceCollection services)
         {
             var defaultDir = Path.Combine(ContentRoot, "specs");
             var specsDir = Configuration.GetValue("specs", defaultDir);
-            var provider = new OpenApiDocumentsProvider(specsDir);
+            var provider = new DirectoryOpenApiDocumentsProvider(specsDir);
             services.AddSingleton<IOpenApiDocumentProvider>(provider);
         }
 
-        private static void AddMockServer(IEnumerable<OpenApiDocument> specs, string mockServerHost)
+        private void AddMockServerToSpecs(IEnumerable<OpenApiDocument> specs)
         {
             foreach (var spec in specs)
             {
@@ -86,16 +87,16 @@ namespace ITExpert.OpenApi.Server.Configuration
                                      ? UrlHelper.GetDefaultPathPrefix(spec.Info.GetServiceName())
                                      : UrlHelper.GetPathPrefix(specServer);
 
-                var mockServerUrl = UrlHelper.Join(mockServerHost, prefix);
+                var mockServerUrl = UrlHelper.Join(Host, prefix);
                 var mockServer = new OpenApiServer { Url = mockServerUrl };
                 spec.Servers.Add(mockServer);
             }
-        }
 
-        private static bool IsAbsoluteUrl(string url)
-        {
-            var comparison = StringComparison.OrdinalIgnoreCase;
-            return url.StartsWith("http://", comparison) || url.StartsWith("https://", comparison);
+            bool IsAbsoluteUrl(string url)
+            {
+                var comparison = StringComparison.OrdinalIgnoreCase;
+                return url.StartsWith("http://", comparison) || url.StartsWith("https://", comparison);
+            }
         }
     }
 }
