@@ -35,7 +35,7 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
                                   new LaunchServerCommandOptions
                                   {
                                           Port = port.GetIntValue(5000),
-                                          Sources = sources.GetStringValues("./.oas").ToArray(),
+                                          Sources = sources.GetStringValues("./.oas/specs").ToArray(),
                                           MinLogLevel = minLogLevel.GetEnumValue(LogLevel.Information),
                                           ConfigPath = config.GetStringValue("./.oas/oas.config.json"),
                                           TreatSourcesAsDiscoveryFiles = discover.GetBooleanValue(),

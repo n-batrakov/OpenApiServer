@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Server.DocumentProviders;
 using ITExpert.OpenApi.Server.Utils;
 using ITExpert.OpenApi.Tools.Commands.Server.DocumentProviders;
 
@@ -18,14 +16,15 @@ namespace ITExpert.OpenApi.Tools.Commands.Load
     public class LoadCommand
     {
         private LoadCommandOptions Options { get; }
-        private ILogger Logger { get; }
+        private ILoggerFactory LoggerFactory { get; }
         private IHttpClientFactory ClientFactory { get; }
 
         public LoadCommand(LoadCommandOptions options)
         {
             Options = options;
             ClientFactory = new HttpClientFactory();
-            Logger = new ConsoleLogger("SpecLoader", (s, level) => true, includeScopes: false);
+
+            LoggerFactory = new LoggerFactory(new[] {new ConsoleLoggerProvider(new ConsoleLoggerSettings())});
         }
 
         public int Execute()
@@ -38,30 +37,18 @@ namespace ITExpert.OpenApi.Tools.Commands.Load
 
             PrintStart();
 
-            var specs = Options.Sources.SelectMany(GetSpecs);
+            //var specs = Options.Sources.SelectMany(GetSpecs);
+            var provider = new CliOpenApiDocumentProvider(Options.Sources,
+                                                          Options.TreatSourcesAsDiscoveryFiles,
+                                                          Options.DiscoveryKey,
+                                                          ClientFactory,
+                                                          LoggerFactory);
+            var specs = provider.GetDocuments();
             var tasks = specs.Select(WriteSpec).ToArray();
             Task.WaitAll(tasks);
 
             PrintFinish();
             return 0;
-        }
-
-        private IEnumerable<OpenApiDocument> GetSpecs(string source)
-        {
-            var provider = GetProvider(source);
-            return provider.GetDocuments();
-            
-            IOpenApiDocumentProvider GetProvider(string url)
-            {
-                if (Options.TreatSourcesAsDiscoveryFiles)
-                {
-                    return new DiscoveryOpenApiDocumentProvider(ClientFactory, url, Options.DiscoveryKey, Logger);
-                }
-                else
-                {
-                    return new WebOpenApiDocumentProvider(ClientFactory, url);
-                }
-            }
         }
 
         private async Task WriteSpec(OpenApiDocument spec)
