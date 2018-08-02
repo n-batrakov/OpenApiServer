@@ -3,10 +3,7 @@
     "App": {
       "commandName": "Project",
       "launchBrowser": false,
-        "environmentVariables": {
-            "ASPNETCORE_ENVIRONMENT": "Development",
-            "specs": "../../specs"
-        },
+      "commandLineArgs": "run -c appsettings.json ../../specs",
       "applicationUrl": "http://localhost:35200/"
     }
   }

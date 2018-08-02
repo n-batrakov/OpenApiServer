@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace ITExpert.OpenApi.Tools.Commands.Server
+namespace ITExpert.OpenApi.Server.Cli.Run
 {
     public class LaunchServerCommandOptions
     {

@@ -1,6 +1,6 @@
 using System;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Validation;
+using ITExpert.OpenApi.Server.Core.MockServer.Validation.Types;
 
 namespace UnitTests.Utils
 {

@@ -8,7 +8,7 @@ using ITExpert.OpenApi.Server.DocumentProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Tools.Commands.Server.DocumentProviders
+namespace ITExpert.OpenApi.Server.Cli.Run.DocumentProviders
 {
     public class CliOpenApiDocumentProvider : IOpenApiDocumentProvider
     {

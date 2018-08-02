@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators;
+using ITExpert.OpenApi.Server.Core.MockServer.Generation.Internals;
 
 using Microsoft.OpenApi.Writers;
 

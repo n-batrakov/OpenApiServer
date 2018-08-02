@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 using ITExpert.OpenApi.Server.Core.DocumentationServer;
@@ -10,25 +9,21 @@ using ITExpert.OpenApi.Server.DocumentProviders;
 using ITExpert.OpenApi.Server.Utils;
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.Configuration
+namespace ITExpert.OpenApi.Server.Server
 {
     public class Startup
     {
         private IConfiguration Configuration { get; }
 
-        private string ContentRoot { get; }
         private string Host { get; }
 
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-
-            ContentRoot = env.ContentRootPath;
 
             Host = Configuration[nameof(MockServerOptions.MockServerHost)];
         }
@@ -37,12 +32,6 @@ namespace ITExpert.OpenApi.Server.Configuration
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMockServer(Configuration);
-
-            var hasProvider = services.Any(x => x.ServiceType == typeof(IOpenApiDocumentProvider));
-            if (!hasProvider)
-            {
-                AddDefaultDocumentsProvider(services);
-            }
         }
 
         // ReSharper disable once UnusedMember.Global
@@ -62,14 +51,6 @@ namespace ITExpert.OpenApi.Server.Configuration
             app.UseMockServer(specs)
                .UseOpenApiDocumentServer(specs, Host)
                .UseSwaggerUI();
-        }
-
-        private void AddDefaultDocumentsProvider(IServiceCollection services)
-        {
-            var defaultDir = Path.Combine(ContentRoot, "specs");
-            var specsDir = Configuration.GetValue("specs", defaultDir);
-            var provider = new DirectoryOpenApiDocumentsProvider(specsDir);
-            services.AddSingleton<IOpenApiDocumentProvider>(provider);
         }
 
         private void AddMockServerToSpecs(IEnumerable<OpenApiDocument> specs)

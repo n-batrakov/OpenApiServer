@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Logging;
 
-namespace ITExpert.OpenApi.Tools.Commands.Server
+namespace ITExpert.OpenApi.Server.Cli.Run
 {
     public static class LaunchServerConfiguration
     {

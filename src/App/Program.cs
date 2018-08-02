@@ -1,39 +1,50 @@
-using System.IO;
+using System;
 
-using ITExpert.OpenApi.Server.Configuration;
+using ITExpert.OpenApi.Server.Cli.Load;
+using ITExpert.OpenApi.Server.Cli.Merge;
+using ITExpert.OpenApi.Server.Cli.Run;
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.CommandLineUtils;
 
 namespace ITExpert.OpenApi.Server
 {
     public class Program
     {
-        public static void Main()
+        public static int Main(string[] args)
         {
-            CreateHostBuilder().UseStartup<Startup>().Build().Run();
-        }
+            var app = new CommandLineApplication
+                      {
+                              Name = "oas",
+                              FullName = "OpenAPI Server tools",
+                              Description = "Tools for OpenAPI specification.",
+                      };
 
-        public static IWebHostBuilder CreateHostBuilder()
-        {
-            var builder = new WebHostBuilder();
+            app.HelpOption("-h|--help");
+            app.VersionOption("-v|--version", "0.1.0");
 
-            builder.UseContentRoot(Directory.GetCurrentDirectory());
-            builder.UseKestrel(x => x.Configure());
-            builder.ConfigureAppConfiguration(x => x.AddEnvironmentVariables()
-                                                    .AddJsonFile("appsettings.json",
-                                                                 optional: true,
-                                                                 reloadOnChange: true));
-            builder.ConfigureLogging(x => x.AddConsole());
+            app.Command("merge", MergeConfiguration.Configure);
+            app.Command("run", LaunchServerConfiguration.Configure);
+            app.Command("load", LoadCommandConfiguration.Configure);
 
-            builder.UseDefaultServiceProvider(
-                    (ctx, options) =>
-                    {
-                        options.ValidateScopes = ctx.HostingEnvironment.IsDevelopment();
-                    });
+            if (args.Length == 0)
+            {
+                app.ShowHelp();
+                return -1;
+            }
 
-            return builder;
+            app.ShowRootCommandFullNameAndVersion();
+
+            try
+            {
+                return app.Execute(args);
+            }
+            catch (CommandParsingException e)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine();
+                app.ShowHelp();
+                return -1;
+            }
         }
     }
 }

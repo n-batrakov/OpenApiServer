@@ -1,4 +1,4 @@
-namespace ITExpert.OpenApi.Tools.Commands.Merge
+namespace ITExpert.OpenApi.Server.Cli.Merge
 {
     public class MergeOptions
     {

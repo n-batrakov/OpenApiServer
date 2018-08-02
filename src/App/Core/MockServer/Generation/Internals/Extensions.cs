@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using ITExpert.OpenApi.Server.Core.MockServer.Generation.Types;
+
 using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Generation
+namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Internals
 {
     internal static class Extensions
     {

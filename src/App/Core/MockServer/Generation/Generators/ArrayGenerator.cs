@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using ITExpert.OpenApi.Server.Core.MockServer.Generation.Internals;
+
 using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;

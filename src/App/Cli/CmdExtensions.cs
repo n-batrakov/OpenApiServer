@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace ITExpert.OpenApi.Tools
+namespace ITExpert.OpenApi.Server.Cli
 {
     public static class CmdExtensions
     {

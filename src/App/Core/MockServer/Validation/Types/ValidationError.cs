@@ -1,4 +1,4 @@
-namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
+namespace ITExpert.OpenApi.Server.Core.MockServer.Validation.Types
 {
     public static class ValidationError
     {
