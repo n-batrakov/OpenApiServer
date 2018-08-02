@@ -1,21 +1,23 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <AssemblyName>ITExpert.OpenApi.Server</AssemblyName>
+    <AssemblyName>ITExpert.OpenApi</AssemblyName>
     <RootNamespace>ITExpert.OpenApi.Server</RootNamespace>
+    <OutputType>Exe</OutputType>
     <TargetLatestRuntimePatch>True</TargetLatestRuntimePatch>
     <LangVersion>latest</LangVersion>
+    <TieredCompilation>true</TieredCompilation>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageId>ITExpert.OpenApi.Server</PackageId>
-    <Version>0.1.0</Version>
+    <PackageId>ITExpert.OpenApi</PackageId>
     <Authors>Nikita Batrakov</Authors>
-    <Company>ITExpert</Company>
+    <Owners>ITExpert</Owners>
     <Description>Development tools for OpenAPI Specification</Description>
     <Copyright>ITExpert</Copyright>
     <PackageIconUrl>https://s.gravatar.com/avatar/244f0b4fb377646c641b943478121721?s=80</PackageIconUrl>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Pack'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <PackAsTool>True</PackAsTool>
     <ToolCommandName>oas</ToolCommandName>
   </PropertyGroup>
