@@ -20,20 +20,18 @@ namespace ITExpert.OpenApi.Server
                       };
 
             app.HelpOption("-h|--help");
-            app.VersionOption("-v|--version", "0.1.0");
+            app.VersionOption("-v|--version", GetVersion);
 
             app.Command("merge", MergeConfiguration.Configure);
             app.Command("run", LaunchServerConfiguration.Configure);
             app.Command("load", LoadCommandConfiguration.Configure);
+
 
             if (args.Length == 0)
             {
                 app.ShowHelp();
                 return -1;
             }
-
-            Console.WriteLine();
-            app.ShowRootCommandFullNameAndVersion();
 
             try
             {
@@ -46,5 +44,8 @@ namespace ITExpert.OpenApi.Server
                 return -1;
             }
         }
+
+        private static string GetVersion() =>
+                typeof(Program).Assembly.GetName().Version.ToString(3);
     }
 }
