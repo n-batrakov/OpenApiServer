@@ -58,10 +58,13 @@ namespace ITExpert.OpenApi.Server.Server
         {
             logging.AddConsole();
 
-            logging.AddFilter("Microsoft.AspNetCore.Hosting.Internal.WebHost", LogLevel.None);
-            logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Error);
+            if (LogLevel > LogLevel.Debug)
+            {
+                logging.AddFilter("Microsoft.AspNetCore.Hosting.Internal.WebHost", LogLevel.None);
+                logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Error);
+            }
+            
             logging.SetMinimumLevel(LogLevel);
-
         }
 
         private void ConfigureConfiguration(IConfigurationBuilder config)

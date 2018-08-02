@@ -85,7 +85,10 @@ namespace ITExpert.OpenApi.Server.Cli.Run
             }
 
             var dir = Path.GetDirectoryName(path);
-            Directory.CreateDirectory(dir);
+            if (dir != string.Empty)
+            {
+                Directory.CreateDirectory(dir);
+            }
 
             var optionsText = GetDefaultOptions();
             using (var writer = File.CreateText(path))

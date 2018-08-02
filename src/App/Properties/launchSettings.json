@@ -3,8 +3,7 @@
     "App": {
       "commandName": "Project",
       "launchBrowser": false,
-      "commandLineArgs": "run -c appsettings.json ../../specs",
-      "applicationUrl": "http://localhost:35200/"
+      "commandLineArgs": "run -p 35200 -v Debug -c appsettings.json ../../../../../specs"
     }
   }
 }
