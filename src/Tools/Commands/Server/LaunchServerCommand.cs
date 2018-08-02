@@ -64,6 +64,7 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
             
             PrintStartupMessage();
             host.WaitForShutdown();
+            PrintFinish();
 
             return 0;
         }
@@ -102,7 +103,6 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
             Console.WriteLine($"* Verbosity: {LogLevel}");
             Console.WriteLine($"* Config: {Path.GetFullPath(ConfigFile)}");
             Console.WriteLine($"* Sources: {string.Join(", ", Sources)}");
-            Console.WriteLine($"* Discovery: {(TreatSourcesAsDiscoveryFiles ? "Yes" : "No")} (key: '{DiscoveryKey}')");
             Console.WriteLine("".PadRight(60, '*'));
             Console.WriteLine();
         }
@@ -116,6 +116,13 @@ namespace ITExpert.OpenApi.Tools.Commands.Server
             Console.WriteLine(e.Message);
             Console.WriteLine();
             Console.WriteLine("Exiting...");
+        }
+
+        private static void PrintFinish()
+        {
+            Console.WriteLine();
+            Console.WriteLine("Terminated.");
+            Console.WriteLine();
         }
 
         private void CreateConfig()

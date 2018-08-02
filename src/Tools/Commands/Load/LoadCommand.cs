@@ -37,13 +37,19 @@ namespace ITExpert.OpenApi.Tools.Commands.Load
 
             PrintStart();
 
-            //var specs = Options.Sources.SelectMany(GetSpecs);
             var provider = new CliOpenApiDocumentProvider(Options.Sources,
                                                           Options.TreatSourcesAsDiscoveryFiles,
                                                           Options.DiscoveryKey,
                                                           ClientFactory,
                                                           LoggerFactory);
-            var specs = provider.GetDocuments();
+            var specs = provider.GetDocuments().ToArray();
+
+            if (specs.Length == 0)
+            {
+                PrintNoSpecs();
+                return 0;
+            }
+
             var tasks = specs.Select(WriteSpec).ToArray();
             Task.WaitAll(tasks);
 
@@ -84,10 +90,18 @@ namespace ITExpert.OpenApi.Tools.Commands.Load
 
         private static void PrintFinish()
         {
-            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine();
-            Console.WriteLine("Success!");
-            Console.ResetColor();
+            Console.WriteLine("Complete.");
+            Console.WriteLine();
+        }
+
+        private static void PrintNoSpecs()
+        {
+            Console.WriteLine();
+            Console.WriteLine("No specs were loaded");
+            Console.WriteLine("Make sure specified sources contain valid OpenApi specifications.");
+            Console.WriteLine("If discovery endpoint is used, don't forget to add '-D' key.");
+            Console.WriteLine();
         }
 
         private static void PrintArgumentError()

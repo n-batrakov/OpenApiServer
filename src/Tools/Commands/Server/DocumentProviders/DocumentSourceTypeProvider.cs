@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace ITExpert.OpenApi.Tools.Commands.Server.DocumentProviders
@@ -27,7 +27,7 @@ namespace ITExpert.OpenApi.Tools.Commands.Server.DocumentProviders
                     $"Unable to determine type for given URI ('{uri}'). " +
                     "If it is file or directory, make sure it exists. " +
                     "In case of web URI make sure protocol specified " +
-                    "correctly (only http(-s) is supported.");
+                    "correctly (only http(-s) is supported).");
         }
     }
 }

@@ -32,6 +32,8 @@ namespace ITExpert.OpenApi.Tools
                 return -1;
             }
 
+            app.ShowRootCommandFullNameAndVersion();
+
             try
             {
                 return app.Execute(args);
