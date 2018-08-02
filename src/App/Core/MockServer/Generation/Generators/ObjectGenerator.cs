@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 
-using Microsoft.OpenApi.Models;
+using ITExpert.OpenApi.Server.Core.MockServer.Generation.Internals;
+
 using Microsoft.OpenApi.Writers;
+
+using Newtonsoft.Json.Schema;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
 {
@@ -26,7 +29,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
             DepthCounter = counter;
         }
 
-        public bool TryWriteValue(IOpenApiWriter writer, OpenApiSchema schema)
+        public bool TryWriteValue(IOpenApiWriter writer, JSchema schema)
         {
             if (!schema.IsObject())
             {
@@ -48,7 +51,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
             return true;
         }
 
-        private void WriteProperties(IOpenApiWriter writer, OpenApiSchema schema)
+        private void WriteProperties(IOpenApiWriter writer, JSchema schema)
         {
             if (schema.Properties != null)
             {

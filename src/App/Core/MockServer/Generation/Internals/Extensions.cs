@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Microsoft.OpenApi.Models;
+using ITExpert.OpenApi.Server.Core.MockServer.Generation.Types;
+
 using Microsoft.OpenApi.Writers;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Generation
+using Newtonsoft.Json.Schema;
+
+namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Internals
 {
     internal static class Extensions
     {
@@ -66,7 +69,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation
 
         public static void WriteValueOrThrow(this IEnumerable<IOpenApiExampleProvider> providers,
                                              IOpenApiWriter writer,
-                                             OpenApiSchema schema)
+                                             JSchema schema)
         {
             var isExampleProvided = TryWriteValue(providers, writer, schema);
             if (isExampleProvided)
@@ -79,12 +82,12 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation
 
         public static bool TryWriteValue(this IEnumerable<IOpenApiExampleProvider> providers,
                                       IOpenApiWriter writer,
-                                      OpenApiSchema schema)
+                                      JSchema schema)
         {
             return providers.Any(x => x.TryWriteValue(writer, schema));
         }
 
-        public static OpenApiSchemaType ConvertTypeToEnum(this OpenApiSchema schema)
+        public static OpenApiSchemaType ConvertTypeToEnum(this JSchema schema)
         {
             if (schema.Type == null)
             {
@@ -94,7 +97,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation
                     return OpenApiSchemaType.Object;
                 }
 
-                var isArray = schema.Items != null;
+                var isArray = schema.Items.Count > 0;
                 if (isArray)
                 {
                     return OpenApiSchemaType.Array;
@@ -107,9 +110,8 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation
 
                 return OpenApiSchemaType.Any;
             }
-            return Enum.Parse<OpenApiSchemaType>(schema.Type, ignoreCase: true);
+
+            return Enum.Parse<OpenApiSchemaType>(schema.Type.ToString(), ignoreCase: true);
         }
-
-
     }
 }

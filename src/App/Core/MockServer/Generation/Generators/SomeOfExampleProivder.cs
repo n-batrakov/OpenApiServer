@@ -1,8 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Microsoft.OpenApi.Models;
+using ITExpert.OpenApi.Server.Core.MockServer.Generation.Internals;
+using ITExpert.OpenApi.Server.Core.MockServer.Generation.Types;
+
 using Microsoft.OpenApi.Writers;
+
+using Newtonsoft.Json.Schema;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
 {
@@ -15,7 +19,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
             Providers = providers;
         }
 
-        public bool TryWriteValue(IOpenApiWriter writer, OpenApiSchema schema)
+        public bool TryWriteValue(IOpenApiWriter writer, JSchema schema)
         {
             if (schema.ConvertTypeToEnum() != OpenApiSchemaType.Combined)
             {
@@ -29,7 +33,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
             return true;
         }
 
-        private static IEnumerable<OpenApiSchema> SelectSchemes(OpenApiSchema schema)
+        private static IEnumerable<JSchema> SelectSchemes(JSchema schema)
         {
             if (schema.AnyOf?.Count > 0)
             {
@@ -50,29 +54,27 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
             }
         }
 
-        private static OpenApiSchema CombineSchemes(IEnumerable<OpenApiSchema> schemes)
+        private static JSchema CombineSchemes(IEnumerable<JSchema> schemes)
         {
-            var result = new OpenApiSchema();
+            var result = new JSchema();
             foreach (var schema in schemes)
             {
                 result.Properties.AddRange(schema.Properties);
-                result.Extensions.AddRange(schema.Extensions);
+                result.ExtensionData.AddRange(schema.ExtensionData);
 
                 result.Enum.AddRange(schema.Enum);
                 result.AnyOf.AddRange(schema.AnyOf);
                 result.AllOf.AddRange(schema.AllOf);
                 result.OneOf.AddRange(schema.OneOf);
 
+                result.Items.Clear();
+                result.Items.AddRange(schema.Items);
 
-                result.Items = schema.Items;
                 result.AdditionalProperties = schema.AdditionalProperties;
                 result.Not = schema.Not;
 
                 result.UniqueItems = schema.UniqueItems;
-                result.AdditionalPropertiesAllowed = schema.AdditionalPropertiesAllowed;
-                result.Example = schema.Example;
-                result.Nullable = schema.Nullable;
-                result.Discriminator = schema.Discriminator;
+                result.AllowAdditionalProperties = schema.AllowAdditionalProperties;
                 result.Type = schema.Type;
                 result.Format = schema.Format;
                 result.Pattern = schema.Pattern;
@@ -80,12 +82,12 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
                 result.Minimum = schema.Minimum;
                 result.ExclusiveMaximum = schema.ExclusiveMaximum;
                 result.ExclusiveMinimum = schema.ExclusiveMinimum;
-                result.MaxItems = schema.MaxItems;
-                result.MinItems = schema.MinItems;
-                result.MaxProperties = schema.MaxProperties;
-                result.MinProperties = schema.MinProperties;
-                result.MaxLength = schema.MaxLength;
-                result.MinLength = schema.MinLength;
+                result.MaximumItems = schema.MaximumItems;
+                result.MinimumItems = schema.MinimumItems;
+                result.MaximumProperties = schema.MaximumProperties;
+                result.MinimumProperties = schema.MinimumProperties;
+                result.MaximumLength = schema.MaximumLength;
+                result.MinimumLength = schema.MinimumLength;
                 result.MultipleOf = schema.MultipleOf;
                 result.Default = schema.Default;
                 result.ReadOnly = schema.ReadOnly;

@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
+using ITExpert.OpenApi.Server.Core.MockServer.Context;
+using ITExpert.OpenApi.Server.Core.MockServer.Context.Types;
+using ITExpert.OpenApi.Server.Core.MockServer.Validation.Internals;
+using ITExpert.OpenApi.Server.Core.MockServer.Validation.Types;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.OpenApi.Models;
@@ -13,32 +18,33 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
 {
     public class MockServerRequestValidator : IMockServerRequestValidator
     {
-        public RequestValidationStatus Validate(HttpRequestValidationContext context, OpenApiOperation operation)
+        public RequestValidationStatus Validate(RequestContext context)
         {
+            var operation = context.Spec;
             var paramtersErrors = operation.Parameters?.SelectMany(ValidateParameter) ??
                                   Enumerable.Empty<RequestValidationError>();
 
-            var bodyErrors = operation.RequestBody != null
-                                     ? ValidateBody(operation.RequestBody, context.Body, context.ContentType)
+            var bodyErrors = operation.Bodies.Count > 0
+                                     ? ValidateBody(context.GetBodySpec(),
+                                                    context.Request.Body,
+                                                    context.Request.ContentType)
                                      : Enumerable.Empty<RequestValidationError>();
 
             var errors = paramtersErrors.Concat(bodyErrors).ToArray();
             return new RequestValidationStatus(errors);
 
-            IEnumerable<RequestValidationError> ValidateParameter(OpenApiParameter x)
+            IEnumerable<RequestValidationError> ValidateParameter(RequestContextParameter x)
             {
                 switch (x.In)
                 {
                     case ParameterLocation.Query:
-                        return ValidateQuery(x, context.Query);
+                        return ValidateQuery(x, context.Request.Query);
                     case ParameterLocation.Header:
-                        return ValidateHeaders(x, context.Headers);
+                        return ValidateHeaders(x, context.Request.Headers);
                     case ParameterLocation.Path:
-                        return ValidatePath(x, context.Route);
+                        return ValidatePath(x, context.Request.Route);
                     case ParameterLocation.Cookie:
                         return ValidateCookie(x);
-                    case null:
-                        return Enumerable.Empty<RequestValidationError>();
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -49,28 +55,28 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
 
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private static IEnumerable<RequestValidationError> ValidateHeaders(
-                OpenApiParameter parameter,
+                RequestContextParameter parameter,
                 IHeaderDictionary headers)
         {
             yield break;
         }
 
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
-        private static IEnumerable<RequestValidationError> ValidateCookie(OpenApiParameter parameter)
+        private static IEnumerable<RequestValidationError> ValidateCookie(RequestContextParameter parameter)
         {
             yield break;
         }
 
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private static IEnumerable<RequestValidationError> ValidatePath(
-                OpenApiParameter parameter,
+                RequestContextParameter parameter,
                 RouteData routeData)
         {
             yield break;
         }
 
         private static IEnumerable<RequestValidationError> ValidateQuery(
-                OpenApiParameter parameter,
+                RequestContextParameter parameter,
                 IQueryCollection query)
         {
             var hasParameter = query.TryGetValue(parameter.Name, out var parameterValues);
@@ -100,38 +106,28 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
         }
 
         private static IEnumerable<RequestValidationError> ValidateBody(
-                OpenApiRequestBody body,
+                RequestContextBody body,
                 string bodyString,
                 string contentType)
         {
-            if (string.IsNullOrEmpty(bodyString) && body.Required)
+            if (body == null)
             {
-                yield return ValidationError.BodyRequired();
-
+                yield return ValidationError.UnexpectedContentType(contentType);
                 yield break;
             }
 
-            var hasContent = TryGetContent(contentType, body, out var content);
-            if (!hasContent)
+            if (string.IsNullOrEmpty(bodyString) && body.Required)
             {
-                yield return ValidationError.UnexpectedContentType(contentType);
-
+                yield return ValidationError.BodyRequired();
                 yield break;
             }
 
             var jsonBody = JObject.Parse(bodyString);
-            var schemaErrors = content.Schema.ValidateValue(jsonBody).ToArray();
+            var schemaErrors = body.Schema.ValidateValue(jsonBody).ToArray();
             if (schemaErrors.Any())
             {
                 yield return ValidationError.InvalidBody(schemaErrors);
             }
         }
-
-        private static bool TryGetContent(string contentType,
-                                          OpenApiRequestBody body,
-                                          out OpenApiMediaType result) =>
-                body.Content.TryGetValue(contentType, out result) ||
-                body.Content.TryGetValue("*/*", out result);
-
     }
 }

@@ -1,10 +1,14 @@
 using System;
 
-using Microsoft.OpenApi.Models;
+using ITExpert.OpenApi.Server.Core.MockServer.Generation.Internals;
+
 using Microsoft.OpenApi.Writers;
+
+using Newtonsoft.Json.Schema;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
 {
+    //TODO: Enchance generation quality
     //TODO: Pattern
     public class TextGenerator : IOpenApiExampleProvider
     {
@@ -15,7 +19,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
             Random = random;
         }
 
-        public bool TryWriteValue(IOpenApiWriter writer, OpenApiSchema schema)
+        public bool TryWriteValue(IOpenApiWriter writer, JSchema schema)
         {
             var isText = schema.IsString() && schema.Format == null;
             if (!isText)
@@ -23,8 +27,8 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
                 return false;
             }
 
-            var minLength = schema.MinLength ?? 0;
-            var maxLength = schema.MaxLength ?? 10;
+            var minLength = (int)(schema.MinimumLength ?? 0);
+            var maxLength = (int)(schema.MaximumLength ?? 10);
             var text = GetText(minLength, maxLength);
             writer.WriteValue(text);
 

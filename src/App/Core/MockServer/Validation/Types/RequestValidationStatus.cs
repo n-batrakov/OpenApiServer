@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Validation
+namespace ITExpert.OpenApi.Server.Core.MockServer.Validation.Types
 {
     public class RequestValidationStatus : IEquatable<RequestValidationStatus>
     {
         public bool IsSuccess { get; }
-
-        public bool IsFaulty => !IsSuccess;
 
         public IEnumerable<RequestValidationError> Errors { get; }
 

@@ -1,7 +1,11 @@
 using System;
 
-using Microsoft.OpenApi.Models;
+using ITExpert.OpenApi.Server.Core.MockServer.Generation.Internals;
+using ITExpert.OpenApi.Server.Core.MockServer.Generation.Types;
+
 using Microsoft.OpenApi.Writers;
+
+using Newtonsoft.Json.Schema;
 
 namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
 {
@@ -14,7 +18,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
             Random = random;
         }
 
-        public bool TryWriteValue(IOpenApiWriter writer, OpenApiSchema schema)
+        public bool TryWriteValue(IOpenApiWriter writer, JSchema schema)
         {
             switch (schema.ConvertTypeToEnum())
             {
@@ -41,7 +45,7 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
             }
         }
 
-        private int GetIntValue(OpenApiSchema schema)
+        private int GetIntValue(JSchema schema)
         {
             //TODO: MultipleOf
             var min = (int)(schema.Minimum ?? 0);
@@ -49,11 +53,11 @@ namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
             return Random.Next(min, max);
         }
 
-        private double GetNumberValue(OpenApiSchema schema)
+        private double GetNumberValue(JSchema schema)
         {
             //TODO: MultipleOf
-            var min = (double)(schema.Minimum ?? 0);
-            var max = (double)(schema.Maximum ?? decimal.MaxValue);
+            var min = schema.Minimum ?? 0;
+            var max = schema.Maximum ?? double.MaxValue;
             var number = Random.NextDouble();
             return min + (max - min) * number;
         }

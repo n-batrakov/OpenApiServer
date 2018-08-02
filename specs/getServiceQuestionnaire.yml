@@ -1,0 +1,258 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: BusinessLogic
+servers:
+  - url: /api/bl/ws
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getServiceQuestionnaireResponse'
+
+components:
+  schemas:
+    typeMetadata:
+      oneOf:
+        - $ref: '#/components/schemas/scalarType'
+        - $ref: '#/components/schemas/referenceType'
+        - $ref: '#/components/schemas/unionType'
+        - $ref: '#/components/schemas/enumerationType'
+        - $ref: '#/components/schemas/collectionType'
+    scalarType:
+      description: примитивные значимые типы вроде строки, числа и т.п.
+      type: object
+      required: [type]
+      properties:
+        type:
+          type: string
+          enum:
+            - Integer
+            - Float
+            - String
+            - Boolean
+            - DateTime
+    referenceType:
+      description: ссылочные типы, т.е. типы ссылающиеся на какую-то сущность в системе
+      type: object
+      required: [type, args]
+      properties:
+        type:
+          type: string
+          enum: [Reference]
+        args:
+          type: object
+          required: [reference]
+          properties:
+            reference:
+              description: Сущность, на которую ссылается значение типа
+              type: string
+    unionType:
+      description: типы, значения которых могут принадлежать одному из фиксированного набора типов
+      type: object
+      required: [type, args]
+      properties:
+        type:
+          type: string
+          enum: [Union]
+        args:
+          type: object
+          required: [types]
+          properties:
+            types:
+              description: набор всевозможных типов, один из которых должно принять значение
+              type: array
+              minItems: 1
+              items:
+                $ref: '#/components/schemas/typeMetadata'
+    enumerationType:
+      description: типы с фиксированным набором значений
+      type: object
+      required: [type, args]
+      properties:
+        type:
+          type: string
+          enum: [Enumeration]
+        args:
+          type: object
+          required: [values]
+          properties:
+            values:
+              description: набор всевозможных значений типа
+              type: array
+              minItems: 1
+              items:
+                type: object
+                required: [id]
+                properties:
+                  id:
+                    description: идентификатор значения
+                    type: string
+                  title:
+                    description: экранное имя значения
+                    type: string
+    collectionType:
+      description: тип, описывающий набор значений с одинаковым типом
+      type: object
+      required: [type, args]
+      properties:
+        type:
+          type: string
+          enum: [Collection]
+        args:
+          type: object
+          required: [itemsType]
+          properties:
+            itemsType:
+              $ref: '#/components/schemas/typeMetadata'
+    
+
+    filter:
+      description: Абстрактное дерево описывающее фильтрацию
+      oneOf:
+        - $ref: '#/components/schemas/filterLogicalNode'
+        - $ref: '#/components/schemas/filterComparisonNode'
+    filterLogicalNode:
+      description: Узел, объединяющий между собой другие узлы фильтра через конъюнкцию или дезъюнкцию
+      type: object
+      required: [operator, nodes]
+      properties:
+        isNegative:
+          description: если `True`, то логическое условие блока следует инвертировать
+          type: boolean
+          default: false
+        operator:
+          description: имя логического оператора сравнения
+          type: string
+          enum: [and, or]
+        nodes:
+          description: потомки узла дерева; массив узлов объединяемых одним логическим оператором
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/filter'
+    filterComparisonNode:
+      description: Узел описывающий сравнение значения из источника с помощью указанного оператора
+      type: object
+      required: [operator]
+      properties:
+        field:
+          description: поле фильтрумой сущности; источник значения
+          type: string
+        operator:
+          description: оператор сравнения
+          type: string
+          enum:
+            - equal
+            - notEqual
+            - greaterThan
+            - greaterOrEqual
+            - lesserThan
+            - lesserOrEqual
+            - Like
+            - In
+        value: {}
+        isNegative:
+          description: если `True`, то результат сравнения следует инвертировать
+          type: boolean
+          default: false
+
+
+    questionnaireTrigger:
+      description: условие на значение вопроса, которое, если срабатывает, вызывает какие-то действия над другими вопросами
+      type: object
+      properties:
+        filter:
+          $ref: '#/components/schemas/filter'
+        actions:
+          description: Действия, выполняемые при срабатывании триггера
+          type: array
+          items:
+            $ref: '#/components/schemas/questionnaireAction'
+
+    questionnaireAction:
+      description: Действие над полем опросника
+      type: object
+      required: [type, question]
+      properties:
+        type:
+          description: Идентификатор действия
+          type: string
+        question:
+          description: Идентификатор вопроса
+          type: string
+        args:
+          description: Аргрументы действия
+          type: object
+          additionalProperties: {}
+        
+
+    getServiceQuestionnaireResponse:
+      type: object
+      required: [groups, fields]
+      properties:
+        groups:
+          description: Группирока вопросов
+          type: array
+          items:
+            type: object
+            required: [name, fields]
+            properties:
+              name:
+                type: string
+              fields:
+                type: array
+                items:
+                  type: string
+        fields:
+          description: Описание вопросов
+          type: array
+          items:
+            description: Вопрос (одно поле формы)
+            type: object
+            required:
+              - id
+              - name
+              - meta
+              - value
+              - visible
+              - available
+              - required
+              - triggers
+            properties:
+              id:
+                description: Идентификатор вопроса
+                type: string
+              name:
+                description: Локализованное экранное имя вопроса
+                type: string
+              meta:
+                $ref: '#/components/schemas/typeMetadata'
+              value:
+                description: Значение по-умолчанию вопроса
+                oneOf:
+                  - type: string
+                  - type: number
+                  - type: boolean
+              visible:
+                description: Видимость вопроса
+                type: boolean
+                default: false
+              available:
+                description: Доступность для заполнения вопроса
+                type: boolean
+                default: false
+              required:
+                description: Обязательность ответа на вопрос
+                type: boolean
+                default: false
+              triggers:
+                description: Триггеры вопроса
+                type: array
+                items:
+                  $ref: '#/components/schemas/questionnaireTrigger'
