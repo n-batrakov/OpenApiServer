@@ -23,6 +23,7 @@ namespace ITExpert.OpenApi.Server.Cli.Run
 
         public int Execute()
         {
+            PrintStartMessage();
             CreateConfig();
 
             var host = new WebHostFactory(Options).CreateHost();
@@ -32,34 +33,54 @@ namespace ITExpert.OpenApi.Server.Cli.Run
             }
             catch (Exception e)
             {
-                PrintStartupError(e);
+                PrintStartError(e);
                 return 1;
             }
             
-            PrintStartupMessage();
+            PrintServerStartedMessage();
             host.WaitForShutdown();
             PrintFinish();
 
             return 0;
         }
 
-        private void PrintStartupMessage()
+        private void PrintStartMessage()
         {
+            if (Options.VerbosityLevel == ServerVerbosityLevel.Quiet)
+            {
+                return;
+            }
+
+            Console.WriteLine("OpenAPI Server is starting...");
+        }
+
+        private void PrintServerStartedMessage()
+        {
+            if (Options.VerbosityLevel == ServerVerbosityLevel.Quiet)
+            {
+                return;
+            }
+
             Console.WriteLine();
             Console.WriteLine($"OpenAPI Server is running on http://localhost:{Options.Port}".PadRight(60));
             Console.WriteLine("Press Ctrl+C to terminate.".PadRight(60));
 
             Console.WriteLine();
             Console.WriteLine("Parameters:");
-            Console.WriteLine($"* Verbosity: {Options.MinLogLevel}");
+            Console.WriteLine($"* Verbosity: {Options.VerbosityLevel}");
             Console.WriteLine($"* Config: {Path.GetFullPath(Options.ConfigPath)}");
             Console.WriteLine($"* Sources: {string.Join(", ", Options.Sources)}");
             Console.WriteLine("".PadRight(60, '*'));
             Console.WriteLine();
         }
 
-        private static void PrintStartupError(Exception e)
+        private void PrintStartError(Exception e)
         {
+            if (Options.VerbosityLevel == ServerVerbosityLevel.Quiet)
+            {
+                return;
+            }
+
             Console.BackgroundColor = ConsoleColor.Red;
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("Critical startup error:");
@@ -69,8 +90,13 @@ namespace ITExpert.OpenApi.Server.Cli.Run
             Console.WriteLine("Exiting...");
         }
 
-        private static void PrintFinish()
+        private void PrintFinish()
         {
+            if (Options.VerbosityLevel == ServerVerbosityLevel.Quiet)
+            {
+                return;
+            }
+
             Console.WriteLine();
             Console.WriteLine("Terminated.");
             Console.WriteLine();
