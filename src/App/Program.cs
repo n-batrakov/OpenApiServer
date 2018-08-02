@@ -32,6 +32,7 @@ namespace ITExpert.OpenApi.Server
                 return -1;
             }
 
+            Console.WriteLine();
             app.ShowRootCommandFullNameAndVersion();
 
             try
@@ -42,7 +43,6 @@ namespace ITExpert.OpenApi.Server
             {
                 Console.WriteLine(e.Message);
                 Console.WriteLine();
-                app.ShowHelp();
                 return -1;
             }
         }
