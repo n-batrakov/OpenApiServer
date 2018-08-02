@@ -6,11 +6,18 @@
     <TargetLatestRuntimePatch>True</TargetLatestRuntimePatch>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
-  
+  <PropertyGroup>
+    <PackageId>ITExpert.OpenApi.Server</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Nikita Batrakov</Authors>
+    <Company>ITExpert</Company>
+    <Description>Development tools for OpenAPI Specification</Description>
+    <Copyright>ITExpert</Copyright>
+    <PackageIconUrl>https://s.gravatar.com/avatar/244f0b4fb377646c641b943478121721?s=80</PackageIconUrl>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Pack'">
     <PackAsTool>True</PackAsTool>
     <ToolCommandName>oas</ToolCommandName>
-    <PackageId>ITExpert.OpenApi.Server</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
