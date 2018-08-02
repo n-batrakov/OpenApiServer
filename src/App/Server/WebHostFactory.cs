@@ -2,7 +2,6 @@ using System.IO;
 using System.Net.Http;
 
 using ITExpert.OpenApi.Server.Cli.Run;
-using ITExpert.OpenApi.Server.Cli.Run.DocumentProviders;
 using ITExpert.OpenApi.Server.DocumentProviders;
 
 using Microsoft.AspNetCore.Hosting;

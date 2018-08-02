@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Server.Cli.Run.DocumentProviders;
+using ITExpert.OpenApi.Server.DocumentProviders;
 using ITExpert.OpenApi.Server.Utils;
 
 using Microsoft.Extensions.Logging;

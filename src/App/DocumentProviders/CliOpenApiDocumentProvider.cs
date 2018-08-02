@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 
-using ITExpert.OpenApi.Server.DocumentProviders;
-
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.Cli.Run.DocumentProviders
+namespace ITExpert.OpenApi.Server.DocumentProviders
 {
     public class CliOpenApiDocumentProvider : IOpenApiDocumentProvider
     {
