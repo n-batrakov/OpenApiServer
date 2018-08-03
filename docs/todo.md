@@ -1,6 +1,5 @@
 # TODO
 
-* CLI: document, setup CI, release
 * Improve Text generation quality
 * Response validation
 * Server testing
