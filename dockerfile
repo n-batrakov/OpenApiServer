@@ -1,5 +1,5 @@
 FROM microsoft/dotnet:runtime-deps
 EXPOSE 80
-WORKDIR /oas
+WORKDIR /app
 COPY ./oas .
-CMD ["./ITExpert.OpenApi.Server run --port 80 --config /oas/oas.config.json"]
+ENTRYPOINT [ "./oas" ]
