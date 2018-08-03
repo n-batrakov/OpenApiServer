@@ -1,43 +1,25 @@
 stages:
   - build
-  - push
   - deploy
 
-variables:
-  image: itexpert/openapi
-  service: specs
-  url_dev: http://localmail.itexpert.ru:6001/api/spec/
-
-
-
-build docker image:
+build_linux:
   stage: build
-  only:
-    - develop
-  tags: 
-    - linux-docker
-  script: docker build -t $image .
+  only: [CI]
+  tags: [docker-executor]
+  image: microsoft/dotnet:sdk
+  script: 
+    - export VERSION=$(cat .version)
+    - dotnet publish -c Release /property:Version=$VERSION -r linux-x64 -o /out/linux-x64
+  artifacts:
+    paths: [/out/linux-x64]
+    untracked: true
 
-push docker image:
-  stage: push
-  only:
-    - develop
-  tags:
-    - linux-docker
-  retry: 2
-  script: docker push $image
-
-deploy develop:
+deploy_nuget:
   stage: deploy
-  only:
-    - develop
-  tags:
-    - ritm
-  retry: 2
-  environment:
-    name: develop
-    url: $url_dev
-  script: >
-    cd /srv/ritm &&
-    docker pull $image &&
-    docker-compose up -d $service
+  only: [CI]
+  tags: [docker-executor]
+  image: microsoft/dotnet:sdk
+  script:
+    - export VERSION=$(cat .version)
+    - dotnet pack -o nuget -c Release /property:Version=$VERSION
+    - dotnet nuget push nuget/*.nupkg -s http://nuget.itexpert.ru/nuget/ -k password
