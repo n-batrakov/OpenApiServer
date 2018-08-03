@@ -9,6 +9,7 @@ build_linux:
   image: microsoft/dotnet:sdk
   script: 
     - export VERSION=$(cat .version)
+    - cd src/App
     - dotnet publish -c Release /property:Version=$VERSION -r linux-x64 -o /out/linux-x64
   artifacts:
     paths: [/out/linux-x64]
@@ -21,5 +22,6 @@ deploy_nuget:
   image: microsoft/dotnet:sdk
   script:
     - export VERSION=$(cat .version)
+    - cd src/App
     - dotnet pack -o nuget -c Release /property:Version=$VERSION
     - dotnet nuget push nuget/*.nupkg -s http://nuget.itexpert.ru/nuget/ -k password
