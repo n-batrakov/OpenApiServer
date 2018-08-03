@@ -35,6 +35,19 @@
     <script src="./swagger-ui-bundle.js"> </script>
     <script src="./swagger-ui-standalone-preset.js"> </script>
     <script>
+
+    function renderError(msg) {
+      const container = document.getElementsByTagName('body')[0];
+      
+      const title = document.createElement('h1');
+      title.innerText = 'Error';
+      container.appendChild(title);
+
+      const msgElement = document.createElement('p');
+      msgElement.innerText = msg;
+      container.appendChild(msgElement);
+    }
+
     window.onload = function() {
 
       const httpRequest = new XMLHttpRequest();
@@ -47,6 +60,11 @@
           if (httpRequest.status === 200) {
 
             var urls = JSON.parse(httpRequest.responseText);
+
+            if (urls.length === 0) {
+              renderError('Unable to render SwaggerUI. No specs defined.');
+              return;
+            }
 
             const ui = SwaggerUIBundle({
               urls: urls,
