@@ -16,7 +16,6 @@ build_linux:
   artifacts:
     name: oas-$PLATFORM
     paths: [src/App/out]
-    untracked: true
 
 deploy_nuget:
   stage: deploy
