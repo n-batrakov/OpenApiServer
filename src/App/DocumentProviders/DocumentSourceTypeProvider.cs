@@ -23,11 +23,7 @@ namespace ITExpert.OpenApi.DocumentProviders
                 return DocumentSourceType.File;
             }
 
-            throw new ArgumentException(
-                    $"Unable to determine type for given URI ('{uri}'). " +
-                    "If it is file or directory, make sure it exists. " +
-                    "In case of web URI make sure protocol specified " +
-                    "correctly (only http(-s) is supported).");
+            return DocumentSourceType.Unknown;
         }
     }
 }

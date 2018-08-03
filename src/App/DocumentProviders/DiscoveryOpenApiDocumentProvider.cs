@@ -37,7 +37,13 @@ namespace ITExpert.OpenApi.DocumentProviders
 
         public IEnumerable<OpenApiDocument> GetDocuments()
         {
-            var discoveryFile = LoadDiscoveryFile(Uri);
+            var type = DocumentSourceTypeProvider.GetSourceType(Uri);
+            if (type == DocumentSourceType.Unknown)
+            {
+                return Enumerable.Empty<OpenApiDocument>();
+            }
+
+            var discoveryFile = LoadDiscoveryFile(Uri, type);
             var uris = GetUris(discoveryFile);
             var tasks = uris
                         .Select(LoadSpecsAsync)
@@ -49,11 +55,9 @@ namespace ITExpert.OpenApi.DocumentProviders
             return tasks.Select(x => x.Result).Where(x => x != null);
         }
 
-        private JToken LoadDiscoveryFile(string uri)
+        private JToken LoadDiscoveryFile(string uri, DocumentSourceType type)
         {
-            var type = DocumentSourceTypeProvider.GetSourceType(uri);
-            var discoveryFileText = GetContent(type);
-            return JToken.Parse(discoveryFileText);
+            return JToken.Parse(GetContent(type));
 
             string GetContent(DocumentSourceType source)
             {
@@ -67,6 +71,8 @@ namespace ITExpert.OpenApi.DocumentProviders
                     case DocumentSourceType.Web:
                         var client = ClientFactory.CreateClient();
                         return client.GetStringAsync(uri).Result;
+                    case DocumentSourceType.Unknown:
+                        throw new Exception("Unable to determine type of URI for discovery file.");
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

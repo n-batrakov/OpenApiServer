@@ -37,10 +37,20 @@ namespace ITExpert.OpenApi.DocumentProviders
                                                                    string discoveryKey,
                                                                    ILogger logger)
         {
-            return treatUriAsDiscovery
-                           ? uris.Select(
-                                   x => new DiscoveryOpenApiDocumentProvider(ClientFactory, x, discoveryKey, logger))
-                           : uris.Select(x => GetProvider(DocumentSourceTypeProvider.GetSourceType(x), x));
+
+            foreach (string uri in uris)
+            {
+                var uriType = DocumentSourceTypeProvider.GetSourceType(uri);
+                if (uriType == DocumentSourceType.Unknown)
+                {
+                    LogUnknownUriType(uri);
+                    continue;
+                }
+
+                yield return treatUriAsDiscovery
+                                     ? new DiscoveryOpenApiDocumentProvider(ClientFactory, uri, discoveryKey, logger)
+                                     : GetProvider(uriType, uri);
+            }
         }
 
         private IOpenApiDocumentProvider GetProvider(DocumentSourceType type, string uri)
@@ -53,6 +63,8 @@ namespace ITExpert.OpenApi.DocumentProviders
                     return new DirectoryOpenApiDocumentsProvider(uri);
                 case DocumentSourceType.Web:
                     return new WebOpenApiDocumentProvider(ClientFactory, uri);
+                case DocumentSourceType.Unknown:
+                    throw new Exception("Unable to determine URI type.");
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
@@ -72,6 +84,15 @@ namespace ITExpert.OpenApi.DocumentProviders
                 var msg = $"Specs loaded: {loadedSpecs}";
                 Logger.LogInformation(msg);
             }
+        }
+
+        private void LogUnknownUriType(string uri)
+        {
+            const string msg = "Unable to determine type for given URI ('{0}'). " +
+                               "If it is file or directory, make sure it exists. " +
+                               "In case of web URI make sure protocol specified " +
+                               "correctly (only http(-s) is supported).";
+            Logger.LogWarning(msg, uri);
         }
     }
 }

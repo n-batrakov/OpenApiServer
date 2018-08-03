@@ -1,9 +1,10 @@
-﻿namespace ITExpert.OpenApi.DocumentProviders
+namespace ITExpert.OpenApi.DocumentProviders
 {
     public enum DocumentSourceType
     {
         File,
         Directory,
-        Web
+        Web,
+        Unknown
     }
 }
