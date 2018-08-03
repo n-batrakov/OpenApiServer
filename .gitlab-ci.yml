@@ -12,10 +12,10 @@ build_linux:
   script: 
     - export VERSION=$(cat .version)
     - cd src/App
-    - dotnet publish -o /oas -c Release -r $PLATFORM /property:Version=$VERSION
+    - dotnet publish -o oas -c Release -r $PLATFORM /property:Version=$VERSION
   artifacts:
     name: oas-$PLATFORM
-    paths: [/oas]
+    paths: [oas]
 
 deploy_nuget:
   stage: deploy
