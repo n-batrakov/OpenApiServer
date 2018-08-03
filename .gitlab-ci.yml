@@ -15,7 +15,7 @@ build_linux:
     - dotnet publish -o out -c Release -r $PLATFORM /property:Version=$VERSION
   artifacts:
     name: oas-$PLATFORM
-    paths: [out]
+    paths: [src/App/out]
     untracked: true
 
 deploy_nuget:
