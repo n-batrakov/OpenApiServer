@@ -1,5 +1,6 @@
 stages:
   - publish
+  - docker
 
 linux-x64:
   variables: {PLATFORM: linux-x64}
@@ -63,5 +64,5 @@ docker:
     tags: [linux-docker]
     dependencies: [linux-x64]
     script:
-      - export VERSION=$(cat .version)
-      - docker build -t itexpert/openapi:$VERSION -t itexpert/openapi:latest
+      - docker build -t itexpert/openapi
+      - docker push itexpert/openapi
