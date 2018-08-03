@@ -64,5 +64,5 @@ docker:
     tags: [linux-docker]
     dependencies: [linux-x64]
     script:
-      - docker build -t itexpert/openapi
+      - docker build -t itexpert/openapi .
       - docker push itexpert/openapi
