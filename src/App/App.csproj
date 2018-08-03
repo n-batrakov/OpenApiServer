@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <AssemblyName>ITExpert.OpenApi</AssemblyName>
+    <AssemblyName>oas</AssemblyName>
     <RootNamespace>ITExpert.OpenApi</RootNamespace>
     <OutputType>Exe</OutputType>
     <TargetLatestRuntimePatch>True</TargetLatestRuntimePatch>

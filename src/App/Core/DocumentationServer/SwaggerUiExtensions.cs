@@ -8,9 +8,9 @@ namespace ITExpert.OpenApi.Core.DocumentationServer
     {
         public static IApplicationBuilder UseSwaggerUI(this IApplicationBuilder app)
         {
-            var assm = typeof(SwaggerUiExtensions).Assembly;
-            var name = assm.GetName().Name;
-            var provider = new EmbeddedFileProvider(assm, $"{name}.Resources.SwaggerUI");
+            var assm = typeof(Program).Assembly;
+            var ns = $"{typeof(Program).Namespace}.Resources.SwaggerUI";
+            var provider = new EmbeddedFileProvider(assm, ns);
 
             var filesOptions = new SharedOptions
                                {
