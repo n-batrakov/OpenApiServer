@@ -47,6 +47,10 @@ namespace ITExpert.OpenApi.Core.MockServer.Validation.Internals
 
                 case OpenApiSchemaType.Object:
                     throw new NotImplementedException(ObjectNotSupported);
+                case OpenApiSchemaType.Null:
+                    return null;
+                case OpenApiSchemaType.Combined:
+                    throw new NotSupportedException();
                 default:
                     throw new ArgumentOutOfRangeException();
             }

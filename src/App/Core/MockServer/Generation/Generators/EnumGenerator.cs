@@ -31,11 +31,11 @@ namespace ITExpert.OpenApi.Core.MockServer.Generation.Generators
             return true;
         }
 
-        public void WriteJToken(IOpenApiWriter writer, JToken token)
+        private static void WriteJToken(IOpenApiWriter writer, JToken token)
         {
+            // ReSharper disable once SwitchStatementMissingSomeCases
             switch (token.Type)
             {
-                
                 case JTokenType.String:
                 case JTokenType.Date:
                 case JTokenType.Guid:
