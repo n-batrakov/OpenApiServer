@@ -7,12 +7,15 @@ build_linux:
   only: [CI]
   tags: [docker-executor]
   image: microsoft/dotnet:sdk
+  variables:
+    PLATFORM: linux-x64
   script: 
     - export VERSION=$(cat .version)
     - cd src/App
-    - dotnet publish -c Release /property:Version=$VERSION -r linux-x64 -o /out/linux-x64
+    - dotnet publish -o out -c Release -r $PLATFORM /property:Version=$VERSION
   artifacts:
-    paths: [/out/linux-x64]
+    name: oas-$PLATFORM
+    paths: [out]
     untracked: true
 
 deploy_nuget:
