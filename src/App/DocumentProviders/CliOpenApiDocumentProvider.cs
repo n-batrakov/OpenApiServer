@@ -6,7 +6,7 @@ using System.Net.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.DocumentProviders
+namespace ITExpert.OpenApi.DocumentProviders
 {
     public class CliOpenApiDocumentProvider : IOpenApiDocumentProvider
     {

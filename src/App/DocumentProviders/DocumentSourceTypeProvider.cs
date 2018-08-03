@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace ITExpert.OpenApi.Server.DocumentProviders
+namespace ITExpert.OpenApi.DocumentProviders
 {
     public static class DocumentSourceTypeProvider
     {

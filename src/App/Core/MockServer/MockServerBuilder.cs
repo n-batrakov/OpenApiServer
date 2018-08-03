@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Context;
-using ITExpert.OpenApi.Server.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers;
+using ITExpert.OpenApi.Core.MockServer.Context;
+using ITExpert.OpenApi.Core.MockServer.Context.Types;
+using ITExpert.OpenApi.Core.MockServer.RequestHandlers;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer
+namespace ITExpert.OpenApi.Core.MockServer
 {
     public class MockServerBuilder
     {

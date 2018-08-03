@@ -1,8 +1,8 @@
 using System;
 using System.IO;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Options;
-using ITExpert.OpenApi.Server.Server;
+using ITExpert.OpenApi.Core.MockServer.Options;
+using ITExpert.OpenApi.Server;
 
 using Microsoft.AspNetCore.Hosting;
 
@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
-namespace ITExpert.OpenApi.Server.Cli.Run
+namespace ITExpert.OpenApi.Cli.Run
 {
     public class LaunchServerCommand
     {

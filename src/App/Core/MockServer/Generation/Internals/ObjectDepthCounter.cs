@@ -1,6 +1,6 @@
 using System;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Internals
+namespace ITExpert.OpenApi.Core.MockServer.Generation.Internals
 {
     public class ObjectDepthCounter
     {

@@ -5,14 +5,14 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Server.Core.MockServer.Exceptions;
+using ITExpert.OpenApi.Core.MockServer.Context.Types;
+using ITExpert.OpenApi.Core.MockServer.Exceptions;
 
 using Microsoft.Extensions.Primitives;
 
 using HttpMethod = System.Net.Http.HttpMethod;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers
+namespace ITExpert.OpenApi.Core.MockServer.RequestHandlers
 {
     public class ProxyRequestHandler : IMockServerRequestHandler
     {

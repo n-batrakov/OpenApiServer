@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using ITExpert.OpenApi.Server.DocumentProviders;
-using ITExpert.OpenApi.Server.Utils;
+using ITExpert.OpenApi.DocumentProviders;
+using ITExpert.OpenApi.Utils;
 
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.Cli.Merge
+namespace ITExpert.OpenApi.Cli.Merge
 {
     public class MergeCommand
     {

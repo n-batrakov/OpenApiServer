@@ -1,11 +1,11 @@
-using ITExpert.OpenApi.Server.Core.MockServer.Generation.Internals;
-using ITExpert.OpenApi.Server.Core.MockServer.Generation.Types;
+using ITExpert.OpenApi.Core.MockServer.Generation.Internals;
+using ITExpert.OpenApi.Core.MockServer.Generation.Types;
 
 using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
+namespace ITExpert.OpenApi.Core.MockServer.Generation.Generators
 {
     public class AnyGenerator : IOpenApiExampleProvider
     {

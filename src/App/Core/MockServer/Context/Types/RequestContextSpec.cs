@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Context.Types
+namespace ITExpert.OpenApi.Core.MockServer.Context.Types
 {
     public class RequestContextSpec
     {

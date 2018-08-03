@@ -4,13 +4,13 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Server.Core.MockServer.Generation;
-using ITExpert.OpenApi.Server.Core.MockServer.Generation.Types;
+using ITExpert.OpenApi.Core.MockServer.Context.Types;
+using ITExpert.OpenApi.Core.MockServer.Generation;
+using ITExpert.OpenApi.Core.MockServer.Generation.Types;
 
 using Microsoft.Extensions.Primitives;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers
+namespace ITExpert.OpenApi.Core.MockServer.RequestHandlers
 {
     public class MockRequestHandler : IMockServerRequestHandler
     {

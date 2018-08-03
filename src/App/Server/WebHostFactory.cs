@@ -2,15 +2,15 @@ using System;
 using System.IO;
 using System.Net.Http;
 
-using ITExpert.OpenApi.Server.Cli.Run;
-using ITExpert.OpenApi.Server.DocumentProviders;
+using ITExpert.OpenApi.Cli.Run;
+using ITExpert.OpenApi.DocumentProviders;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace ITExpert.OpenApi.Server.Server
+namespace ITExpert.OpenApi.Server
 {
     public class WebHostFactory
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 
-namespace ITExpert.OpenApi.Server.Cli.Load
+namespace ITExpert.OpenApi.Cli.Load
 {
     public static class LoadCommandConfiguration
     {

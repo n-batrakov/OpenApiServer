@@ -1,12 +1,12 @@
 using System;
 
-using ITExpert.OpenApi.Server.Cli.Load;
-using ITExpert.OpenApi.Server.Cli.Merge;
-using ITExpert.OpenApi.Server.Cli.Run;
+using ITExpert.OpenApi.Cli.Load;
+using ITExpert.OpenApi.Cli.Merge;
+using ITExpert.OpenApi.Cli.Run;
 
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace ITExpert.OpenApi.Server
+namespace ITExpert.OpenApi
 {
     public class Program
     {

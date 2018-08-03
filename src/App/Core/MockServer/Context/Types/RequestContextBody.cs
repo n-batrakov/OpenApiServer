@@ -2,7 +2,7 @@
 
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Context.Types
+namespace ITExpert.OpenApi.Core.MockServer.Context.Types
 {
     public class RequestContextBody
     {

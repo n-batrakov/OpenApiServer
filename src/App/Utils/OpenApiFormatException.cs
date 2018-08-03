@@ -2,7 +2,7 @@ using System;
 
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.Utils
+namespace ITExpert.OpenApi.Utils
 {
     public class OpenApiFormatException : FormatException
     {

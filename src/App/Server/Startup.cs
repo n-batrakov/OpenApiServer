@@ -2,18 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Server.Core.DocumentationServer;
-using ITExpert.OpenApi.Server.Core.MockServer;
-using ITExpert.OpenApi.Server.Core.MockServer.Options;
-using ITExpert.OpenApi.Server.DocumentProviders;
-using ITExpert.OpenApi.Server.Utils;
+using ITExpert.OpenApi.Core.DocumentationServer;
+using ITExpert.OpenApi.Core.MockServer;
+using ITExpert.OpenApi.Core.MockServer.Options;
+using ITExpert.OpenApi.DocumentProviders;
+using ITExpert.OpenApi.Utils;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.Server
+namespace ITExpert.OpenApi.Server
 {
     public class Startup
     {

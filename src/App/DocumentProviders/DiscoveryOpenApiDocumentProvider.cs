@@ -6,14 +6,14 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Server.Utils;
+using ITExpert.OpenApi.Utils;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json.Linq;
 
-namespace ITExpert.OpenApi.Server.DocumentProviders
+namespace ITExpert.OpenApi.DocumentProviders
 {
     public class DiscoveryOpenApiDocumentProvider : IOpenApiDocumentProvider
     {

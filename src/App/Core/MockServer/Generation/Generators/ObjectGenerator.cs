@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Generation.Internals;
+using ITExpert.OpenApi.Core.MockServer.Generation.Internals;
 
 using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
+namespace ITExpert.OpenApi.Core.MockServer.Generation.Generators
 {
     //TODO: minProperties, maxProperties
     //TODO: patternProperties

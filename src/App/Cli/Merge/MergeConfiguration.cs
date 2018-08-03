@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 
-namespace ITExpert.OpenApi.Server.Cli.Merge
+namespace ITExpert.OpenApi.Cli.Merge
 {
     public class MergeConfiguration
     {

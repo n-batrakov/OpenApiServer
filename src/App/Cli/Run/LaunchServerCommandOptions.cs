@@ -1,4 +1,4 @@
-namespace ITExpert.OpenApi.Server.Cli.Run
+namespace ITExpert.OpenApi.Cli.Run
 {
     public enum ServerVerbosityLevel
     {

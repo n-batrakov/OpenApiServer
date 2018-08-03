@@ -5,7 +5,7 @@ using Microsoft.OpenApi.Writers;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Generators
+namespace ITExpert.OpenApi.Core.MockServer.Generation.Generators
 {
     public class EnumGenerator : IOpenApiExampleProvider
     {

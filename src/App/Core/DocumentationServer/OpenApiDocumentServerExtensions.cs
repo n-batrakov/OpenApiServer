@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Server.Utils;
+using ITExpert.OpenApi.Utils;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +11,7 @@ using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json.Linq;
 
-namespace ITExpert.OpenApi.Server.Core.DocumentationServer
+namespace ITExpert.OpenApi.Core.DocumentationServer
 {
     public static class OpenApiDocumentServerExtensions
     {

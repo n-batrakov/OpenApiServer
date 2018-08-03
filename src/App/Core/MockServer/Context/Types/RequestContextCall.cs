@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Context.Types
+namespace ITExpert.OpenApi.Core.MockServer.Context.Types
 {
     public class RequestContextCall
     {

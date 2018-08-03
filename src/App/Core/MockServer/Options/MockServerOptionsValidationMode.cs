@@ -1,4 +1,4 @@
-namespace ITExpert.OpenApi.Server.Core.MockServer.Options
+namespace ITExpert.OpenApi.Core.MockServer.Options
 {
     public enum MockServerOptionsValidationMode
     {

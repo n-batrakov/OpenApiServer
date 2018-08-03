@@ -1,10 +1,10 @@
 using System;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Generation.Types;
+using ITExpert.OpenApi.Core.MockServer.Generation.Types;
 
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Internals
+namespace ITExpert.OpenApi.Core.MockServer.Generation.Internals
 {
     internal static class OpenApiSchemaTypesExtensions
     {

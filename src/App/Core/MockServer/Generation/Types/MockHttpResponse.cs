@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer.Generation.Types
+namespace ITExpert.OpenApi.Core.MockServer.Generation.Types
 {
     public class MockHttpResponse
     {

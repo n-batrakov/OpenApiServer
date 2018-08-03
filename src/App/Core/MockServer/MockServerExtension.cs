@@ -1,17 +1,17 @@
 using System;
 
-using ITExpert.OpenApi.Server.Core.MockServer.Context;
-using ITExpert.OpenApi.Server.Core.MockServer.Generation;
-using ITExpert.OpenApi.Server.Core.MockServer.Options;
-using ITExpert.OpenApi.Server.Core.MockServer.RequestHandlers;
-using ITExpert.OpenApi.Server.Core.MockServer.Validation;
+using ITExpert.OpenApi.Core.MockServer.Context;
+using ITExpert.OpenApi.Core.MockServer.Generation;
+using ITExpert.OpenApi.Core.MockServer.Options;
+using ITExpert.OpenApi.Core.MockServer.RequestHandlers;
+using ITExpert.OpenApi.Core.MockServer.Validation;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.Core.MockServer
+namespace ITExpert.OpenApi.Core.MockServer
 {
     public static class MockServerExtension
     {

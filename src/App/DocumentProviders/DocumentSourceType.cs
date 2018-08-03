@@ -1,4 +1,4 @@
-﻿namespace ITExpert.OpenApi.Server.DocumentProviders
+﻿namespace ITExpert.OpenApi.DocumentProviders
 {
     public enum DocumentSourceType
     {

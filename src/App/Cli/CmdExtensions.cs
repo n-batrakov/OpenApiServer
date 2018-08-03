@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
 
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace ITExpert.OpenApi.Server.Cli
+namespace ITExpert.OpenApi.Cli
 {
     public static class CmdExtensions
     {
@@ -17,9 +16,5 @@ namespace ITExpert.OpenApi.Server.Cli
 
         public static int GetIntValue(this CommandOption value, int defaultValue = default) =>
                 int.TryParse(value.Value(), out var port) ? port : defaultValue;
-
-        public static T GetEnumValue<T>(this CommandOption value, T defaultValue = default) where T : struct =>
-                Enum.TryParse<T>(value.Value(), ignoreCase: true, out var result) ? result : defaultValue;
-
     }
 }

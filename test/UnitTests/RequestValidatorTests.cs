@@ -1,5 +1,5 @@
-using ITExpert.OpenApi.Server.Core.MockServer.Validation;
-using ITExpert.OpenApi.Server.Core.MockServer.Validation.Types;
+using ITExpert.OpenApi.Core.MockServer.Validation;
+using ITExpert.OpenApi.Core.MockServer.Validation.Types;
 
 using UnitTests.Utils;
 

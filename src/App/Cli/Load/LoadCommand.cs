@@ -4,14 +4,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Server.DocumentProviders;
-using ITExpert.OpenApi.Server.Utils;
+using ITExpert.OpenApi.DocumentProviders;
+using ITExpert.OpenApi.Utils;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server.Cli.Load
+namespace ITExpert.OpenApi.Cli.Load
 {
     public class LoadCommand
     {
