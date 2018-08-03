@@ -63,6 +63,7 @@ docker:
     only: [CI]
     tags: [linux-docker]
     dependencies: [linux-x64]
+    retry: 2
     script:
       - docker build -t itexpert/openapi .
       - docker push itexpert/openapi
