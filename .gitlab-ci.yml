@@ -5,7 +5,7 @@ stages:
 linux-x64:
   variables: {PLATFORM: linux-x64}
   stage: publish
-  only: [CI]
+  only: [master]
   tags: [docker-executor]
   image: microsoft/dotnet:sdk
   script: 
@@ -19,7 +19,7 @@ linux-x64:
 win-x64:
   variables: {PLATFORM: win-x64}
   stage: publish
-  only: [CI]
+  only: [master]
   tags: [docker-executor]
   image: microsoft/dotnet:sdk
   script: 
@@ -33,7 +33,7 @@ win-x64:
 osx-x64:
   variables: {PLATFORM: osx-x64}
   stage: publish
-  only: [CI]
+  only: [master]
   tags: [docker-executor]
   image: microsoft/dotnet:sdk
   script: 
@@ -48,7 +48,7 @@ osx-x64:
 
 nuget:
   stage: publish
-  only: [CI]
+  only: [master]
   tags: [docker-executor]
   image: microsoft/dotnet:sdk
   script:
@@ -60,7 +60,7 @@ nuget:
 
 docker:
     stage: docker
-    only: [CI]
+    only: [master]
     tags: [linux-docker]
     dependencies: [linux-x64]
     retry: 2
