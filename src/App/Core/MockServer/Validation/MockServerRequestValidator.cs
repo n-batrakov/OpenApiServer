@@ -5,8 +5,6 @@ using System.Linq;
 
 using ITExpert.OpenApi.Core.MockServer.Context;
 using ITExpert.OpenApi.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Core.MockServer.Validation.Internals;
-using ITExpert.OpenApi.Core.MockServer.Validation.Types;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

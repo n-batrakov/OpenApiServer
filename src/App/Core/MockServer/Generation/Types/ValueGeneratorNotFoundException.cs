@@ -1,6 +1,6 @@
 using System;
 
-namespace ITExpert.OpenApi.Core.MockServer.Generation.Types
+namespace ITExpert.OpenApi.Core.MockServer.Generation
 {
     public class ValueGeneratorNotFoundException : Exception
     {

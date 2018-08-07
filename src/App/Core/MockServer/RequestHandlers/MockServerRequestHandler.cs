@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 
 using ITExpert.OpenApi.Core.MockServer.Context.Types;
 using ITExpert.OpenApi.Core.MockServer.Validation;
-using ITExpert.OpenApi.Core.MockServer.Validation.Types;
 
 using Newtonsoft.Json;
 

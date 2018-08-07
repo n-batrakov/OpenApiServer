@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 
 using ITExpert.OpenApi.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Core.MockServer.Generation.Internals;
-using ITExpert.OpenApi.Core.MockServer.Generation.Types;
+using ITExpert.OpenApi.Core.MockServer.Generation;
 
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Core.MockServer.Validation.Internals
+namespace ITExpert.OpenApi.Core.MockServer.Validation
 {
     internal static class ParametersExtensions
     {

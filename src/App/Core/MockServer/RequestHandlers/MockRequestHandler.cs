@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 using ITExpert.OpenApi.Core.MockServer.Context.Types;
 using ITExpert.OpenApi.Core.MockServer.Generation;
-using ITExpert.OpenApi.Core.MockServer.Generation.Types;
 
 using Microsoft.Extensions.Primitives;
 

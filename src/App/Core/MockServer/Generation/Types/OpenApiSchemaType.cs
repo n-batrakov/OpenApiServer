@@ -1,4 +1,4 @@
-namespace ITExpert.OpenApi.Core.MockServer.Generation.Types
+namespace ITExpert.OpenApi.Core.MockServer.Generation
 {
     internal enum OpenApiSchemaType
     {

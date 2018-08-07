@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ITExpert.OpenApi.Core.MockServer.Validation.Types
+namespace ITExpert.OpenApi.Core.MockServer.Validation
 {
     public class RequestValidationStatus : IEquatable<RequestValidationStatus>
     {

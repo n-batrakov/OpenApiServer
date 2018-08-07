@@ -1,7 +1,5 @@
 using System;
 
-using ITExpert.OpenApi.Core.MockServer.Generation.Internals;
-
 using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;

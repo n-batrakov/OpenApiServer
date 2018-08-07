@@ -1,7 +1,6 @@
 using System.Linq;
 
 using ITExpert.OpenApi.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Core.MockServer.Generation.Types;
 using ITExpert.OpenApi.Utils;
 
 using Microsoft.OpenApi.Writers;

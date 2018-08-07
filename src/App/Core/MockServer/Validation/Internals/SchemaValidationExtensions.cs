@@ -1,14 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Core.MockServer.Validation.Types;
-
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
-using ValidationError = ITExpert.OpenApi.Core.MockServer.Validation.Types.ValidationError;
-
-namespace ITExpert.OpenApi.Core.MockServer.Validation.Internals
+namespace ITExpert.OpenApi.Core.MockServer.Validation
 {
     internal static class SchemaValidationExtensions
     {

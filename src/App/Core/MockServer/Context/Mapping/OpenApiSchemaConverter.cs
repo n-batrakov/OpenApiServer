@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Core.MockServer.Generation.Internals;
+using ITExpert.OpenApi.Core.MockServer.Generation;
 using ITExpert.OpenApi.Utils;
 
 using Microsoft.OpenApi.Any;
