@@ -4,7 +4,7 @@
     <AssemblyName>oas</AssemblyName>
     <RootNamespace>ITExpert.OpenApi</RootNamespace>
     <OutputType>Exe</OutputType>
-    <TargetLatestRuntimePatch>True</TargetLatestRuntimePatch>
+    <TargetLatestRuntimePatch>False</TargetLatestRuntimePatch>
     <LangVersion>latest</LangVersion>
     <TieredCompilation>true</TieredCompilation>
   </PropertyGroup>
