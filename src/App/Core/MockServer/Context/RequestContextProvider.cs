@@ -14,13 +14,14 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
     public class RequestContextProvider
     {
         private ILogger Logger { get; }
+
         private IDictionary<RouteId, RequestContext> Contexts { get; }
 
         public IReadOnlyCollection<RouteId> Routes { get; }
 
         public RequestContextProvider(IEnumerable<OpenApiDocument> specs,
-                               IOptionsMonitor<MockServerOptions> options,
-                               ILoggerFactory loggerFactory)
+                                      IOptionsMonitor<MockServerOptions> options,
+                                      ILoggerFactory loggerFactory)
         {
             Contexts = RequestContextCollectionBuilder.Build(options.CurrentValue, specs);
             Routes = Contexts.Keys.ToArray();
@@ -33,12 +34,14 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
         public RequestContext GetContext(HttpContext ctx) =>
                 GetContext(ctx.GetRouteId(), ctx);
 
-        public RequestContext GetContext(RouteId id, HttpContext ctx) => 
+        public RequestContext GetContext(RouteId id, HttpContext ctx) =>
                 Contexts[id].WithRequest(ctx, Logger);
 
         private void OnOptionsChange(MockServerOptions options)
         {
+            Logger.LogInformation("Reloading configuration...");
             RequestContextCollectionBuilder.UpdateContexts(Contexts, options);
+            Logger.LogInformation("Configuration reloaded.");
         }
     }
 }

@@ -62,7 +62,7 @@ namespace ITExpert.OpenApi.Cli.Run
             }
 
             Console.WriteLine();
-            Console.WriteLine($"OpenAPI Server is running on http://localhost:{Options.Port}".PadRight(60));
+            Console.WriteLine($"OpenAPI Server is running on http://localhost:{Options.Port}");
             Console.WriteLine("Press Ctrl+C to terminate.".PadRight(60));
 
             Console.WriteLine();

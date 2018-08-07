@@ -61,7 +61,7 @@ namespace ITExpert.OpenApi.Server
             logging.SetMinimumLevel(GetLogLevel());
 
             // Suppress especially chatty services
-            if (VerbosityLevel > ServerVerbosityLevel.Normal)
+            if (VerbosityLevel <= ServerVerbosityLevel.Normal)
             {
                 logging.AddFilter("Microsoft.AspNetCore.Hosting.Internal.WebHost", LogLevel.Error);
                 logging.AddFilter("Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServer", LogLevel.Error);
