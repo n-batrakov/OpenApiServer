@@ -1,0 +1,266 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: BusinessLogic
+paths:
+  /executeQuery:
+    post:
+      summary: Возвращает стадии жизненного цикла объекта на основе статуса или Бизнес-Процесса
+      description: |-
+        [Details](https://git.itexpert.ru/ITExpert/ITExpert.RITM/wikis/dashboards)
+      tags:
+        - Dashboards
+
+      requestBody:
+        description: Запрос
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/executeQueryRequest'
+
+      responses:
+        '200':
+          description: Результат запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/executeQueryResponse'
+
+components:
+  schemas:
+    filter:
+      description: Абстрактное дерево описывающее фильтрацию
+      oneOf:
+        - $ref: '#/components/schemas/filterLogicalNode'
+        - $ref: '#/components/schemas/filterComparisonNode'
+    filterLogicalNode:
+      description: Узел, объединяющий между собой другие узлы фильтра через конъюнкцию или дезъюнкцию
+      type: object
+      required: [operaotr, nodes]
+      properties:
+        isNegative:
+          description: если `True`, то логическое условие блока следует инвертировать
+          type: boolean
+          default: false
+        operator:
+          description: имя логического оператора сравнения
+          type: string
+          enum: [and, or]
+        nodes:
+          description: потомки узла дерева; массив узлов объединяемых одним логическим оператором
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/filter'
+    filterComparisonNode:
+      description: Узел описывающий сравнение значения из источника с помощью указанного оператора
+      type: object
+      required: [operator]
+      properties:
+        field:
+          description: поле фильтрумой сущности; источник значения
+          type: string
+        operator:
+          description: оператор сравнения
+          type: string
+          enum:
+            - equal
+            - notEqual
+            - greaterThan
+            - greaterOrEqual
+            - lesserThan
+            - lesserOrEqual
+            - Like
+            - In
+        value: {}
+        isNegative:
+          description: если `True`, то результат сравнения следует инвертировать
+          type: boolean
+          default: false
+
+
+    executeQueryRequest:
+      type: object
+      required: [select, from]
+      properties:
+        select:
+          description: Описание отбираемых значений из выборки
+          type: array
+          items:
+            description: Отбираемое поле сущности
+            type: object
+            required: [column]
+            properties:
+              column:
+                description: Полное имя поля сущности
+                type: string
+              aggregate:
+                description: Функция аггрегации
+                type: string
+                enum: [count, min, max, avg, sum]
+              alias:
+                description: Псевдоним поля, используемый при формировании ответа
+                type: string
+        from:
+          description: Описание сущностей выборки
+          type: array
+          items:
+            description: Сущность, учавствующая в выборке
+            type: object
+            required: [entity]
+            properties:
+              entity:
+                description: Имя сущности
+                type: string
+              alias:
+                description: Псевдоним сущности, используемый в запросе для ссылки на нее
+                type: string
+              innerJoin:
+                description: Описание объединения таблиц
+                type: object
+                required: [entity, condition]
+                properties:
+                  entity:
+                    description: Присоединяемая сущность
+                    type: string
+                  condition:
+                    description: Условие присоединения
+                    type: object
+                    required: [left, operator]
+                    properties:
+                      left:
+                        description: Левый операнд условия
+                        type: string
+                      right:
+                        description: Правый операнд условия
+                        type: string
+                      operator:
+                        description: Оператор сравнения
+                        type: string
+        where:
+          $ref: '#/components/schemas/filter'
+        orderBy:
+          description: Описание сортировки в выборке
+          type: array
+          items:
+            description: Поле выборки, по которому производится сортировка
+            type: object
+            required: [column]
+            properties:
+              column:
+                description: Полное имя поля сущности
+                type: string
+              direction:
+                description: Направление сортировки
+                type: string
+                enum: [asc, desc]
+                default: asc
+        groupBy:
+          description: Описание группировки в выборке
+          type: array
+          items:
+            description: Поле выборки, по которому производится группировка
+            type: object
+            required: [column]
+            properties:
+              column:
+                description: Полное имя поля сущности
+                type: string
+        distinct:
+          description: True, если все записи выборки должны быть уникальны
+          type: boolean
+        limit:
+          description: Количество возвращаемых записей
+          type: integer
+          default: 0
+        offset:
+          description: Количество записей выборки, которые необходимо пропустить
+          type: integer
+          default: 0
+        displayNames:
+          description: True, если необходимо возвращать экранные имена ссылок
+          type: boolean
+      example:
+        select:
+        - column: inc.Номер
+          alias: num
+        - column: inc.Дата
+          alias: date
+        - column: emp.Фамилия
+          alias: employee
+        from:
+        - entity: Документ.ITEXP_Инцидент
+          alias: inc
+        - entity: Справочник.ITEXP_Сотрудники
+          alias: emp
+          innerJoin:
+            entity: inc
+            condition:
+              left: inc.Зарегистрировал
+              right: emp.Ссылка
+              operator: equal
+        where:
+          operator: and
+          nodes:
+          - column: inc.Дата
+            operator: greaterThan
+            value: '2017-01-01T00:00:00Z'
+          - column: emp.Имя
+            operator: equal
+            value: Олег
+        orderBy:
+        - column: inc.Дата
+          direction: asc
+        limit: 100
+        offset: 0
+        displayNames: false
+
+
+  
+    executeQueryResponse:
+      type: object
+      required: [entities]
+      properties:
+        entities:
+          description: Экземпляр сущности
+          type: array
+          items:
+            description: "Маппинг `{ <Имя свойства>: <Значение свойства> }`"
+            type: object
+            additionalProperties:
+              description: "Значение свойства (напр., `{'value': false}`)"
+              type: object
+              required: [value]
+              properties:
+                value:
+                  anyOf:
+                    - type: string
+                    - type: number
+                    - type: boolean
+                referenceName:
+                  description: Экранное имя ссылки
+                  type: string
+      example:
+        entities:
+          - Номер:
+              value: '123'
+            Дата:
+              value: '2018-07-05T13:18:17Z'
+            Пользователь:
+              referenceName: Администратор
+              value: 4a46937f-e879-11e6-98ee-5404a638632e
+            Инициатор:
+              referenceName: Администратор
+              value: 4a46937f-e879-11e6-98ee-5404a638632e
+            Тема:
+              value: Укажите тематику обращения
+            Приоритет:
+              referenceName: Плановый
+              value: 0276ed2f-8dd2-11e7-9d32-000c29626b10
+            Статус:
+              referenceName: Зарегистрирован
+              value: 0276ed3b-8dd2-11e7-9d32-000c29626b10
+            ДатаОбнаружения:
+              value: '2018-07-05T13:18:17Z'
+      

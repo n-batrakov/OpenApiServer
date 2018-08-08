@@ -1,0 +1,66 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: BusinessLogic
+paths:
+  /searchService:
+    post:
+      summary: Возвращает шаблоны ЗНО каталога услуг по строке поиска
+      description: |-
+        Поиск производится по имени и описанию шаблона ЗНО.
+      tags:
+        - ServiceCatalog
+
+      parameters:
+        - in: query
+          name: text
+          description: Строка поиска, введенная пользователем
+          required: true
+          schema:
+            type: string
+          example: Система
+
+      responses:
+        '200':
+          description: Результат поиска
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/searchServiceResponse'
+
+components:
+  schemas:
+    searchServiceResponse:
+      type: object
+      required: [entities]
+      properties:
+        entities:
+          description: Найденные услуги
+          type: array
+          items:
+            type: object
+            required: [id, name, isTerminal]
+            properties:
+              id:
+                description: Идентификатор услуги
+                type: string
+                format: guid
+              name:
+                description: Локализованное экранное имя услуги
+                type: string
+              description:
+                description: Локализованное экранное описание услуги
+                type: string
+              isTerminal:
+                description: '`True` если услуга не имеет дочерних услуг'
+                type: boolean
+      example:
+        entities:
+          - id: eb51b21e-5910-11e8-ae55-000c29626b10
+            name: Справочная система
+            description: ''
+            isTerminal: true
+          - id: fda7ebd7-5910-11e8-ae55-000c29626b10
+            name: Финансовая система 1С
+            description: ''
+            isTerminal: true

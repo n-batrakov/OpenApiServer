@@ -1,0 +1,134 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: BusinessLogic
+paths:
+  /getServiceCatalogItem :
+    post:
+      summary: Возвращает информацию об одной услуге каталога
+      tags:
+        - ServiceCatalog
+        
+      parameters:
+        - in: query
+          name: serivce
+          description: Идентификатор услуга (ссылка на `Справочник.ITEXP_ШаблоныЗаполненияЗНО`)
+          required: true
+          schema:
+            type: string
+            format: guid
+          example: "d5019b77-5910-11e8-ae55-000c29626b10"
+
+      responses:
+        '200':
+          description: Информация по услуге
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getServiceCatalogItemResponse'
+
+components:
+  schemas:
+    parentCatalogItem:
+      title: Service Catalog Item Base
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          description: Идентификатор услуги
+          type: string
+          format: guid
+        name:
+          description: Локализованное экранное имя услуги
+          type: string
+        parent:
+          $ref: '#/components/schemas/parentCatalogItem'
+
+    childCatalogItem:
+      title: Service Catalog Item Child
+      description: Дочерняя услуга
+      type: object
+      required: [id, name, isTerminal]
+      properties:
+        id:
+          description: Идентификатор услуги
+          type: string
+          format: guid
+        name:
+          description: Локализованное экранное имя услуги
+          type: string
+        description:
+          description: Локализованное экранное описание услуги
+          type: string
+        isTerminal:
+          description: '`True` если услуга не имеет дочерних услуг'
+          type: boolean
+
+    getServiceCatalogItemResponse:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          description: Идентификатор услуги
+          type: string
+          format: guid
+        name:
+          description: Локализованное экранное имя услуги
+          type: string
+        icon:
+          description: Иконка услуги
+          type: string
+          format: base64
+        parent:
+          $ref: '#/components/schemas/parentCatalogItem'
+        children:
+          description: Дочерние услуги
+          type: array
+          items:
+            $ref: '#/components/schemas/childCatalogItem'
+      example:
+        id: d5019b77-5910-11e8-ae55-000c29626b10
+        name: Программное обеспечение
+        icon: ''
+        parent:
+          id: c9518470-5910-11e8-ae55-000c29626b10
+          name: ИТ-сервисы
+          parent: null
+        children:
+        - id: eb51b21e-5910-11e8-ae55-000c29626b10
+          name: Справочная система
+          description: ''
+          isTerminal: true
+          icon: ''
+        - id: fda7ebd7-5910-11e8-ae55-000c29626b10
+          name: Финансовая система 1С
+          description: ''
+          isTerminal: true
+          icon: ''
+        - id: 0db42690-5911-11e8-ae55-000c29626b10
+          name: Офисное ПО
+          description: ''
+          isTerminal: true
+          icon: ''
+        - id: 1bb604fa-5911-11e8-ae55-000c29626b10
+          name: ПО процессов управления разработкой
+          description: ''
+          isTerminal: true
+          icon: ''
+        - id: 27744d2e-5911-11e8-ae55-000c29626b10
+          name: ПО учета задач разработчиков
+          description: ''
+          isTerminal: true
+          icon: ''
+        - id: 333bbd5e-5911-11e8-ae55-000c29626b10
+          name: ПО Службы Поддержки Пользователей
+          description: ''
+          isTerminal: true
+          icon: ''
+        - id: 443fa4de-5911-11e8-ae55-000c29626b10
+          name: Графическое ПО
+          description: ''
+          isTerminal: true
+          icon: ''

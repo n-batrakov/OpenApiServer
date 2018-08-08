@@ -1,0 +1,87 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: BusinessLogic
+paths:
+  /makeOrder:
+    post:
+      summary: Cоздает заказ услуг из каталога
+      tags:
+        - ServiceCatalog
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/makeOrderRequest'
+
+      responses:
+        '200':
+          description: Статус опрерации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/makeOrderResponse'
+
+components:
+  schemas:
+    makeOrderRequest:
+      description: Список заказанных услуг
+      type: object
+      required: [services]
+      properties:
+        services:
+          type: array
+          items:
+            description: Заказанная услуга
+            type: object
+            required: [id, parameters]
+            properties:
+              id: 
+                description: Идентификатор услуги
+                type: string
+                format: guid
+              parameters:
+                description: Значения опросника по услуге
+                type: array
+                items:
+                  description: Ответ на вопрос опросника
+                  type: object
+                  required: [id, value]
+                  properties:
+                    id:
+                      description: Идентификатор вопроса
+                      type: string
+                      format: guid
+                    value:
+                      description: Значение ответа
+                      oneOf:
+                        - type: string
+                        - type: number
+                        - type: boolean
+      example:
+        services:
+        - id: e05a5cbc-41aa-11e5-8252-001c42c9212f
+          parameters:
+          - id: f05a5cbc-41aa-11e5-8252-001c42c9212f
+            value: "..."
+          - id: d05a5cbc-41aa-11e5-8252-001c42c9212f
+            value: false
+        - id: e05a5cbc-41aa-11e5-8252-001c42c9212g
+          parameters:
+          - id: g05a5cbc-41aa-11e5-8252-001c42c9212f
+            value: 42
+    makeOrderResponse:
+      type: object
+      required: [success]
+      properties:
+        success:
+          description: "`True`, если заказ оформлен успешно"
+          type: boolean
+        message:
+          description: "Локлизованное сообщение о статусе создания заказа"
+          type: string
+      example:
+        success: true
+        message: ''

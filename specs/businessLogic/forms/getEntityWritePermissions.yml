@@ -1,0 +1,74 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: BusinessLogic
+paths:
+  /getEntityWritePermissions:
+    post:
+      summary: Возвращает атрибуты полей сущности для записи (видимость, доступность, обязательность)
+      description: |-
+        При создании вызывается только с параметром `entity`.
+        
+        При обновлении с параметрами `entity` и `objectId`.
+      tags:
+        - Forms
+
+      parameters:
+        - in: query
+          name: entity
+          description: Имя сущности
+          required: true
+          schema:
+            type: string
+          example: Документ.ITEXP_Инцидент
+        - in: query
+          name: objectId
+          description: |-
+            Идентификатор объекта сущности.
+            
+            **Указывается только для получения разрешений на конкретный объект (для обновления).**
+          
+          required: false
+          schema:
+            type: string
+            format: guid
+
+      responses:
+        '200':
+          description: Response format is unknown
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getEntityWritePermissionsResponse'
+
+components:
+  schemas:
+    getEntityWritePermissionsResponse:
+      description: "Маппнг `{ <Имя свойства>: <Параметры свойства> }`"
+      type: object
+      additionalProperties:
+        description: Параметры свойства
+        type: object
+        properties:
+          avaialable:
+            description: Доступность
+            type: boolean
+          visible:
+            description: Видимость
+            type: boolean
+          required:
+            description: Обязательность
+            type: boolean
+        required:
+          - avaialable
+          - visible
+          - required
+      example:
+        Ссылка:
+          available: true
+          visible: true
+          required: true
+        Номер:
+          available: true
+          visible: true
+          required: true

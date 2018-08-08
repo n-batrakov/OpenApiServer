@@ -1,0 +1,56 @@
+openapi: 3.0.0
+info:
+  version: 0.1.0
+  title: Insight
+  description: Service for logging and telemetry.
+  contact:
+    name: n.batrakov
+    email: n.batrakov@itexpert.ru
+servers:
+  - url: /api/insight
+
+paths:
+  /log:
+    post:
+      tags:
+        - Log
+      summary: Transmits the messsage to logging system.
+      responses:
+        '204':
+          description: Fire and forget.
+      requestBody:
+        description: Logged message.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InsightLogMessage'
+        
+
+components:
+  schemas:
+    InsightLogMessage:
+      description: Logged message.
+      type: object
+      properties:
+        level:
+          description: Log importacne level.
+          enum:
+            - Trace
+            - Debug
+            - Information
+            - Warning
+            - Error
+            - Critical
+            - None
+          type: string
+        message:
+          description: Message text.
+          type: string
+        sender:
+          description: 'Arbitraty log sender name, e.g. name of the component or subsystem.'
+          type: string
+        data:
+          description: Additional data associated with log. Should be 'flat' object.
+          type: object
+          additionalProperties:
+            type: object

@@ -1,0 +1,59 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: BusinessLogic
+paths:
+  /getEntityCreateTemplate:
+    post:
+      summary: Возвращает шаблон объекта сущности с полями, заполненными значениями по умолчанию.
+      tags:
+        - Forms
+
+      parameters:
+        - in: query
+          name: entity
+          description: Имя сущности
+          required: true
+          schema:
+            type: string
+          example: Документ.ITEXP_Инцдиент
+
+      responses:
+        '200':
+          description: Шаблон объекта
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getEntityCreateTemplateResponse'
+        
+      
+components:
+  schemas:
+    getEntityCreateTemplateResponse:
+      type: object
+      required: [properties]
+      properties:
+        properties:
+          description: "Маппинг `{ <Имя свойства>: <Значение свойства> }`"
+          type: object
+          additionalProperties:
+            type: object
+            required: [value]
+            properties:
+              value:
+                description: Значение свойства
+                anyOf:
+                  - type: string
+                  - type: number
+                  - type: boolean
+              referenceName:
+                description: Экранное имя ссылки
+                type: string
+      example:
+        properties:
+          Инициатор:
+            referenceName: Савушкин Григорий Викторович
+            value: b8226cdd-9be2-11e7-8de5-000c29626b10
+          Статус:
+            referenceName: Отказано
+            value: 4491c5f1-fab5-11e7-962e-000c29626b10

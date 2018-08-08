@@ -1,0 +1,44 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: EventRelay
+  description: Service for real-time event delivery.
+  contact:
+    name: n.batrakov
+    email: n.batrakov@itexpert.ru
+
+servers:
+  - url: /api/relay
+
+paths:
+  '/publish/{channel}/{eventType}':
+    post:
+      summary: Publish event to client.
+      parameters:
+        - name: eventType
+          in: path
+          description: Event type name.
+          required: true
+          schema:
+            type: string
+        - name: channel
+          in: path
+          description: Channel name.
+          required: true
+          schema:
+            type: string
+        - name: user
+          in: query
+          description: 'User ID, if event is user-targeted.'
+          required: false
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Fire and forget.
+      requestBody:
+        description: 'Event arguments, if event type accepts them.'
+        content:
+          application/json:
+            schema:
+              type: object

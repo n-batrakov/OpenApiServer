@@ -1,0 +1,20 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: BusinessLogic
+  description: API для различной бизнес-логики прокидываемый с веб-сервиса 1С
+servers:
+  - url: /api/bl/ws
+    description: dev server
+
+security:
+  - basic: []
+
+paths: {}
+
+
+components:
+  securitySchemes:
+    basic:
+      type: http
+      scheme: basic

@@ -6,8 +6,6 @@ info:
   contact:
     name: n.batrakov
     email: n.batrakov@itexpert.ru
-servers:
-    - url: /api/source
 paths:
   /update:
     post:

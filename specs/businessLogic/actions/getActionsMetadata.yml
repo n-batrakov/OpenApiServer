@@ -1,0 +1,96 @@
+openapi: 3.0.0
+info:
+  title: BusinessLogic
+  version: 0.0.1
+paths:
+  /getActionsMetadata:
+    post:
+      tags:
+      - Actions
+      summary: Возвращает метаданные доступных действий для объектов одной сущности.
+      description: |-
+        Возвращает метаданные доступных действий для объектов одной сущности.
+
+        Конечный список доступных действий для указанных объектов является пересечением множеств доступных действий по каждом из объектов.
+
+        Т.е. возвращаются только те действия, которые доступны каждому из указанных объектов и видимы пользователю.
+
+
+        > Типы параметров следуют стандартной системе типов
+
+      parameters:
+        - in: query
+          name: entity
+          description: Имя сущности
+          required: true
+          schema:
+            type: string
+          example: Документ.ITEXP_Инцидент
+        - in: query
+          name: objects
+          description: Id объектов в виде строки через запятую
+          required: true
+          schema:
+            type: string
+            format: CSV
+          example: df93fd03-bb23-11e7-91ca-000c29626b10,bec104b7-992b-11e7-8de5-000c29626b10
+
+      responses:
+        200:
+          description: Список действий
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getActionsMetadataResponse'
+
+components:
+  schemas:
+    getActionsMetadataResponse:
+      description: Список действий
+      type: array
+      items:
+        description: Действие
+        type: object
+        required:
+          - name
+          - title
+          - parameters
+        properties:
+          name:
+            description: Идентификатор действия
+            type: string
+          title:
+            description: Экранное имя действия
+            type: string
+          parameters:
+            description: Список параметров действия
+            type: array
+            items:
+              description: Параметр действия
+              type: object
+              required:
+                - name
+                - title
+                - type
+                - required
+              properties:
+                name:
+                  description: Идентификатор параметра
+                  type: string
+                title:
+                  description: Экранное имя параметра
+                  type: string
+                type:
+                  description: Тип данных параметра
+                  type: string
+                required:
+                  description: True, если параметр является обязательным
+                  type: boolean
+      example:
+        - name: ЗакрытьОбращение
+          title: Закрыть обращение
+          parameters:
+          - name: ЗатраченноеВремя
+            title: Затраченное время, час
+            type: String
+            required: true

@@ -1,0 +1,99 @@
+openapi: 3.0.0
+info:
+  version: 0.1.0
+  title: KeyValueStore
+  description: General purpose key-value store.
+  contact:
+    name: n.batrakov
+    email: n.batrakov@itexpert.ru
+servers:
+  - url: /api/kv
+
+paths:
+  '/{set}':
+    get:
+      tags:
+        - CRUD
+      summary: >-
+        Returns records of specified set with the keys matched by provided key
+        pattern.
+      parameters:
+        - name: set
+          in: path
+          description: Global set idenifier.
+          required: true
+          schema:
+            type: string
+        - name: key
+          in: query
+          description: Key pattern.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Dynamic object based on key. See docs for explanation and examples.
+          content:
+            application/json:
+              schema: {}
+        '204':
+          description: Set not found.
+    post:
+      tags:
+        - CRUD
+      summary: >-
+        Sets key value in store. If value exists, it's overriden, otherwise new
+        pair is added.
+      parameters:
+        - name: set
+          in: path
+          description: Global set identifier.
+          required: true
+          schema:
+            type: string
+        - name: key
+          in: query
+          description: >-
+            Record key. Must point to exactly one record, i.e. must not contain
+            patterns.
+          required: false
+          schema:
+            type: string
+        - name: shared
+          in: query
+          description: True if key should be accessible for every user.
+          required: true
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Success
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        description: Key's Value in arbitrary format.
+        required: true
+    delete:
+      tags:
+        - CRUD
+      summary: Removes key from store.
+      parameters:
+        - name: set
+          in: path
+          description: Global set identifier.
+          required: true
+          schema:
+            type: string
+        - name: key
+          in: query
+          description: >-
+            Record key. Must point to exactly one record, i.e. must not contain
+            patterns.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success

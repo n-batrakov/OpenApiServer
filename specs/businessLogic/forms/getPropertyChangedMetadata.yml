@@ -1,0 +1,72 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: BusinessLogic
+paths:
+  /getPropertyChangedMetadata:
+    post:
+      summary: Возвращает имена функций, которые следует вызывать при изменении значений свойств объекта при его редактировании
+      description: |-
+        Метод вызывается клиентом на форме редактирования объекта. 
+        Ответ метода используется для выполнения логики динамического изменения полей формы, 
+        по мере заполнения карточки пользователем.
+
+        Возвращаемые процедуры следует вызывать методом `/executeObjectTransform`.
+      tags:
+        - Forms
+
+      parameters:
+        - in: query
+          name: entity
+          description: Имя сущности
+          required: true
+          schema:
+            type: string
+          example: Документ.ITEXP_Инцидент
+
+      responses:
+        '200':
+          description: Маппинг полей на идентификаторы функций
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getPropertyChangedMetadataResponse'
+
+components:
+  schemas:
+    getPropertyChangedMetadataResponse:
+      type: object
+      required: [properties]
+      properties:
+        properties:
+          description: "Маппинг `{ <Имя свойства>: <Имя функции>}`"
+          type: object
+          additionalProperties:
+            type: object
+            required: [value]
+            properties:
+              value:
+                description: Идентификатор функции
+                type: string
+      example:
+        properties:
+          ОтветственнаяФункциональнаяГруппа:
+            value: ПриИзмененииОтветственнойФункциональнойГруппы
+          УстранившаяФГ:
+            value: ПриИзмененииУстранившейФункциональнойГруппы
+          SLA:
+            value: ПриИзмененииSLA
+          Пользователь:
+            value: ПриИзмененииПользователя
+          СтепеньВлияния:
+            value: РасчетПриоритета
+          УровеньКритичности:
+            value: РасчетПриоритета
+          Услуга:
+            value: ПриИзмененииУслуги
+          КЕИсточник:
+            value: ПриИзмененииКЕИсточника
+          Дата:
+            value: ПриИзмененииДатыРегистрации
+          Зарегистрировал:
+            value: ПриИзмененииЗарегистрировавшего

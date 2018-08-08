@@ -2,14 +2,28 @@ openapi: 3.0.0
 info:
   version: 0.0.1
   title: BusinessLogic
-servers:
-  - url: /api/bl/ws
 paths:
-  /:
-    get:
+  /getServiceQuestionnaire:
+    post:
+      summary: Метод получения опросника каталога услуг
+      description: |- 
+        [Details](https://git.itexpert.ru/ITExpert/ITExpert.RITM/wikis/1c/api/service-catalog/get-questionnaire)
+      tags:
+        - ServiceCatalog
+      
+      parameters:
+        - in: query
+          name: template
+          description: Идентификатор услуги
+          required: true
+          schema:
+            type: string
+            format: guid
+          example: 5c7bfa7b-58e6-11e8-ae55-000c29626b10
+
       responses:
         '200':
-          description: Success
+          description: Опросник
           content:
             application/json:
               schema:
@@ -256,3 +270,169 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/questionnaireTrigger'
+            
+      example:
+        groups:
+        - name: Общие сведения
+          fields:
+          - 8745cfbd-7913-11e8-95f0-000c29626b10
+          - 6f79bdbc-7913-11e8-95f0-000c29626b10
+        - name: Кабинет
+          fields:
+          - 64d0fa00-73b4-11e8-95f0-000c29626b10
+          - b43e954d-73b4-11e8-95f0-000c29626b10
+        - name: Персональный компьютер
+          fields:
+          - a55f7907-73b5-11e8-95f0-000c29626b10
+          - be2b4e54-73b5-11e8-95f0-000c29626b10
+          - f428e0e0-73b5-11e8-95f0-000c29626b10
+          - 135ff13d-73b6-11e8-95f0-000c29626b10
+        fields:
+        - id: 8745cfbd-7913-11e8-95f0-000c29626b10
+          name: Тема
+          meta:
+            value: ''
+            type: String
+          value: 
+          visible: true
+          available: true
+          required: true
+          triggers:
+          - filter: 
+            actions: []
+        - id: 6f79bdbc-7913-11e8-95f0-000c29626b10
+          name: Описание заявки
+          meta:
+            value: ''
+            type: String
+          value: 
+          visible: true
+          available: true
+          required: true
+          triggers:
+          - filter: 
+            actions: []
+        - id: 64d0fa00-73b4-11e8-95f0-000c29626b10
+          name: Адрес офиса
+          meta:
+            type: Enumeration
+            args:
+              values:
+              - id: Тимме 2к1, офис 606
+                title: Тимме 2к1, офис 606
+              - id: Троицкий 95к1, офис 705
+                title: Троицкий 95к1, офис 705
+              - id: Галушино 22, офис 208
+                title: Галушино 22, офис 208
+          value: 
+          visible: true
+          available: true
+          required: true
+          triggers:
+          - filter:
+              operator: and
+              nodes:
+              - operator: equal
+                value: Троицкий 95к1, офис 705
+            actions:
+            - type: state
+              question: b43e954d-73b4-11e8-95f0-000c29626b10
+              args:
+                required: true
+        - id: b43e954d-73b4-11e8-95f0-000c29626b10
+          name: Руководитель
+          meta:
+            value: 00000000-0000-0000-0000-000000000000
+            type: Reference
+            args:
+              reference: Справочник.ITEXP_Сотрудники
+          value: 
+          visible: true
+          available: true
+          required: false
+          triggers:
+          - filter: 
+            actions: []
+        - id: a55f7907-73b5-11e8-95f0-000c29626b10
+          name: Тип персонального компьютера
+          meta:
+            type: Enumeration
+            args:
+              values:
+              - id: Учебный
+                title: Учебный
+              - id: Офисный
+                title: Офисный
+              - id: Рабочая станция
+                title: Рабочая станция
+              - id: ''
+                title: ''
+          value: 
+          visible: true
+          available: true
+          required: false
+          triggers:
+          - filter:
+              operator: and
+              nodes:
+              - operator: equal
+                value: Учебный
+            actions:
+            - type: state
+              question: f428e0e0-73b5-11e8-95f0-000c29626b10
+              args:
+                visible: true
+            - type: state
+              question: 135ff13d-73b6-11e8-95f0-000c29626b10
+              args:
+                visible: true
+          - filter:
+              operator: and
+              nodes:
+              - operator: notEqual
+                value: Учебный
+            actions:
+            - type: state
+              question: 135ff13d-73b6-11e8-95f0-000c29626b10
+              args:
+                visible: false
+            - type: state
+              question: f428e0e0-73b5-11e8-95f0-000c29626b10
+              args:
+                visible: false
+        - id: be2b4e54-73b5-11e8-95f0-000c29626b10
+          name: Количество оперативной памяти
+          meta:
+            value: 0
+            type: Float
+          value: 
+          visible: true
+          available: true
+          required: false
+          triggers:
+          - filter: 
+            actions: []
+        - id: f428e0e0-73b5-11e8-95f0-000c29626b10
+          name: Наличие офисных программ
+          meta:
+            value: false
+            type: Boolean
+          value: 
+          visible: false
+          available: true
+          required: false
+          triggers:
+          - filter: 
+            actions: []
+        - id: 135ff13d-73b6-11e8-95f0-000c29626b10
+          name: Наличие графических программ
+          meta:
+            value: false
+            type: Boolean
+          value: 
+          visible: false
+          available: true
+          required: false
+          triggers:
+          - filter: 
+            actions: []
