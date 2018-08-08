@@ -68,7 +68,7 @@ namespace ITExpert.OpenApi.Cli.Run
             Console.WriteLine();
             Console.WriteLine("Parameters:");
             Console.WriteLine($"* Verbosity: {Options.VerbosityLevel}");
-            Console.WriteLine($"* Config: {Path.GetFullPath(Options.ConfigPath)}");
+            Console.WriteLine($"* Config: {Options.ConfigPath}");
             Console.WriteLine($"* Sources: {string.Join(", ", Options.Sources)}");
             Console.WriteLine("".PadRight(60, '*'));
             Console.WriteLine();
