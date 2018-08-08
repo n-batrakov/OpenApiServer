@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -70,17 +71,22 @@ namespace ITExpert.OpenApi.Core.MockServer
             return HandleRequest(requestContext, ctx.Response, GeneralRequestHandler);
         }
 
-        private async Task HandleRequest(RequestContext requestContext, HttpResponse httpResponse, IMockServerRequestHandler handler)
+        private Task HandleRequest(RequestContext requestContext, HttpResponse httpResponse, IMockServerRequestHandler handler)
         {
-            try
+            return handler.HandleAsync(requestContext).ContinueWith(HandleResponseAsync).Unwrap();
+
+            Task HandleResponseAsync(Task<MockServerResponseContext> x)
             {
-                var response = await handler.HandleAsync(requestContext).ConfigureAwait(false);
-                await WriteResponse(httpResponse, response).ConfigureAwait(false);
+                return x.IsCompletedSuccessfully ? HandleSuccess(x.Result) : HandleFault(x.Exception.InnerException);
             }
-            catch (Exception e)
+
+            Task HandleSuccess(MockServerResponseContext ctx) =>
+                    WriteResponse(httpResponse, ctx);
+
+            Task HandleFault(Exception e)
             {
-                await WriteException(httpResponse, e);
                 Logger.LogError(e, "An exception occured while handling request.");
+                return WriteException(httpResponse, e);
             }
         }
 
@@ -94,7 +100,9 @@ namespace ITExpert.OpenApi.Core.MockServer
                 response.Headers[key] = value;
             }
 
-            return response.WriteAsync(responseContext.Body);
+            return responseContext.StatusCode == HttpStatusCode.NoContent
+                           ? Task.CompletedTask
+                           : response.WriteAsync(responseContext.Body);
         }
 
         private static Task WriteException(HttpResponse response, Exception exception)
