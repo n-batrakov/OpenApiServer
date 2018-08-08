@@ -3,7 +3,7 @@
     "App": {
         "commandName": "Project",
         "launchBrowser": false,
-        "commandLineArgs": "run --port 35200 --verbosity detailed --config appsettings.json ../../../../../specs",
+        "commandLineArgs": "run --port 35200 --verbosity detailed --config ../../../appsettings.json ../../../../../specs",
         "environmentVariables": {
             "mockServerHost": "http://localhost:35200"
         }

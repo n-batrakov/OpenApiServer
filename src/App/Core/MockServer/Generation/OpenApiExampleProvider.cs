@@ -21,21 +21,23 @@ namespace ITExpert.OpenApi.Core.MockServer.Generation
 
         private static IOpenApiExampleProvider[] GetProviders(Random rnd)
         {
+            // The order between generators may be important.
+
             var counter = new ObjectDepthCounter(depthThreshold: 5);
             var providers = new List<IOpenApiExampleProvider>();
 
             providers.Add(new SchemaExampleGenerator());
 
-            // The order between this and others is important.
+            
             providers.Add(new EnumGenerator(rnd));
 
             providers.Add(new PrimitiveGenerator(rnd));
             providers.Add(new AnyGenerator());
 
-            providers.Add(new TextGenerator(rnd));
             providers.Add(new GuidGenerator());
             providers.Add(new Base64Generator());
             providers.Add(new DateTimeGenerator());
+            providers.Add(new TextGenerator(rnd));
 
             providers.Add(new ArrayGenerator(providers));
 

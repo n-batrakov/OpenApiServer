@@ -19,8 +19,7 @@ namespace ITExpert.OpenApi.Core.MockServer.Generation.Generators
 
         public bool TryWriteValue(IOpenApiWriter writer, JSchema schema)
         {
-            var isText = schema.IsString() && schema.Format == null;
-            if (!isText)
+            if (!schema.IsString())
             {
                 return false;
             }
