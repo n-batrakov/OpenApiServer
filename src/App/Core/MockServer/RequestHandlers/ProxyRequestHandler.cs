@@ -16,11 +16,16 @@ namespace ITExpert.OpenApi.Core.MockServer.RequestHandlers
 {
     public class ProxyRequestHandler : IMockServerRequestHandler
     {
+        private static readonly Guid Id = Guid.NewGuid();
+        private const string ForwarderFromHeader = "X-Forwarded-From";
+        private string ProxyInstanceId { get; }
+
         private IHttpClientFactory ClientFactory { get; }
 
         public ProxyRequestHandler(IHttpClientFactory clientFactory)
         {
             ClientFactory = clientFactory;
+            ProxyInstanceId = Id.ToString();
         }
 
         public Task<MockServerResponseContext> HandleAsync(RequestContext context)
@@ -28,6 +33,18 @@ namespace ITExpert.OpenApi.Core.MockServer.RequestHandlers
             if (context.Config.Host == default)
             {
                 throw new MockServerConfigurationException("Unable to find host to proxy the request.");
+            }
+
+            var hasHeader = context.Request.Headers.TryGetValue(ForwarderFromHeader, out var mockServerHeader);
+            if (hasHeader)
+            {
+                if (mockServerHeader == ProxyInstanceId)
+                {
+                    throw new MockServerConfigurationException(
+                            "This MockServer instance is configured to proxy requests to itself, " +
+                            "which will result in an infinite loop. Update the host via config or " +
+                            "'X-Forwarded-Host' header");
+                }
             }
 
             return Proxy(context);
@@ -43,7 +60,7 @@ namespace ITExpert.OpenApi.Core.MockServer.RequestHandlers
             return await CreateResponseAsync(response).ConfigureAwait(false);
         }
 
-        private static HttpRequestMessage CreateRequest(RequestContext ctx)
+        private HttpRequestMessage CreateRequest(RequestContext ctx)
         {
             var targetRequest = new HttpRequestMessage
                                 {
@@ -54,8 +71,10 @@ namespace ITExpert.OpenApi.Core.MockServer.RequestHandlers
 
             foreach (var (k, v) in ctx.Request.Headers)
             {
-                targetRequest.Headers.TryAddWithoutValidation(k, v.ToArray());
+                targetRequest.Content.Headers.TryAddWithoutValidation(k, v.ToArray());
             }
+
+            targetRequest.Content.Headers.Add(ForwarderFromHeader, ProxyInstanceId);
 
             return targetRequest;
         }
