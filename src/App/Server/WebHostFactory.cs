@@ -1,9 +1,9 @@
-using System;
 using System.IO;
 using System.Net.Http;
 
 using ITExpert.OpenApi.Cli.Run;
 using ITExpert.OpenApi.DocumentProviders;
+using ITExpert.OpenApi.Server.Logging;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -57,36 +57,7 @@ namespace ITExpert.OpenApi.Server
 
         private void ConfigureLogging(ILoggingBuilder logging)
         {
-            logging.AddConsole();
-            logging.SetMinimumLevel(GetLogLevel());
-
-            // Suppress especially chatty services
-            if (VerbosityLevel <= ServerVerbosityLevel.Normal)
-            {
-                logging.AddFilter("Microsoft.AspNetCore.Hosting.Internal.WebHost", LogLevel.Error);
-                logging.AddFilter("Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServer", LogLevel.Error);
-                logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Error);
-            }
-            
-
-            LogLevel GetLogLevel()
-            {
-                switch (VerbosityLevel)
-                {
-                    case ServerVerbosityLevel.Quiet:
-                        return LogLevel.None;
-                    case ServerVerbosityLevel.Minimal:
-                        return LogLevel.Warning;
-                    case ServerVerbosityLevel.Normal:
-                        return LogLevel.Information;
-                    case ServerVerbosityLevel.Detailed:
-                        return LogLevel.Debug;
-                    case ServerVerbosityLevel.Diagnostic:
-                        return LogLevel.Trace;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
+            logging.AddProvider(new CliLoggerProvider(VerbosityLevel));
         }
 
         private void ConfigureConfiguration(IConfigurationBuilder config)

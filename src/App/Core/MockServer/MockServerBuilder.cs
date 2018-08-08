@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 using ITExpert.OpenApi.Core.MockServer.Context;
 using ITExpert.OpenApi.Core.MockServer.Context.Types;
 using ITExpert.OpenApi.Core.MockServer.RequestHandlers;
+using ITExpert.OpenApi.Server.Logging;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.OpenApi.Models;
 
 namespace ITExpert.OpenApi.Core.MockServer
@@ -33,8 +33,7 @@ namespace ITExpert.OpenApi.Core.MockServer
             ContextProvider = ActivatorUtilities.CreateInstance<RequestContextProvider>(app.ApplicationServices, specs);
             GeneralRequestHandler = app.ApplicationServices.GetRequiredService<IMockServerRequestHandler>();
             MockRequestHandler = app.ApplicationServices.GetRequiredService<MockRequestHandler>();
-            Logger = app.ApplicationServices.GetService<ILoggerFactory>()?.CreateLogger(nameof(MockServerBuilder)) ??
-                     NullLogger.Instance;
+            Logger = app.ApplicationServices.GetRequiredService<ILoggerFactory>().CreateOpenApiLogger();
         }
 
         public IRouter Build()

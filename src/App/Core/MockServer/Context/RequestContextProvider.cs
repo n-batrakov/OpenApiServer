@@ -3,6 +3,7 @@ using System.Linq;
 
 using ITExpert.OpenApi.Core.MockServer.Context.Types;
 using ITExpert.OpenApi.Core.MockServer.Options;
+using ITExpert.OpenApi.Server.Logging;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -28,7 +29,7 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
 
             options.OnChange(OnOptionsChange);
 
-            Logger = loggerFactory.CreateLogger("Context");
+            Logger = loggerFactory.CreateOpenApiLogger();
         }
 
         public RequestContext GetContext(HttpContext ctx) =>
@@ -39,7 +40,6 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
 
         private void OnOptionsChange(MockServerOptions options)
         {
-            Logger.LogInformation("Reloading configuration...");
             RequestContextCollectionBuilder.UpdateContexts(Contexts, options);
             Logger.LogInformation("Configuration reloaded.");
         }

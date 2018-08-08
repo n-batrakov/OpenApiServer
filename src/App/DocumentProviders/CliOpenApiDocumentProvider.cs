@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 
+using ITExpert.OpenApi.Server.Logging;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
@@ -21,7 +23,7 @@ namespace ITExpert.OpenApi.DocumentProviders
                                           ILoggerFactory loggerFactory)
         {
             ClientFactory = clientFactory;
-            Logger = loggerFactory.CreateLogger("DocumentProvider");
+            Logger = loggerFactory.CreateOpenApiLogger();
             Providers = GetProviders(uris, treatUriAsDiscovery, discoveryKey, Logger).ToArray();
         }
 
@@ -72,7 +74,7 @@ namespace ITExpert.OpenApi.DocumentProviders
 
         private void LogLoadedSpecs(IEnumerable<OpenApiDocument> specs)
         {
-            var loadedSpecs = string.Join(", ", specs.Select(x => $"{x.Info.Title} (v{x.Info.Version})"));
+            var loadedSpecs = string.Join("\r\n* ", specs.Select(x => $"{x.Info.Title} (v{x.Info.Version})"));
 
             if (loadedSpecs == string.Empty)
             {
@@ -81,7 +83,7 @@ namespace ITExpert.OpenApi.DocumentProviders
             }
             else
             {
-                var msg = $"Specs loaded: {loadedSpecs}";
+                var msg = $"Specs loaded:\r\n* {loadedSpecs}";
                 Logger.LogInformation(msg);
             }
         }
