@@ -41,7 +41,7 @@ namespace ITExpert.OpenApi.Core.DocumentationServer
 
         private static JObject GetAvailableSpecItem(OpenApiDocument x, string route, string host)
         {
-            var name = $"{x.Info.Title}_{x.Info.GetMajorVersion()}";
+            var name = $"{x.Info.Title} v{x.Info.GetMajorVersion()}";
             var url = UrlHelper.Join(host, route);
             return new JObject { { "name", name }, { "url", url } };
         }
