@@ -56,6 +56,7 @@ namespace ITExpert.OpenApi.Core.MockServer.Context.Mapping
             jSchema.Not = Convert(oasSchema.Not);
             jSchema.Pattern = oasSchema.Pattern;
 
+            jSchema.SetExample(ConvertAny(oasSchema.Example));
             FillCollections(jSchema, oasSchema);
             
             return jSchema;

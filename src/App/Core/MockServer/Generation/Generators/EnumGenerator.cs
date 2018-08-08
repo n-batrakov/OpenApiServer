@@ -2,7 +2,6 @@ using System;
 
 using Microsoft.OpenApi.Writers;
 
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
 namespace ITExpert.OpenApi.Core.MockServer.Generation.Generators
@@ -26,27 +25,9 @@ namespace ITExpert.OpenApi.Core.MockServer.Generation.Generators
 
             var valueIndex = Random.Next(0, schema.Enum.Count);
             var value = schema.Enum[valueIndex];
-            WriteJToken(writer, value);
+            writer.WriteJToken(value);
 
             return true;
-        }
-
-        private static void WriteJToken(IOpenApiWriter writer, JToken token)
-        {
-            // ReSharper disable once SwitchStatementMissingSomeCases
-            switch (token.Type)
-            {
-                case JTokenType.String:
-                case JTokenType.Date:
-                case JTokenType.Guid:
-                case JTokenType.TimeSpan:
-                case JTokenType.Uri:
-                    writer.WriteValue(token.ToString());
-                    break;
-                default:
-                    writer.WriteRaw(token.ToString());
-                    break;
-            }
         }
     }
 }

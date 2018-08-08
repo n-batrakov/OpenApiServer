@@ -4,6 +4,7 @@ using System.Linq;
 
 using Microsoft.OpenApi.Writers;
 
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
 namespace ITExpert.OpenApi.Core.MockServer.Generation
@@ -110,6 +111,24 @@ namespace ITExpert.OpenApi.Core.MockServer.Generation
             }
 
             return Enum.Parse<OpenApiSchemaType>(schema.Type.ToString(), ignoreCase: true);
+        }
+
+        public static void WriteJToken(this IOpenApiWriter writer, JToken token)
+        {
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (token.Type)
+            {
+                case JTokenType.String:
+                case JTokenType.Date:
+                case JTokenType.Guid:
+                case JTokenType.TimeSpan:
+                case JTokenType.Uri:
+                    writer.WriteValue(token.ToString());
+                    break;
+                default:
+                    writer.WriteRaw(token.ToString());
+                    break;
+            }
         }
     }
 }

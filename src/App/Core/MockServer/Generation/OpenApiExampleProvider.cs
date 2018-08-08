@@ -24,6 +24,8 @@ namespace ITExpert.OpenApi.Core.MockServer.Generation
             var counter = new ObjectDepthCounter(depthThreshold: 5);
             var providers = new List<IOpenApiExampleProvider>();
 
+            providers.Add(new SchemaExampleGenerator());
+
             // The order between this and others is important.
             providers.Add(new EnumGenerator(rnd));
 
