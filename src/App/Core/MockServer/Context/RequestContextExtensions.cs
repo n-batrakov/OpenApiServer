@@ -93,7 +93,7 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
                                          requestContext.Config.Host ??
                                          GetHostFromOperation(requestContext.Spec),
 
-                                  ContentType = ctx.Request.ContentType,
+                                  ContentType = GetContentType(ctx.Request),
                                   Query = ctx.Request.Query,
                                   Headers = ctx.Request.Headers,
                                   Route = ctx.GetRouteData(),
@@ -145,6 +145,18 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
         {
             //TODO: Format server url wtih variables
             return server.Url;
+        }
+
+        private static string GetContentType(HttpRequest request)
+        {
+            var hasContentType = request.Headers.TryGetValue("Content-Type", out var values);
+            if (!hasContentType || values.Count == 0)
+            {
+                return null;
+            }
+
+            var contentType = values.First();
+            return contentType.Split(';').First();
         }
     }
 }
