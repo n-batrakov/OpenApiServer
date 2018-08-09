@@ -4,7 +4,11 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Core.MockServer.Validation
+using OpenApiServer.Core.MockServer.Validation.Types;
+
+using ValidationError = OpenApiServer.Core.MockServer.Validation.Types.ValidationError;
+
+namespace OpenApiServer.Core.MockServer.Validation.Internals
 {
     internal static class SchemaValidationExtensions
     {

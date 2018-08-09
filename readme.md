@@ -1,4 +1,4 @@
-# ITExpert OpenApi 
+# OpenApiServer
 
 Набор CLI инструментов для работы с OpenAPI спецификациями (Swagger).
 

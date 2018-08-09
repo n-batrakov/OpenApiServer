@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>oas</AssemblyName>
-    <RootNamespace>ITExpert.OpenApi</RootNamespace>
+    <RootNamespace>OpenApiServer</RootNamespace>
     <OutputType>Exe</OutputType>
     <TargetLatestRuntimePatch>False</TargetLatestRuntimePatch>
     <LangVersion>latest</LangVersion>

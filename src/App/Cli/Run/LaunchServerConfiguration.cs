@@ -4,7 +4,7 @@ using System.Linq;
 
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace ITExpert.OpenApi.Cli.Run
+namespace OpenApiServer.Cli.Run
 {
     public static class LaunchServerConfiguration
     {

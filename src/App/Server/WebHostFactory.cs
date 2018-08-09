@@ -1,16 +1,16 @@
 using System.IO;
 using System.Net.Http;
 
-using ITExpert.OpenApi.Cli.Run;
-using ITExpert.OpenApi.DocumentProviders;
-using ITExpert.OpenApi.Server.Logging;
-
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace ITExpert.OpenApi.Server
+using OpenApiServer.Cli.Run;
+using OpenApiServer.DocumentProviders;
+using OpenApiServer.Server.Logging;
+
+namespace OpenApiServer.Server
 {
     public class WebHostFactory
     {

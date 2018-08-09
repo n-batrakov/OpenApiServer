@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 
 using Newtonsoft.Json.Linq;
 
-namespace ITExpert.OpenApi.Core.MockServer.Context.Types
+namespace OpenApiServer.Core.MockServer.Context.Types
 {
     public class RequestContextCall
     {

@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
 
-using ITExpert.OpenApi.Utils;
-
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.DocumentProviders
+using OpenApiServer.Utils;
+
+namespace OpenApiServer.DocumentProviders
 {
     public class FileOpenApiDocumentProvider : IOpenApiDocumentProvider
     {

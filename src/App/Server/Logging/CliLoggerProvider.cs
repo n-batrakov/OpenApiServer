@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Concurrent;
 
-using ITExpert.OpenApi.Cli.Run;
-
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 
-namespace ITExpert.OpenApi.Server.Logging
+using OpenApiServer.Cli.Run;
+
+namespace OpenApiServer.Server.Logging
 {
     public static class CliLoggerExtensions
     {

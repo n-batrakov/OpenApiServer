@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace ITExpert.OpenApi.Utils
+namespace OpenApiServer.Utils
 {
     public static class UrlHelper
     {

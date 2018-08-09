@@ -4,11 +4,6 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Core.MockServer.Context;
-using ITExpert.OpenApi.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Core.MockServer.RequestHandlers;
-using ITExpert.OpenApi.Server.Logging;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -16,7 +11,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Core.MockServer
+using OpenApiServer.Core.MockServer.Context;
+using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.RequestHandlers;
+using OpenApiServer.Server.Logging;
+
+namespace OpenApiServer.Core.MockServer
 {
     public class MockServerBuilder
     {

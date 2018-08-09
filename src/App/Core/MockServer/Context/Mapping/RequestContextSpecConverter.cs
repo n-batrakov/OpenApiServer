@@ -1,20 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Utils;
-
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Core.MockServer.Context.Mapping
+using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Utils;
+
+namespace OpenApiServer.Core.MockServer.Context.Mapping
 {
     public static class RequestContextSpecConverter
     {
         public static RequestContextSpec ConvertSpec(OpenApiOperation operation,
-                                                     IEnumerable<OpenApiServer> globalServers)
+                                                     IEnumerable<Microsoft.OpenApi.Models.OpenApiServer> globalServers)
         {
             var schemaConverter = new OpenApiSchemaConverter();
 

@@ -1,10 +1,7 @@
- using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-
-using ITExpert.OpenApi.Core.MockServer.Context;
-using ITExpert.OpenApi.Core.MockServer.Context.Types;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -12,7 +9,12 @@ using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json.Linq;
 
-namespace ITExpert.OpenApi.Core.MockServer.Validation
+using OpenApiServer.Core.MockServer.Context;
+using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Validation.Internals;
+using OpenApiServer.Core.MockServer.Validation.Types;
+
+namespace OpenApiServer.Core.MockServer.Validation
 {
     public class MockServerRequestValidator : IMockServerRequestValidator
     {

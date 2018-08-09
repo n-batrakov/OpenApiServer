@@ -4,21 +4,20 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using ITExpert.OpenApi.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Core.MockServer.Generation;
-using ITExpert.OpenApi.Core.MockServer.Options;
-using ITExpert.OpenApi.Utils;
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json.Linq;
 
-namespace ITExpert.OpenApi.Core.MockServer.Context
+using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Generation.Internals;
+using OpenApiServer.Core.MockServer.Options;
+using OpenApiServer.Utils;
+
+namespace OpenApiServer.Core.MockServer.Context
 {
     internal static class RequestContextExtensions
     {
@@ -47,7 +46,7 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
             return context.Spec.Bodies.FirstOrDefault(x => x.ContentType == contentType || x.ContentType == "*/*");
         }
 
-        public static string FormatUrl(this OpenApiServer server)
+        public static string FormatUrl(this Microsoft.OpenApi.Models.OpenApiServer server)
         {
             //TODO: Format server url wtih variables
             return server.Url;

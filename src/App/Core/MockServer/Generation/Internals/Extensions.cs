@@ -7,7 +7,9 @@ using Microsoft.OpenApi.Writers;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Core.MockServer.Generation
+using OpenApiServer.Core.MockServer.Generation.Types;
+
+namespace OpenApiServer.Core.MockServer.Generation.Internals
 {
     internal static class Extensions
     {

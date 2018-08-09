@@ -2,7 +2,7 @@ using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Core.MockServer.Generation
+namespace OpenApiServer.Core.MockServer.Generation
 {
     public interface IOpenApiExampleProvider
     {

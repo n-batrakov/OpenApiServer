@@ -7,7 +7,7 @@ using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Interfaces;
 using Microsoft.OpenApi.Writers;
 
-namespace ITExpert.OpenApi.Utils
+namespace OpenApiServer.Utils
 {
     public static class OpenApiSerializer
     {

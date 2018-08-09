@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace ITExpert.OpenApi.Core.MockServer.Context.Types
+namespace OpenApiServer.Core.MockServer.Context.Types
 {
     public class RequestContext
     {

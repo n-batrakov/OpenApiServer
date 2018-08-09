@@ -1,7 +1,7 @@
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Core.MockServer.Context.Mapping
+namespace OpenApiServer.Core.MockServer.Context.Mapping
 {
     public static class JSchemaExtensions
     {

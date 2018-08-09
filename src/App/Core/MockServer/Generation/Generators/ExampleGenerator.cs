@@ -1,10 +1,11 @@
-using ITExpert.OpenApi.Core.MockServer.Context.Mapping;
-
 using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Core.MockServer.Generation.Generators
+using OpenApiServer.Core.MockServer.Context.Mapping;
+using OpenApiServer.Core.MockServer.Generation.Internals;
+
+namespace OpenApiServer.Core.MockServer.Generation.Generators
 {
     public class SchemaExampleGenerator : IOpenApiExampleProvider
     {

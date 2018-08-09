@@ -1,6 +1,7 @@
-using ITExpert.OpenApi.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Validation.Types;
 
-namespace ITExpert.OpenApi.Core.MockServer.Validation
+namespace OpenApiServer.Core.MockServer.Validation
 {
     public interface IMockServerRequestValidator
     {
