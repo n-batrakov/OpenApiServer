@@ -2,23 +2,22 @@ using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;
 
+using OpenApiServer.Core.MockServer.Context.Mapping;
 using OpenApiServer.Core.MockServer.Generation.Internals;
 
 namespace OpenApiServer.Core.MockServer.Generation.Generators
 {
-    public class Base64Generator : IOpenApiExampleProvider
+    public class SchemaExampleGenerator : IOpenApiExampleProvider
     {
-        private const string Base64 = "TW9jayBzZXJ2ZXIgZ2VuZXJhdGVkIGZpbGU=";
-
         public bool TryWriteValue(IOpenApiWriter writer, JSchema schema)
         {
-            if (!schema.IsFormattedString("base64"))
+            var example = schema.GetExample();
+            if (example == null)
             {
                 return false;
             }
 
-            writer.WriteValue(Base64);
-
+            writer.WriteJToken(example);
             return true;
         }
     }

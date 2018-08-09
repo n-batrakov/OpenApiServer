@@ -2,7 +2,7 @@ using System;
 
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 
-namespace ITExpert.OpenApi.Core.MockServer.Context.Types
+namespace OpenApiServer.Core.MockServer.Context.Types
 {
     public readonly struct RouteId : IEquatable<RouteId>
     {

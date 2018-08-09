@@ -1,23 +1,23 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-
-using ITExpert.OpenApi.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Core.MockServer.Options;
-using ITExpert.OpenApi.Utils;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace ITExpert.OpenApi.Core.MockServer.Context
+using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Generation.Internals;
+using OpenApiServer.Core.MockServer.Options;
+using OpenApiServer.Utils;
+
+namespace OpenApiServer.Core.MockServer.Context
 {
     internal static class RequestContextExtensions
     {
@@ -44,6 +44,12 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
 
             var contentType = context.Request.ContentType;
             return context.Spec.Bodies.FirstOrDefault(x => x.ContentType == contentType || x.ContentType == "*/*");
+        }
+
+        public static string FormatUrl(this Microsoft.OpenApi.Models.OpenApiServer server)
+        {
+            //TODO: Format server url wtih variables
+            return server.Url;
         }
 
         public static bool IsMatch(this MockServerRouteOptions config, RouteId id)
@@ -93,31 +99,51 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
                                          requestContext.Config.Host ??
                                          GetHostFromOperation(requestContext.Spec),
 
-                                  ContentType = ctx.Request.ContentType,
+                                  ContentType = GetContentType(ctx.Request),
                                   Query = ctx.Request.Query,
                                   Headers = ctx.Request.Headers,
                                   Route = ctx.GetRouteData(),
                                   Body = GetBody(ctx.Request),
-            };
+                          };
             return requestContext.WithRequest(callCtx, logger);
         }
 
-        private static string GetBody(HttpRequest request)
+        private static JToken GetBody(HttpRequest request)
         {
             return request.HasFormContentType ? ReadForm() : ReadBody();
 
-            string ReadForm()
+            JToken ReadForm()
             {
-                var dict = request.Form.ToDictionary(x => x.Key, x => JToken.Parse(x.Value));
-                return JsonConvert.SerializeObject(dict);
+                var obj = new JObject();
+                foreach (var (key, value) in request.Form)
+                {
+                    var propertyValue = ParseRawValue(value);
+                    obj.Add(key, propertyValue);
+                }
+
+                var fileProperties = request.Form.Files.ToDictionary(x => x.Name, GetFilePropertyValue);
+                obj.AddRange(fileProperties, overwriteDuplicateKeys: false);
+
+                return obj;
             }
 
-            string ReadBody()
+            JToken ReadBody()
             {
                 using (var reader = new StreamReader(request.Body))
                 {
-                    return reader.ReadToEnd();
+                    return ParseRawValue(reader.ReadToEnd());
                 }
+            }
+        }
+
+        private static JToken GetFilePropertyValue(IFormFile file)
+        {
+            using (var memorySteam = new MemoryStream())
+            {
+                file.CopyTo(memorySteam);
+                var bytes = memorySteam.ToArray();
+                var base64 = Convert.ToBase64String(bytes);
+                return new JValue(base64);
             }
         }
 
@@ -141,10 +167,41 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
             return specUrl == null ? null : UrlHelper.GetHost(specUrl);
         }
 
-        public static string FormatUrl(this OpenApiServer server)
+        private static string GetContentType(HttpRequest request)
         {
-            //TODO: Format server url wtih variables
-            return server.Url;
+            var hasContentType = request.Headers.TryGetValue("Content-Type", out var values);
+            if (!hasContentType || values.Count == 0)
+            {
+                return null;
+            }
+
+            var contentType = values.First();
+            return contentType.Split(';').First();
+        }
+
+        private static JToken ParseRawValue(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return null;
+            }
+
+            if (value.StartsWith('{') || value.StartsWith('['))
+            {
+                return JToken.Parse(value);
+            }
+
+            if (bool.TryParse(value, out var boolean))
+            {
+                return new JValue(boolean);
+            }
+
+            if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var num))
+            {
+                return new JValue(num);
+            }
+
+            return new JValue(value);
         }
     }
 }

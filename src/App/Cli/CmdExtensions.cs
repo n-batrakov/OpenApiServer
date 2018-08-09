@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace ITExpert.OpenApi.Cli
+namespace OpenApiServer.Cli
 {
     public static class CmdExtensions
     {

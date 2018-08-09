@@ -1,13 +1,13 @@
 using System.Net;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Core.MockServer.Validation;
-using ITExpert.OpenApi.Core.MockServer.Validation.Types;
-
 using Newtonsoft.Json;
 
-namespace ITExpert.OpenApi.Core.MockServer.RequestHandlers
+using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Validation;
+using OpenApiServer.Core.MockServer.Validation.Types;
+
+namespace OpenApiServer.Core.MockServer.RequestHandlers
 {
     public class MockServerRequestHandler : IMockServerRequestHandler
     {

@@ -1,12 +1,12 @@
 using System;
 
-using ITExpert.OpenApi.Cli.Load;
-using ITExpert.OpenApi.Cli.Merge;
-using ITExpert.OpenApi.Cli.Run;
-
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace ITExpert.OpenApi
+using OpenApiServer.Cli.Load;
+using OpenApiServer.Cli.Merge;
+using OpenApiServer.Cli.Run;
+
+namespace OpenApiServer
 {
     public class Program
     {

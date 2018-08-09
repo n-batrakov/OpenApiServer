@@ -1,12 +1,12 @@
 using System;
 
-using ITExpert.OpenApi.Core.MockServer.Generation.Internals;
-
 using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Core.MockServer.Generation.Generators
+using OpenApiServer.Core.MockServer.Generation.Internals;
+
+namespace OpenApiServer.Core.MockServer.Generation.Generators
 {
     public class GuidGenerator : IOpenApiExampleProvider
     {

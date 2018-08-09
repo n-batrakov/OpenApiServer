@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Utils;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -11,7 +9,9 @@ using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json.Linq;
 
-namespace ITExpert.OpenApi.Core.DocumentationServer
+using OpenApiServer.Utils;
+
+namespace OpenApiServer.Core.DocumentationServer
 {
     public static class OpenApiDocumentServerExtensions
     {
@@ -41,7 +41,7 @@ namespace ITExpert.OpenApi.Core.DocumentationServer
 
         private static JObject GetAvailableSpecItem(OpenApiDocument x, string route, string host)
         {
-            var name = $"{x.Info.Title}_{x.Info.GetMajorVersion()}";
+            var name = $"{x.Info.Title} v{x.Info.GetMajorVersion()}";
             var url = UrlHelper.Join(host, route);
             return new JObject { { "name", name }, { "url", url } };
         }

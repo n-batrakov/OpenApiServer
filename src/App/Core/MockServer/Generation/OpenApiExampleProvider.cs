@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Core.MockServer.Generation.Generators;
-using ITExpert.OpenApi.Core.MockServer.Generation.Internals;
-
 using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Core.MockServer.Generation
+using OpenApiServer.Core.MockServer.Generation.Generators;
+using OpenApiServer.Core.MockServer.Generation.Internals;
+
+namespace OpenApiServer.Core.MockServer.Generation
 {
     public class OpenApiExampleProvider : IOpenApiExampleProvider
     {
@@ -22,19 +22,23 @@ namespace ITExpert.OpenApi.Core.MockServer.Generation
 
         private static IOpenApiExampleProvider[] GetProviders(Random rnd)
         {
+            // The order between generators may be important.
+
             var counter = new ObjectDepthCounter(depthThreshold: 5);
             var providers = new List<IOpenApiExampleProvider>();
 
-            // The order between this and others is important.
+            providers.Add(new SchemaExampleGenerator());
+
+            
             providers.Add(new EnumGenerator(rnd));
 
             providers.Add(new PrimitiveGenerator(rnd));
             providers.Add(new AnyGenerator());
 
-            providers.Add(new TextGenerator(rnd));
             providers.Add(new GuidGenerator());
             providers.Add(new Base64Generator());
             providers.Add(new DateTimeGenerator());
+            providers.Add(new TextGenerator(rnd));
 
             providers.Add(new ArrayGenerator(providers));
 

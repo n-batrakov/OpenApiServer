@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ITExpert.OpenApi.Core.MockServer.Exceptions
+namespace OpenApiServer.Core.MockServer.Exceptions
 {
     public class MockServerException : Exception
     {

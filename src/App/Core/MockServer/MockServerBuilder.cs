@@ -1,21 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-
-using ITExpert.OpenApi.Core.MockServer.Context;
-using ITExpert.OpenApi.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Core.MockServer.RequestHandlers;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Core.MockServer
+using OpenApiServer.Core.MockServer.Context;
+using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.RequestHandlers;
+using OpenApiServer.Server.Logging;
+
+namespace OpenApiServer.Core.MockServer
 {
     public class MockServerBuilder
     {
@@ -32,8 +33,7 @@ namespace ITExpert.OpenApi.Core.MockServer
             ContextProvider = ActivatorUtilities.CreateInstance<RequestContextProvider>(app.ApplicationServices, specs);
             GeneralRequestHandler = app.ApplicationServices.GetRequiredService<IMockServerRequestHandler>();
             MockRequestHandler = app.ApplicationServices.GetRequiredService<MockRequestHandler>();
-            Logger = app.ApplicationServices.GetService<ILoggerFactory>()?.CreateLogger(nameof(MockServerBuilder)) ??
-                     NullLogger.Instance;
+            Logger = app.ApplicationServices.GetRequiredService<ILoggerFactory>().CreateOpenApiLogger();
         }
 
         public IRouter Build()
@@ -70,17 +70,22 @@ namespace ITExpert.OpenApi.Core.MockServer
             return HandleRequest(requestContext, ctx.Response, GeneralRequestHandler);
         }
 
-        private async Task HandleRequest(RequestContext requestContext, HttpResponse httpResponse, IMockServerRequestHandler handler)
+        private Task HandleRequest(RequestContext requestContext, HttpResponse httpResponse, IMockServerRequestHandler handler)
         {
-            try
+            return handler.HandleAsync(requestContext).ContinueWith(HandleResponseAsync).Unwrap();
+
+            Task HandleResponseAsync(Task<MockServerResponseContext> x)
             {
-                var response = await handler.HandleAsync(requestContext).ConfigureAwait(false);
-                await WriteResponse(httpResponse, response).ConfigureAwait(false);
+                return x.IsCompletedSuccessfully ? HandleSuccess(x.Result) : HandleFault(x.Exception.InnerException);
             }
-            catch (Exception e)
+
+            Task HandleSuccess(MockServerResponseContext ctx) =>
+                    WriteResponse(httpResponse, ctx);
+
+            Task HandleFault(Exception e)
             {
-                await WriteException(httpResponse, e);
                 Logger.LogError(e, "An exception occured while handling request.");
+                return WriteException(httpResponse, e);
             }
         }
 
@@ -94,7 +99,9 @@ namespace ITExpert.OpenApi.Core.MockServer
                 response.Headers[key] = value;
             }
 
-            return response.WriteAsync(responseContext.Body);
+            return responseContext.StatusCode == HttpStatusCode.NoContent
+                           ? Task.CompletedTask
+                           : response.WriteAsync(responseContext.Body);
         }
 
         private static Task WriteException(HttpResponse response, Exception exception)

@@ -5,22 +5,27 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Core.MockServer.Exceptions;
-
 using Microsoft.Extensions.Primitives;
+
+using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Exceptions;
 
 using HttpMethod = System.Net.Http.HttpMethod;
 
-namespace ITExpert.OpenApi.Core.MockServer.RequestHandlers
+namespace OpenApiServer.Core.MockServer.RequestHandlers
 {
     public class ProxyRequestHandler : IMockServerRequestHandler
     {
+        private static readonly Guid Id = Guid.NewGuid();
+        private const string ForwarderFromHeader = "X-Forwarded-From";
+        private string ProxyInstanceId { get; }
+
         private IHttpClientFactory ClientFactory { get; }
 
         public ProxyRequestHandler(IHttpClientFactory clientFactory)
         {
             ClientFactory = clientFactory;
+            ProxyInstanceId = Id.ToString();
         }
 
         public Task<MockServerResponseContext> HandleAsync(RequestContext context)
@@ -28,6 +33,18 @@ namespace ITExpert.OpenApi.Core.MockServer.RequestHandlers
             if (context.Config.Host == default)
             {
                 throw new MockServerConfigurationException("Unable to find host to proxy the request.");
+            }
+
+            var hasHeader = context.Request.Headers.TryGetValue(ForwarderFromHeader, out var mockServerHeader);
+            if (hasHeader)
+            {
+                if (mockServerHeader == ProxyInstanceId)
+                {
+                    throw new MockServerConfigurationException(
+                            "This MockServer instance is configured to proxy requests to itself, " +
+                            "which will result in an infinite loop. Update the host via config or " +
+                            "'X-Forwarded-Host' header");
+                }
             }
 
             return Proxy(context);
@@ -43,19 +60,23 @@ namespace ITExpert.OpenApi.Core.MockServer.RequestHandlers
             return await CreateResponseAsync(response).ConfigureAwait(false);
         }
 
-        private static HttpRequestMessage CreateRequest(RequestContext ctx)
+        private HttpRequestMessage CreateRequest(RequestContext ctx)
         {
             var targetRequest = new HttpRequestMessage
                                 {
                                         RequestUri = new Uri($"{ctx.Config.Host}{ctx.Request.PathAndQuery}"),
                                         Method = new HttpMethod(ctx.Request.Method.ToString().ToUpperInvariant()),
-                                        Content = new StringContent(ctx.Request.Body, Encoding.UTF8, ctx.Request.ContentType)
+                                        Content = new StringContent(ctx.Request.Body.ToString(),
+                                                                    Encoding.UTF8,
+                                                                    ctx.Request.ContentType)
                                 };
 
             foreach (var (k, v) in ctx.Request.Headers)
             {
-                targetRequest.Headers.TryAddWithoutValidation(k, v.ToArray());
+                targetRequest.Content.Headers.TryAddWithoutValidation(k, v.ToArray());
             }
+
+            targetRequest.Content.Headers.Add(ForwarderFromHeader, ProxyInstanceId);
 
             return targetRequest;
         }

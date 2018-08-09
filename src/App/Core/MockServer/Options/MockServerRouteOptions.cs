@@ -1,4 +1,4 @@
-namespace ITExpert.OpenApi.Core.MockServer.Options
+namespace OpenApiServer.Core.MockServer.Options
 {
     public static class MockServerRouteOptionsExtensions
     {

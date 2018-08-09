@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.StaticFiles.Infrastructure;
 using Microsoft.Extensions.FileProviders;
 
-namespace ITExpert.OpenApi.Core.DocumentationServer
+namespace OpenApiServer.Core.DocumentationServer
 {
     public static class SwaggerUiExtensions
     {
