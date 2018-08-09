@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -59,11 +58,6 @@ namespace OpenApiServer.Server
             {
                 var specServer = spec.Servers.FirstOrDefault()?.Url;
 
-                if (specServer != null && !IsAbsoluteUrl(specServer))
-                {
-                    continue;
-                }
-
                 var prefix = specServer == null
                                      ? UrlHelper.GetDefaultPathPrefix(spec.Info.GetServiceName())
                                      : UrlHelper.GetPathPrefix(specServer);
@@ -71,12 +65,6 @@ namespace OpenApiServer.Server
                 var mockServerUrl = UrlHelper.Join(Host, prefix);
                 var mockServer = new Microsoft.OpenApi.Models.OpenApiServer { Url = mockServerUrl };
                 spec.Servers.Add(mockServer);
-            }
-
-            bool IsAbsoluteUrl(string url)
-            {
-                var comparison = StringComparison.OrdinalIgnoreCase;
-                return url.StartsWith("http://", comparison) || url.StartsWith("https://", comparison);
             }
         }
     }
