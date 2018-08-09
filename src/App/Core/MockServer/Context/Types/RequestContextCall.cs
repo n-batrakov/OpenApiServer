@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+
+using Newtonsoft.Json.Linq;
 
 namespace ITExpert.OpenApi.Core.MockServer.Context.Types
 {
@@ -18,7 +20,7 @@ namespace ITExpert.OpenApi.Core.MockServer.Context.Types
 
         public IQueryCollection Query { get; set; }
 
-        public string Body { get; set; }
+        public JToken Body { get; set; }
 
         public string ContentType { get; set; }
     }

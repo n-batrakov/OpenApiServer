@@ -1,4 +1,4 @@
-using System;
+ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -105,7 +105,7 @@ namespace ITExpert.OpenApi.Core.MockServer.Validation
 
         private static IEnumerable<RequestValidationError> ValidateBody(
                 RequestContextBody body,
-                string bodyString,
+                JToken bodyContent,
                 string contentType)
         {
             if (body == null)
@@ -114,14 +114,13 @@ namespace ITExpert.OpenApi.Core.MockServer.Validation
                 yield break;
             }
 
-            if (string.IsNullOrEmpty(bodyString) && body.Required)
+            if (bodyContent == null && body.Required)
             {
                 yield return ValidationError.BodyRequired();
                 yield break;
             }
 
-            var jsonBody = JToken.Parse(bodyString);
-            var schemaErrors = body.Schema.ValidateValue(jsonBody).ToArray();
+            var schemaErrors = body.Schema.ValidateValue(bodyContent).ToArray();
             if (schemaErrors.Any())
             {
                 yield return ValidationError.InvalidBody(schemaErrors);

@@ -66,7 +66,9 @@ namespace ITExpert.OpenApi.Core.MockServer.RequestHandlers
                                 {
                                         RequestUri = new Uri($"{ctx.Config.Host}{ctx.Request.PathAndQuery}"),
                                         Method = new HttpMethod(ctx.Request.Method.ToString().ToUpperInvariant()),
-                                        Content = new StringContent(ctx.Request.Body, Encoding.UTF8, ctx.Request.ContentType)
+                                        Content = new StringContent(ctx.Request.Body.ToString(),
+                                                                    Encoding.UTF8,
+                                                                    ctx.Request.ContentType)
                                 };
 
             foreach (var (k, v) in ctx.Request.Headers)

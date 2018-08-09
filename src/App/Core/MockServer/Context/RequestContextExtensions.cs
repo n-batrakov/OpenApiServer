@@ -109,11 +109,11 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
             return requestContext.WithRequest(callCtx, logger);
         }
 
-        private static string GetBody(HttpRequest request)
+        private static JToken GetBody(HttpRequest request)
         {
             return request.HasFormContentType ? ReadForm() : ReadBody();
 
-            string ReadForm()
+            JToken ReadForm()
             {
                 var obj = new JObject();
                 foreach (var (key, value) in request.Form)
@@ -125,14 +125,14 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
                 var fileProperties = request.Form.Files.ToDictionary(x => x.Name, GetFilePropertyValue);
                 obj.AddRange(fileProperties, overwriteDuplicateKeys: false);
 
-                return obj.ToString();
+                return obj;
             }
 
-            string ReadBody()
+            JToken ReadBody()
             {
                 using (var reader = new StreamReader(request.Body))
                 {
-                    return reader.ReadToEnd();
+                    return ParseRawValue(reader.ReadToEnd());
                 }
             }
         }
@@ -180,25 +180,29 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
             return contentType.Split(';').First();
         }
 
-
-        private static JToken ParseRawValue(string s)
+        private static JToken ParseRawValue(string value)
         {
-            if (s.StartsWith('{') || s.StartsWith('['))
+            if (string.IsNullOrEmpty(value))
             {
-                return JToken.Parse(s);
+                return null;
             }
 
-            if (bool.TryParse(s, out var boolean))
+            if (value.StartsWith('{') || value.StartsWith('['))
+            {
+                return JToken.Parse(value);
+            }
+
+            if (bool.TryParse(value, out var boolean))
             {
                 return new JValue(boolean);
             }
 
-            if (double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out var num))
+            if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var num))
             {
                 return new JValue(num);
             }
 
-            return new JValue(s);
+            return new JValue(value);
         }
     }
 }
