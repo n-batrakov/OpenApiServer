@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Core.MockServer.Generation.Types;
-
 using Microsoft.OpenApi.Writers;
 
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Core.MockServer.Generation.Internals
+using OpenApiServer.Core.MockServer.Generation.Types;
+
+namespace OpenApiServer.Core.MockServer.Generation.Internals
 {
     internal static class Extensions
     {
@@ -112,6 +113,24 @@ namespace ITExpert.OpenApi.Core.MockServer.Generation.Internals
             }
 
             return Enum.Parse<OpenApiSchemaType>(schema.Type.ToString(), ignoreCase: true);
+        }
+
+        public static void WriteJToken(this IOpenApiWriter writer, JToken token)
+        {
+            // ReSharper disable once SwitchStatementMissingSomeCases
+            switch (token.Type)
+            {
+                case JTokenType.String:
+                case JTokenType.Date:
+                case JTokenType.Guid:
+                case JTokenType.TimeSpan:
+                case JTokenType.Uri:
+                    writer.WriteValue(token.ToString());
+                    break;
+                default:
+                    writer.WriteRaw(token.ToString());
+                    break;
+            }
         }
     }
 }

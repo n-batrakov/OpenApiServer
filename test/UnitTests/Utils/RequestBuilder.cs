@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Core.MockServer.Context.Mapping;
-using ITExpert.OpenApi.Core.MockServer.Context.Types;
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
+
+using OpenApiServer.Core.MockServer.Context.Mapping;
+using OpenApiServer.Core.MockServer.Context.Types;
 
 namespace UnitTests.Utils
 {
@@ -45,7 +45,8 @@ namespace UnitTests.Utils
         public RequestContext Build()
         {
             var config = new RequestContextConfig();
-            var spec = RequestContextSpecConverter.ConvertSpec(Spec, new OpenApiServer[0]);
+            var server = new Microsoft.OpenApi.Models.OpenApiServer[0];
+            var spec = RequestContextSpecConverter.ConvertSpec(Spec, server);
             var callCtx = new RequestContextCall
                           {
                                   Route = Route,

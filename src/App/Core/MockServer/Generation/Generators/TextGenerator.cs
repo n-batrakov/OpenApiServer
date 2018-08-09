@@ -1,12 +1,12 @@
 using System;
 
-using ITExpert.OpenApi.Core.MockServer.Generation.Internals;
-
 using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Core.MockServer.Generation.Generators
+using OpenApiServer.Core.MockServer.Generation.Internals;
+
+namespace OpenApiServer.Core.MockServer.Generation.Generators
 {
     //TODO: Enchance generation quality
     //TODO: Pattern
@@ -21,8 +21,7 @@ namespace ITExpert.OpenApi.Core.MockServer.Generation.Generators
 
         public bool TryWriteValue(IOpenApiWriter writer, JSchema schema)
         {
-            var isText = schema.IsString() && schema.Format == null;
-            if (!isText)
+            if (!schema.IsString())
             {
                 return false;
             }

@@ -1,4 +1,4 @@
-﻿namespace ITExpert.OpenApi.Cli.Load
+﻿namespace OpenApiServer.Cli.Load
 {
     public class LoadCommandOptions
     {

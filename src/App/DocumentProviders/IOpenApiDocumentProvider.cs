@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.DocumentProviders
+namespace OpenApiServer.DocumentProviders
 {
     public interface IOpenApiDocumentProvider
     {

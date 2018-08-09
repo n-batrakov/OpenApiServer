@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Core.MockServer.Generation.Internals;
-using ITExpert.OpenApi.Core.MockServer.Generation.Types;
-
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json.Schema;
 
-namespace ITExpert.OpenApi.Core.MockServer.Validation.Internals
+using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Generation.Internals;
+using OpenApiServer.Core.MockServer.Generation.Types;
+
+namespace OpenApiServer.Core.MockServer.Validation.Internals
 {
     internal static class ParametersExtensions
     {

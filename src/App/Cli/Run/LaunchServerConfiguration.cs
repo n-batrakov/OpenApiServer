@@ -1,9 +1,10 @@
 using System;
+using System.IO;
 using System.Linq;
 
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace ITExpert.OpenApi.Cli.Run
+namespace OpenApiServer.Cli.Run
 {
     public static class LaunchServerConfiguration
     {
@@ -37,10 +38,16 @@ namespace ITExpert.OpenApi.Cli.Run
                                           Port = port.GetIntValue(5000),
                                           Sources = sources.GetStringValues("./.oas/specs").ToArray(),
                                           VerbosityLevel = ParseVerbosityValue(minLogLevel.GetStringValue("normal")),
-                                          ConfigPath = config.GetStringValue("./.oas/oas.config.json"),
+                                          ConfigPath = GetConfigPath(config),
                                           TreatSourcesAsDiscoveryFiles = discover.GetBooleanValue(),
                                           DiscoveryKey = discoverKey.GetStringValue()
                                   }).Execute());
+        }
+
+        private static string GetConfigPath(CommandOption configOption)
+        {
+            var path = configOption.GetStringValue("./.oas/oas.config.json");
+            return Path.GetFullPath(path);
         }
 
         private static ServerVerbosityLevel ParseVerbosityValue(string value)

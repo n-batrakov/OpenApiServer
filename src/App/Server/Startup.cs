@@ -2,18 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Core.DocumentationServer;
-using ITExpert.OpenApi.Core.MockServer;
-using ITExpert.OpenApi.Core.MockServer.Options;
-using ITExpert.OpenApi.DocumentProviders;
-using ITExpert.OpenApi.Utils;
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Server
+using OpenApiServer.Core.DocumentationServer;
+using OpenApiServer.Core.MockServer;
+using OpenApiServer.Core.MockServer.Options;
+using OpenApiServer.DocumentProviders;
+using OpenApiServer.Utils;
+
+namespace OpenApiServer.Server
 {
     public class Startup
     {
@@ -69,7 +69,7 @@ namespace ITExpert.OpenApi.Server
                                      : UrlHelper.GetPathPrefix(specServer);
 
                 var mockServerUrl = UrlHelper.Join(Host, prefix);
-                var mockServer = new OpenApiServer { Url = mockServerUrl };
+                var mockServer = new Microsoft.OpenApi.Models.OpenApiServer { Url = mockServerUrl };
                 spec.Servers.Add(mockServer);
             }
 

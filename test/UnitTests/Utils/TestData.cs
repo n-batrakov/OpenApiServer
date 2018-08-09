@@ -1,9 +1,9 @@
 using System.IO;
 
-using ITExpert.OpenApi.Core.MockServer.Validation.Types;
-
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
+
+using OpenApiServer.Core.MockServer.Validation.Types;
 
 namespace UnitTests.Utils
 {

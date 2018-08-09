@@ -1,29 +1,33 @@
 using System;
 using System.IO;
 
-using ITExpert.OpenApi.Core.MockServer.Options;
-using ITExpert.OpenApi.Server;
-
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 
-namespace ITExpert.OpenApi.Cli.Run
+using OpenApiServer.Core.MockServer.Options;
+using OpenApiServer.Server;
+using OpenApiServer.Server.Logging;
+
+namespace OpenApiServer.Cli.Run
 {
     public class LaunchServerCommand
     {
+        private ILogger Logger { get; }
         private LaunchServerCommandOptions Options { get; }
 
         public LaunchServerCommand(LaunchServerCommandOptions options)
         {
             Options = options;
+            Logger = new CliLoggerProvider(options.VerbosityLevel).CreateLogger(CliLoggerProvider.OpenApiLoggerName);
         }
 
         public int Execute()
         {
-            PrintStartMessage();
+            LogStart();
             CreateConfig();
 
             var host = new WebHostFactory(Options).CreateHost();
@@ -33,73 +37,15 @@ namespace ITExpert.OpenApi.Cli.Run
             }
             catch (Exception e)
             {
-                PrintStartError(e);
+                Logger.LogCritical(e, "Unable to start application.");
                 return 1;
             }
             
-            PrintServerStartedMessage();
+            Logger.LogInformation(ServerStartMessage);
             host.WaitForShutdown();
-            PrintFinish();
+            Logger.LogInformation("Teminated.");
 
             return 0;
-        }
-
-        private void PrintStartMessage()
-        {
-            if (Options.VerbosityLevel == ServerVerbosityLevel.Quiet)
-            {
-                return;
-            }
-
-            Console.WriteLine("OpenAPI Server is starting...");
-        }
-
-        private void PrintServerStartedMessage()
-        {
-            if (Options.VerbosityLevel == ServerVerbosityLevel.Quiet)
-            {
-                return;
-            }
-
-            Console.WriteLine();
-            Console.WriteLine($"OpenAPI Server is running on http://localhost:{Options.Port}".PadRight(60));
-            Console.WriteLine("Press Ctrl+C to terminate.".PadRight(60));
-
-            Console.WriteLine();
-            Console.WriteLine("Parameters:");
-            Console.WriteLine($"* Verbosity: {Options.VerbosityLevel}");
-            Console.WriteLine($"* Config: {Path.GetFullPath(Options.ConfigPath)}");
-            Console.WriteLine($"* Sources: {string.Join(", ", Options.Sources)}");
-            Console.WriteLine("".PadRight(60, '*'));
-            Console.WriteLine();
-        }
-
-        private void PrintStartError(Exception e)
-        {
-            if (Options.VerbosityLevel == ServerVerbosityLevel.Quiet)
-            {
-                return;
-            }
-
-            Console.BackgroundColor = ConsoleColor.Red;
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Critical startup error:");
-            Console.ResetColor();
-            Console.WriteLine(e.Message);
-            Console.WriteLine();
-            Console.WriteLine("Exiting...");
-        }
-
-        private void PrintFinish()
-        {
-            if (Options.VerbosityLevel == ServerVerbosityLevel.Quiet)
-            {
-                return;
-            }
-
-            Console.WriteLine();
-            Console.WriteLine("Terminated.");
-            Console.WriteLine();
         }
 
         private void CreateConfig()
@@ -138,6 +84,29 @@ namespace ITExpert.OpenApi.Cli.Run
                               };
                 return JsonConvert.SerializeObject(options, settings);
             }
+        }
+
+        private string ServerStartMessage => $@"
+OpenAPI Server is running on http://localhost:{Options.Port}
+Press Ctrl+C to terminate.
+
+Paramters:
+* Verbosity: {Options.VerbosityLevel}
+* Config: {Options.ConfigPath}
+* Source: {string.Join(", ", Options.Sources)}
+***************************************************************
+";
+
+        private void LogStart()
+        {
+            if (Options.VerbosityLevel == ServerVerbosityLevel.Quiet)
+            {
+                return;
+            }
+
+            // Logger not used because we want to write some startup message
+            // when Verbosity is minimal (Warning log level).
+            Console.WriteLine("OpenAPI Server is starting...");
         }
     }
 }

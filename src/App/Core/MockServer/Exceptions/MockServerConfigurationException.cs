@@ -1,4 +1,4 @@
-﻿namespace ITExpert.OpenApi.Core.MockServer.Exceptions
+﻿namespace OpenApiServer.Core.MockServer.Exceptions
 {
     public class MockServerConfigurationException : MockServerException
     {

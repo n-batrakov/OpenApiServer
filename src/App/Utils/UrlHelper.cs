@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace ITExpert.OpenApi.Utils
+namespace OpenApiServer.Utils
 {
     public static class UrlHelper
     {
@@ -30,7 +30,7 @@ namespace ITExpert.OpenApi.Utils
             }
 
             var uri = new Uri(url, UriKind.RelativeOrAbsolute);
-            return uri.IsAbsoluteUri ? uri.Host : defaultHost;
+            return uri.IsAbsoluteUri ? $"{uri.Scheme}://{uri.Host}:{uri.Port}" : defaultHost;
         }
 
         private static string GetLocalPath(Uri uri) => uri.IsAbsoluteUri ? uri.LocalPath : uri.OriginalString;

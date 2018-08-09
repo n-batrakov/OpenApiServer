@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 
-using ITExpert.OpenApi.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Context.Types;
 
-namespace ITExpert.OpenApi.Core.MockServer.RequestHandlers
+namespace OpenApiServer.Core.MockServer.RequestHandlers
 {
     public interface IMockServerRequestHandler
     {

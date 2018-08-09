@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using ITExpert.OpenApi.Core.MockServer.Context.Mapping;
-using ITExpert.OpenApi.Core.MockServer.Context.Types;
-using ITExpert.OpenApi.Core.MockServer.Options;
-using ITExpert.OpenApi.Utils;
-
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.OpenApi.Models;
 
-namespace ITExpert.OpenApi.Core.MockServer.Context
+using OpenApiServer.Core.MockServer.Context.Mapping;
+using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Options;
+using OpenApiServer.Utils;
+
+namespace OpenApiServer.Core.MockServer.Context
 {
     public static class RequestContextCollectionBuilder
     {
