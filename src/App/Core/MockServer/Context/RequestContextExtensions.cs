@@ -1,9 +1,11 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 using ITExpert.OpenApi.Core.MockServer.Context.Types;
+using ITExpert.OpenApi.Core.MockServer.Generation;
 using ITExpert.OpenApi.Core.MockServer.Options;
 using ITExpert.OpenApi.Utils;
 
@@ -14,7 +16,6 @@ using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace ITExpert.OpenApi.Core.MockServer.Context
@@ -44,6 +45,12 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
 
             var contentType = context.Request.ContentType;
             return context.Spec.Bodies.FirstOrDefault(x => x.ContentType == contentType || x.ContentType == "*/*");
+        }
+
+        public static string FormatUrl(this OpenApiServer server)
+        {
+            //TODO: Format server url wtih variables
+            return server.Url;
         }
 
         public static bool IsMatch(this MockServerRouteOptions config, RouteId id)
@@ -98,7 +105,7 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
                                   Headers = ctx.Request.Headers,
                                   Route = ctx.GetRouteData(),
                                   Body = GetBody(ctx.Request),
-            };
+                          };
             return requestContext.WithRequest(callCtx, logger);
         }
 
@@ -108,8 +115,17 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
 
             string ReadForm()
             {
-                var dict = request.Form.ToDictionary(x => x.Key, x => JToken.Parse(x.Value));
-                return JsonConvert.SerializeObject(dict);
+                var obj = new JObject();
+                foreach (var (key, value) in request.Form)
+                {
+                    var propertyValue = ParseRawValue(value);
+                    obj.Add(key, propertyValue);
+                }
+
+                var fileProperties = request.Form.Files.ToDictionary(x => x.Name, GetFilePropertyValue);
+                obj.AddRange(fileProperties, overwriteDuplicateKeys: false);
+
+                return obj.ToString();
             }
 
             string ReadBody()
@@ -118,6 +134,17 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
                 {
                     return reader.ReadToEnd();
                 }
+            }
+        }
+
+        private static JToken GetFilePropertyValue(IFormFile file)
+        {
+            using (var memorySteam = new MemoryStream())
+            {
+                file.CopyTo(memorySteam);
+                var bytes = memorySteam.ToArray();
+                var base64 = Convert.ToBase64String(bytes);
+                return new JValue(base64);
             }
         }
 
@@ -141,12 +168,6 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
             return specUrl == null ? null : UrlHelper.GetHost(specUrl);
         }
 
-        public static string FormatUrl(this OpenApiServer server)
-        {
-            //TODO: Format server url wtih variables
-            return server.Url;
-        }
-
         private static string GetContentType(HttpRequest request)
         {
             var hasContentType = request.Headers.TryGetValue("Content-Type", out var values);
@@ -157,6 +178,27 @@ namespace ITExpert.OpenApi.Core.MockServer.Context
 
             var contentType = values.First();
             return contentType.Split(';').First();
+        }
+
+
+        private static JToken ParseRawValue(string s)
+        {
+            if (s.StartsWith('{') || s.StartsWith('['))
+            {
+                return JToken.Parse(s);
+            }
+
+            if (bool.TryParse(s, out var boolean))
+            {
+                return new JValue(boolean);
+            }
+
+            if (double.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out var num))
+            {
+                return new JValue(num);
+            }
+
+            return new JValue(s);
         }
     }
 }

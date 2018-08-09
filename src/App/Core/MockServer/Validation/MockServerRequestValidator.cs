@@ -120,7 +120,7 @@ namespace ITExpert.OpenApi.Core.MockServer.Validation
                 yield break;
             }
 
-            var jsonBody = JObject.Parse(bodyString);
+            var jsonBody = JToken.Parse(bodyString);
             var schemaErrors = body.Schema.ValidateValue(jsonBody).ToArray();
             if (schemaErrors.Any())
             {
