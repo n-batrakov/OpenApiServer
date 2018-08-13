@@ -12,7 +12,7 @@ using OpenApiServer.Core.MockServer.Exceptions;
 
 using HttpMethod = System.Net.Http.HttpMethod;
 
-namespace OpenApiServer.Core.MockServer.RequestHandlers
+namespace OpenApiServer.Core.MockServer.RequestHandlers.Defaults
 {
     public class ProxyRequestHandler : IMockServerRequestHandler
     {
@@ -73,6 +73,10 @@ namespace OpenApiServer.Core.MockServer.RequestHandlers
 
             foreach (var (k, v) in ctx.Request.Headers)
             {
+                // Skip Content-Length to avoid mismatch with actual content-length
+                // which may change when request is recreated.
+                if (k == "Content-Length") continue;
+
                 targetRequest.Content.Headers.TryAddWithoutValidation(k, v.ToArray());
             }
 

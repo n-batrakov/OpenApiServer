@@ -7,25 +7,21 @@ using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Core.MockServer.Validation;
 using OpenApiServer.Core.MockServer.Validation.Types;
 
-namespace OpenApiServer.Core.MockServer.RequestHandlers
+namespace OpenApiServer.Core.MockServer.RequestHandlers.Defaults
 {
-    public class MockServerRequestHandler : IMockServerRequestHandler
+    public class ConfigurableRequestHandler : IMockServerRequestHandler
     {
         private IMockServerRequestValidator RequestValidator { get; }
         private IMockServerResponseValidator ResponseValidator { get; }
+        private IMockServerRequestHandlerProvider HandlerProvider { get; }
 
-        private MockRequestHandler MockHandler { get; }
-        private ProxyRequestHandler ProxyHandler { get; }
-
-        public MockServerRequestHandler(IMockServerRequestValidator requestValidator,
+        public ConfigurableRequestHandler(IMockServerRequestValidator requestValidator,
                                         IMockServerResponseValidator responseValidator,
-                                        MockRequestHandler mockHandler,
-                                        ProxyRequestHandler proxyHandler)
+                                        IMockServerRequestHandlerProvider handlerProvider)
         {
             RequestValidator = requestValidator;
             ResponseValidator = responseValidator;
-            MockHandler = mockHandler;
-            ProxyHandler = proxyHandler;
+            HandlerProvider = handlerProvider;
         }
 
         public async Task<MockServerResponseContext> HandleAsync(RequestContext context)
@@ -40,9 +36,7 @@ namespace OpenApiServer.Core.MockServer.RequestHandlers
             }
 
             var delayTask = Task.Delay(context.Config.Delay);
-            var responseTask = context.Config.Mock
-                                       ? MockHandler.HandleAsync(context)
-                                       : ProxyHandler.HandleAsync(context);
+            var responseTask = HandlerProvider.GetHandler(context.Config.Handler).HandleAsync(context);
             await Task.WhenAll(delayTask, responseTask);
 
             if (context.Config.ValidateResponse)
@@ -50,8 +44,7 @@ namespace OpenApiServer.Core.MockServer.RequestHandlers
                 var responseValidationStatus = ResponseValidator.Validate(responseTask.Result, context);
                 if (!responseValidationStatus.IsSuccess)
                 {
-                    return Error(responseValidationStatus,
-                                                            HttpStatusCode.InternalServerError);
+                    return Error(responseValidationStatus, HttpStatusCode.InternalServerError);
                 }
 
             }

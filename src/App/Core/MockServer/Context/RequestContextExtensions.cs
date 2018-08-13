@@ -131,7 +131,8 @@ namespace OpenApiServer.Core.MockServer.Context
             {
                 using (var reader = new StreamReader(request.Body))
                 {
-                    return ParseRawValue(reader.ReadToEnd());
+                    var body = reader.ReadToEnd();
+                    return ParseRawValue(body);
                 }
             }
         }

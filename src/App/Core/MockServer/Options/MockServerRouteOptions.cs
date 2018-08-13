@@ -15,7 +15,7 @@ namespace OpenApiServer.Core.MockServer.Options
     {
         public string Path { get; set; }
         public MockServerOptionsHttpMethod Method { get; set; }
-        public bool? Mock { get; set; }
+        public string Handler { get; set; }
 
         public MockServerOptionsValidationMode Validate { get; set; }
         public ushort Delay { get; set; }
@@ -27,7 +27,7 @@ namespace OpenApiServer.Core.MockServer.Options
                         Path = ".*",
                         Method = MockServerOptionsHttpMethod.Any,
                         Delay = 0,
-                        Mock = false,
+                        Handler = "proxy",
                         Validate = MockServerOptionsValidationMode.None
                 };
 
@@ -36,7 +36,7 @@ namespace OpenApiServer.Core.MockServer.Options
                 {
                         Path = Path,
                         Method = Method,
-                        Mock = options.Mock ?? Mock,
+                        Handler = options.Handler ?? Handler,
                         Delay = options.Delay == 0 ? Delay : options.Delay,
                         Validate = options.Validate == MockServerOptionsValidationMode.Undefined
                                            ? Validate

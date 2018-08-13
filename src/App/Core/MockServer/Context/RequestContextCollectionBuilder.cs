@@ -68,7 +68,8 @@ namespace OpenApiServer.Core.MockServer.Context
             return new RequestContextConfig
                    {
                            Delay = option.Delay,
-                           Mock = option.Mock ?? false,
+                           Handler = option.Handler ?? "proxy",
+
                            ValidateRequest = option.ShouldValidateRequest(),
                            ValidateResponse = option.ShouldValidateResponse(),
                            Host = UrlHelper.GetHost(option.Host, defaultHost)

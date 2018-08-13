@@ -13,7 +13,7 @@ using Microsoft.OpenApi.Models;
 
 using OpenApiServer.Core.MockServer.Context;
 using OpenApiServer.Core.MockServer.Context.Types;
-using OpenApiServer.Core.MockServer.RequestHandlers;
+using OpenApiServer.Core.MockServer.RequestHandlers.Defaults;
 using OpenApiServer.Server.Logging;
 
 namespace OpenApiServer.Core.MockServer
@@ -21,18 +21,18 @@ namespace OpenApiServer.Core.MockServer
     public class MockServerBuilder
     {
         private IApplicationBuilder ApplicationBuilder { get; }
+
         private RequestContextProvider ContextProvider { get; }
+
         private ILogger Logger { get; }
 
-        private IMockServerRequestHandler GeneralRequestHandler { get; }
-        private MockRequestHandler MockRequestHandler { get; }
+        private ConfigurableRequestHandler Handler { get; }
 
         public MockServerBuilder(IApplicationBuilder app, IEnumerable<OpenApiDocument> specs)
         {
             ApplicationBuilder = app;
             ContextProvider = ActivatorUtilities.CreateInstance<RequestContextProvider>(app.ApplicationServices, specs);
-            GeneralRequestHandler = app.ApplicationServices.GetRequiredService<IMockServerRequestHandler>();
-            MockRequestHandler = app.ApplicationServices.GetRequiredService<MockRequestHandler>();
+            Handler = ActivatorUtilities.CreateInstance<ConfigurableRequestHandler>(app.ApplicationServices);
             Logger = app.ApplicationServices.GetRequiredService<ILoggerFactory>().CreateOpenApiLogger();
         }
 
@@ -58,8 +58,9 @@ namespace OpenApiServer.Core.MockServer
             var id = new RouteId(path, mockId.Verb);
 
             var requestContext = ContextProvider.GetContext(id, ctx);
+            requestContext.Config.Handler = "mock";
 
-            return HandleRequest(requestContext, ctx.Response, MockRequestHandler);
+            return HandleRequest(requestContext, ctx.Response);
         }
 
         private Task HandleGeneralRequest(HttpContext ctx)
@@ -67,12 +68,12 @@ namespace OpenApiServer.Core.MockServer
             var requestContext = ContextProvider.GetContext(ctx);
             ctx.Features.Set(requestContext);
 
-            return HandleRequest(requestContext, ctx.Response, GeneralRequestHandler);
+            return HandleRequest(requestContext, ctx.Response);
         }
 
-        private Task HandleRequest(RequestContext requestContext, HttpResponse httpResponse, IMockServerRequestHandler handler)
+        private Task HandleRequest(RequestContext requestContext, HttpResponse httpResponse)
         {
-            return handler.HandleAsync(requestContext).ContinueWith(HandleResponseAsync).Unwrap();
+            return Handler.HandleAsync(requestContext).ContinueWith(HandleResponseAsync).Unwrap();
 
             Task HandleResponseAsync(Task<MockServerResponseContext> x)
             {
