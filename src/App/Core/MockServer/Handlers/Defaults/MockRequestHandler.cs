@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Writers;
 
 using OpenApiServer.Core.MockServer.Context.Types;
@@ -13,6 +12,7 @@ using OpenApiServer.Utils;
 
 namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 {
+    [RequestHandler("mock")]
     public class MockRequestHandler : IRequestHandler
     {
         private IOpenApiExampleProvider ExampleProvider { get; }
@@ -25,13 +25,9 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
         public Task<ResponseContext> HandleAsync(RequestContext context)
         {
             var responseSpec = ChooseResponse(context.Spec.Responses);
-            if (responseSpec == null)
-            {
-                return Task.FromResult(RespondWithNothing(HttpStatusCode.NoContent));
-            }
-
-            var responseMock = MockResponse(responseSpec);
-            return Task.FromResult(RespondWithMock(responseMock, responseSpec));
+            return Task.FromResult(responseSpec == null
+                                           ? RespondWithNothing()
+                                           : RespondWithMock(responseSpec));
         }
 
         private static RequestContextResponse ChooseResponse(IEnumerable<RequestContextResponse> responseSpec)
@@ -50,40 +46,37 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             return successResponse ?? filterMediaType.FirstOrDefault();
         }
 
-        private MockHttpResponse MockResponse(RequestContextResponse mediaType)
+        private ResponseContext RespondWithMock(RequestContextResponse mediaType)
         {
             var body = OpenApiSerializer.Serialize(WriteBody);
 
-            return new MockHttpResponse(body);
+            return new ResponseContext
+                   {
+
+                           StatusCode = mediaType.StatusCodeParsed,
+                           ContentType = mediaType.ContentType,
+                           Body = body,
+                   };
 
             void WriteBody(IOpenApiWriter writer)
             {
-                var _ = TryWriteExample(writer, mediaType) || ExampleProvider.TryWriteValue(writer, mediaType.Schema);
+                var _ = TryWriteExample(writer) || ExampleProvider.TryWriteValue(writer, mediaType.Schema);
             }
-        }
 
-        private static bool TryWriteExample(IOpenApiWriter writer, RequestContextResponse mediaType)
-        {
-            if (mediaType.Examples?.Count > 0)
+            bool TryWriteExample(IOpenApiWriter writer)
             {
-                var example = mediaType.Examples.First();
-                writer.WriteRaw(example);
-                return true;
-            }
+                if (mediaType.Examples?.Count > 0)
+                {
+                    var example = mediaType.Examples.First();
+                    writer.WriteRaw(example);
+                    return true;
+                }
 
-            return false;
+                return false;
+            }
         }
 
-        private static ResponseContext RespondWithMock(MockHttpResponse mock, RequestContextResponse spec) =>
-                new ResponseContext
-                {
-                        ContentType = spec.ContentType,
-                        StatusCode = spec.StatusCodeParsed,
-                        Headers = mock.Headers.ToDictionary(x => x.Key, x => new StringValues(x.Value)),
-                        Body = mock.Body
-                };
-
-        private static ResponseContext RespondWithNothing(HttpStatusCode code) =>
-                new ResponseContext {StatusCode = code};
+        private static ResponseContext RespondWithNothing() =>
+                new ResponseContext {StatusCode = HttpStatusCode.NoContent};
     }
 }

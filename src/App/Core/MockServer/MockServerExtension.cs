@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -7,8 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
 using OpenApiServer.Core.MockServer.Context;
+using OpenApiServer.Core.MockServer.ExampleProviders;
 using OpenApiServer.Core.MockServer.Handlers;
-using OpenApiServer.Core.MockServer.Handlers.Defaults;
 using OpenApiServer.Core.MockServer.Options;
 using OpenApiServer.Core.MockServer.Validation;
 
@@ -39,14 +38,9 @@ namespace OpenApiServer.Core.MockServer
             services.AddSingleton<IRequestValidator, RequestValidator>();
             services.AddSingleton<IResponseValidator, ResponseValidator>();
 
-            var handlers = new Dictionary<string, Type>
-                           {
-                                   ["mock"] = typeof(MockRequestHandler),
-                                   ["proxy"] = typeof(ProxyRequestHandler)
-                           };
-            services.AddSingleton<IRequestHandlerProvider>(
-                    x => new RequestHandlerProvider(x, handlers));
+            services.AddSingleton<IOpenApiExampleProvider, OpenApiExampleProvider>();
 
+            services.AddSingleton(x => HandlerProviderFactory.CreateHandlerProvider(x, typeof(Program).Assembly));
 
             services.AddSingleton<RequestContextProvider>();
 

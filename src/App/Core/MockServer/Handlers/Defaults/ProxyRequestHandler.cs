@@ -14,6 +14,7 @@ using HttpMethod = System.Net.Http.HttpMethod;
 
 namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 {
+    [RequestHandler("proxy")]
     public class ProxyRequestHandler : IRequestHandler
     {
         private static readonly Guid Id = Guid.NewGuid();
