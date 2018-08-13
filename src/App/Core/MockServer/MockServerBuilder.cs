@@ -13,7 +13,7 @@ using Microsoft.OpenApi.Models;
 
 using OpenApiServer.Core.MockServer.Context;
 using OpenApiServer.Core.MockServer.Context.Types;
-using OpenApiServer.Core.MockServer.RequestHandlers.Defaults;
+using OpenApiServer.Core.MockServer.Handlers.Defaults;
 using OpenApiServer.Server.Logging;
 
 namespace OpenApiServer.Core.MockServer
@@ -75,12 +75,12 @@ namespace OpenApiServer.Core.MockServer
         {
             return Handler.HandleAsync(requestContext).ContinueWith(HandleResponseAsync).Unwrap();
 
-            Task HandleResponseAsync(Task<MockServerResponseContext> x)
+            Task HandleResponseAsync(Task<ResponseContext> x)
             {
                 return x.IsCompletedSuccessfully ? HandleSuccess(x.Result) : HandleFault(x.Exception.InnerException);
             }
 
-            Task HandleSuccess(MockServerResponseContext ctx) =>
+            Task HandleSuccess(ResponseContext ctx) =>
                     WriteResponse(httpResponse, ctx);
 
             Task HandleFault(Exception e)
@@ -90,7 +90,7 @@ namespace OpenApiServer.Core.MockServer
             }
         }
 
-        private static Task WriteResponse(HttpResponse response, MockServerResponseContext responseContext)
+        private static Task WriteResponse(HttpResponse response, ResponseContext responseContext)
         {
             response.StatusCode = (int)responseContext.StatusCode;
             response.ContentType = responseContext.ContentType;

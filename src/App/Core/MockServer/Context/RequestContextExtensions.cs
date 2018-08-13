@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 using OpenApiServer.Core.MockServer.Context.Types;
-using OpenApiServer.Core.MockServer.Generation.Internals;
+using OpenApiServer.Core.MockServer.ExampleProviders.Internals;
 using OpenApiServer.Core.MockServer.Options;
 using OpenApiServer.Utils;
 

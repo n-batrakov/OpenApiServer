@@ -7,9 +7,8 @@ using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json.Schema;
 
+using OpenApiServer.Core.MockServer.Context.Mapping;
 using OpenApiServer.Core.MockServer.Context.Types;
-using OpenApiServer.Core.MockServer.Generation.Internals;
-using OpenApiServer.Core.MockServer.Generation.Types;
 
 namespace OpenApiServer.Core.MockServer.Validation.Internals
 {
@@ -29,7 +28,7 @@ namespace OpenApiServer.Core.MockServer.Validation.Internals
             var style = parameter.Style ?? GetDefaultStyle(parameter.In);
             var delimeter = GetDelimeter(style);
             var explode = values.Count > 1;
-            var type = parameter.Schema.ConvertTypeToEnum();
+            var type = parameter.Schema.GetSchemaType();
 
             switch (type)
             {
@@ -107,7 +106,7 @@ namespace OpenApiServer.Core.MockServer.Validation.Internals
 
         private static bool TryParseToRequiredType(string value, JSchema schema, out object result)
         {
-            var type = schema.ConvertTypeToEnum();
+            var type = schema.GetSchemaType();
             switch (type)
             {
                 case OpenApiSchemaType.Boolean:

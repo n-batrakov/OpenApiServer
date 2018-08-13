@@ -9,11 +9,11 @@ namespace UnitTests
 {
     public class RequestValidatorTests
     {
-        private MockServerRequestValidator Sut { get; }
+        private RequestValidator Sut { get; }
 
         public RequestValidatorTests()
         {
-            Sut = new MockServerRequestValidator();
+            Sut = new RequestValidator();
         }
 
         [Fact]
