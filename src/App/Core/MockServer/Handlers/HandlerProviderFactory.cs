@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using OpenApiServer.Core.MockServer.Handlers.Defaults;
-
 namespace OpenApiServer.Core.MockServer.Handlers
 {
     public static class HandlerProviderFactory

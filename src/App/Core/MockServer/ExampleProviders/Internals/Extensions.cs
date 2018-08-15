@@ -7,7 +7,7 @@ using Microsoft.OpenApi.Writers;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
-using OpenApiServer.Core.MockServer.Generation.Types;
+using OpenApiServer.Core.MockServer.Exceptions;
 
 namespace OpenApiServer.Core.MockServer.ExampleProviders.Internals
 {

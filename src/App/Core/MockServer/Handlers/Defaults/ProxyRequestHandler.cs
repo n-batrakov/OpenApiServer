@@ -5,10 +5,13 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 
 using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Core.MockServer.Exceptions;
+using OpenApiServer.Utils;
 
 using HttpMethod = System.Net.Http.HttpMethod;
 
@@ -17,21 +20,36 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
     [RequestHandler("proxy")]
     public class ProxyRequestHandler : IRequestHandler
     {
+        public class Options
+        {
+            public string Host { get; set; }
+        }
+
         private static readonly Guid Id = Guid.NewGuid();
-        private const string ForwarderFromHeader = "X-Forwarded-From";
         private string ProxyInstanceId { get; }
 
-        private IHttpClientFactory ClientFactory { get; }
+        private const string ForwarderFromHeader = "X-Forwarded-From";
+        private const string ForwaredHostHeader = "X-Forwarded-Host";
 
-        public ProxyRequestHandler(IHttpClientFactory clientFactory)
+        private IHttpClientFactory ClientFactory { get; }
+        private Options Config { get; }
+
+        public ProxyRequestHandler(IHttpClientFactory clientFactory, IConfiguration config)
         {
             ClientFactory = clientFactory;
             ProxyInstanceId = Id.ToString();
+            
+            var options = new Options();
+            config.Bind(options);
+            Config = options;
         }
 
         public Task<ResponseContext> HandleAsync(RequestContext context)
         {
-            if (context.Config.Host == default)
+            var host = GetHostFromHeader(context.Request.Headers) ??
+                       Config.Host ??
+                       GetHostFromOperation(context.Spec);
+            if (host == null)
             {
                 throw new MockServerConfigurationException("Unable to find host to proxy the request.");
             }
@@ -48,24 +66,24 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
                 }
             }
 
-            return Proxy(context);
+            return Proxy(context, host);
         }
 
-        private async Task<ResponseContext> Proxy(RequestContext ctx)
+        private async Task<ResponseContext> Proxy(RequestContext ctx, string host)
         {
             var client = ClientFactory.CreateClient();
-            var request = CreateRequest(ctx);
+            var request = CreateRequest(ctx, host);
 
             var response = await client.SendAsync(request).ConfigureAwait(false);
 
             return await CreateResponseAsync(response).ConfigureAwait(false);
         }
 
-        private HttpRequestMessage CreateRequest(RequestContext ctx)
+        private HttpRequestMessage CreateRequest(RequestContext ctx, string host)
         {
             var targetRequest = new HttpRequestMessage
                                 {
-                                        RequestUri = new Uri($"{ctx.Config.Host}{ctx.Request.PathAndQuery}"),
+                                        RequestUri = new Uri($"{host}{ctx.Request.PathAndQuery}"),
                                         Method = new HttpMethod(ctx.Request.Method.ToString().ToUpperInvariant()),
                                         Content = new StringContent(ctx.Request.Body.ToString(),
                                                                     Encoding.UTF8,
@@ -108,6 +126,25 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
                                           .ToDictionary(x => x.Key, x => new StringValues(x.Value.ToArray()));
                 return new Dictionary<string, StringValues>(items);
             }
+        }
+
+        private static string GetHostFromHeader(IHeaderDictionary headers)
+        {
+            var hasProxyHeader = headers.TryGetValue(ForwaredHostHeader, out var header);
+            if (hasProxyHeader)
+            {
+                return UrlHelper.GetHost(header.ToString());
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private static string GetHostFromOperation(RequestContextSpec spec)
+        {
+            var specUrl = spec.Servers.FirstOrDefault();
+            return specUrl == null ? null : UrlHelper.GetHost(specUrl);
         }
     }
 }

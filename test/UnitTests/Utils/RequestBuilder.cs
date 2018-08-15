@@ -11,6 +11,9 @@ using Microsoft.OpenApi.Models;
 
 using OpenApiServer.Core.MockServer.Context.Mapping;
 using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.ExampleProviders;
+using OpenApiServer.Core.MockServer.Handlers.Defaults;
+using OpenApiServer.Core.MockServer.Options;
 
 namespace UnitTests.Utils
 {
@@ -44,7 +47,7 @@ namespace UnitTests.Utils
 
         public RequestContext Build()
         {
-            var config = new RequestContextConfig();
+            var config = new MockServerRouteOptions();
             var server = new Microsoft.OpenApi.Models.OpenApiServer[0];
             var spec = RequestContextSpecConverter.ConvertSpec(Spec, server);
             var callCtx = new RequestContextCall
@@ -58,7 +61,9 @@ namespace UnitTests.Utils
                                   PathAndQuery = Path,
                           };
 
-            return new RequestContext(config, spec, callCtx);
+            var handler = new MockRequestHandler(new OpenApiExampleProvider());
+
+            return new RequestContext(config, spec).WithRequest(callCtx, handler);
         }
 
         public RequestBuilder WithSpec(OpenApiOperation spec)

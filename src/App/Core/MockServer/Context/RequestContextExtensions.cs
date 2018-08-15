@@ -1,21 +1,13 @@
 using System;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
-using Microsoft.Extensions.Logging;
-
-using Newtonsoft.Json.Linq;
 
 using OpenApiServer.Core.MockServer.Context.Types;
-using OpenApiServer.Core.MockServer.ExampleProviders.Internals;
 using OpenApiServer.Core.MockServer.Options;
-using OpenApiServer.Utils;
 
 namespace OpenApiServer.Core.MockServer.Context
 {
@@ -54,6 +46,11 @@ namespace OpenApiServer.Core.MockServer.Context
 
         public static bool IsMatch(this MockServerRouteOptions config, RouteId id)
         {
+            if (config.Path == null)
+            {
+                return IsMethodsMatch(id.Verb, config.Method);
+            }
+
             var regexp = new Regex(config.Path);
             return regexp.IsMatch(id.Path) && IsMethodsMatch(id.Verb, config.Method);
         }
@@ -85,124 +82,6 @@ namespace OpenApiServer.Core.MockServer.Context
                 default:
                     throw new ArgumentOutOfRangeException(nameof(configMethod), configMethod, null);
             }
-        }
-
-
-
-        public static RequestContext WithRequest(this RequestContext requestContext, HttpContext ctx, ILogger logger = null)
-        {
-            var callCtx = new RequestContextCall
-                          {
-                                  PathAndQuery = ctx.Request.GetEncodedPathAndQuery(),
-                                  Method = Enum.Parse<HttpMethod>(ctx.Request.Method, ignoreCase: true),
-                                  Host = GetHostFromHeader(ctx) ??
-                                         requestContext.Config.Host ??
-                                         GetHostFromOperation(requestContext.Spec),
-
-                                  ContentType = GetContentType(ctx.Request),
-                                  Query = ctx.Request.Query,
-                                  Headers = ctx.Request.Headers,
-                                  Route = ctx.GetRouteData(),
-                                  Body = GetBody(ctx.Request),
-                          };
-            return requestContext.WithRequest(callCtx, logger);
-        }
-
-        private static JToken GetBody(HttpRequest request)
-        {
-            return request.HasFormContentType ? ReadForm() : ReadBody();
-
-            JToken ReadForm()
-            {
-                var obj = new JObject();
-                foreach (var (key, value) in request.Form)
-                {
-                    var propertyValue = ParseRawValue(value);
-                    obj.Add(key, propertyValue);
-                }
-
-                var fileProperties = request.Form.Files.ToDictionary(x => x.Name, GetFilePropertyValue);
-                obj.AddRange(fileProperties, overwriteDuplicateKeys: false);
-
-                return obj;
-            }
-
-            JToken ReadBody()
-            {
-                using (var reader = new StreamReader(request.Body))
-                {
-                    var body = reader.ReadToEnd();
-                    return ParseRawValue(body);
-                }
-            }
-        }
-
-        private static JToken GetFilePropertyValue(IFormFile file)
-        {
-            using (var memorySteam = new MemoryStream())
-            {
-                file.CopyTo(memorySteam);
-                var bytes = memorySteam.ToArray();
-                var base64 = Convert.ToBase64String(bytes);
-                return new JValue(base64);
-            }
-        }
-
-        private static string GetHostFromHeader(HttpContext ctx)
-        {
-            const string proxyHeaderName = "X-Forwarded-Host";
-            var hasProxyHeader = ctx.Request.Headers.TryGetValue(proxyHeaderName, out var header);
-            if (hasProxyHeader)
-            {
-                return UrlHelper.GetHost(header.ToString());
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        private static string GetHostFromOperation(RequestContextSpec spec)
-        {
-            var specUrl = spec.Servers.FirstOrDefault();
-            return specUrl == null ? null : UrlHelper.GetHost(specUrl);
-        }
-
-        private static string GetContentType(HttpRequest request)
-        {
-            var hasContentType = request.Headers.TryGetValue("Content-Type", out var values);
-            if (!hasContentType || values.Count == 0)
-            {
-                return null;
-            }
-
-            var contentType = values.First();
-            return contentType.Split(';').First();
-        }
-
-        private static JToken ParseRawValue(string value)
-        {
-            if (string.IsNullOrEmpty(value))
-            {
-                return null;
-            }
-
-            if (value.StartsWith('{') || value.StartsWith('['))
-            {
-                return JToken.Parse(value);
-            }
-
-            if (bool.TryParse(value, out var boolean))
-            {
-                return new JValue(boolean);
-            }
-
-            if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var num))
-            {
-                return new JValue(num);
-            }
-
-            return new JValue(value);
         }
     }
 }

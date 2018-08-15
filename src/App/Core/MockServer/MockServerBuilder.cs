@@ -13,7 +13,6 @@ using Microsoft.OpenApi.Models;
 
 using OpenApiServer.Core.MockServer.Context;
 using OpenApiServer.Core.MockServer.Context.Types;
-using OpenApiServer.Core.MockServer.Handlers.Defaults;
 using OpenApiServer.Server.Logging;
 
 namespace OpenApiServer.Core.MockServer
@@ -26,13 +25,11 @@ namespace OpenApiServer.Core.MockServer
 
         private ILogger Logger { get; }
 
-        private ConfigurableRequestHandler Handler { get; }
-
         public MockServerBuilder(IApplicationBuilder app, IEnumerable<OpenApiDocument> specs)
         {
             ApplicationBuilder = app;
             ContextProvider = ActivatorUtilities.CreateInstance<RequestContextProvider>(app.ApplicationServices, specs);
-            Handler = ActivatorUtilities.CreateInstance<ConfigurableRequestHandler>(app.ApplicationServices);
+            
             Logger = app.ApplicationServices.GetRequiredService<ILoggerFactory>().CreateOpenApiLogger();
         }
 
@@ -69,11 +66,11 @@ namespace OpenApiServer.Core.MockServer
             ctx.Features.Set(requestContext);
 
             return HandleRequest(requestContext, ctx.Response);
-        }
+        }        
 
         private Task HandleRequest(RequestContext requestContext, HttpResponse httpResponse)
         {
-            return Handler.HandleAsync(requestContext).ContinueWith(HandleResponseAsync).Unwrap();
+            return requestContext.Handler.HandleAsync(requestContext).ContinueWith(HandleResponseAsync).Unwrap();
 
             Task HandleResponseAsync(Task<ResponseContext> x)
             {

@@ -25,8 +25,7 @@ namespace OpenApiServer.Core.MockServer.Context
                         continue;
                     }
 
-                    var newValue = MapConfig(routeConfig, options.MockServerHost);
-                    requestContext.UpdateConfig(newValue);
+                    requestContext.UpdateConfig(routeConfig);
                 }
             }
         }
@@ -44,10 +43,9 @@ namespace OpenApiServer.Core.MockServer.Context
                     {
                         var key = GetRouteId(spec, operation, verb, path);
                         var config = GetRouteOptions(options, key);
-                        var configCtx = MapConfig(config, options.MockServerHost);
                         var specCtx = RequestContextSpecConverter.ConvertSpec(operation, spec.Servers);
 
-                        var value = new RequestContext(configCtx, specCtx);
+                        var value = new RequestContext(config, specCtx);
                         result[key] = value;
                     }
                 }
@@ -62,19 +60,6 @@ namespace OpenApiServer.Core.MockServer.Context
                         : options.Routes
                                  .Where(x => x.IsMatch(key))
                                  .Aggregate((acc, x) => x.Merge(acc));
-
-        private static RequestContextConfig MapConfig(MockServerRouteOptions option, string defaultHost)
-        {
-            return new RequestContextConfig
-                   {
-                           Delay = option.Delay,
-                           Handler = option.Handler ?? "proxy",
-
-                           ValidateRequest = option.ShouldValidateRequest(),
-                           ValidateResponse = option.ShouldValidateResponse(),
-                           Host = UrlHelper.GetHost(option.Host, defaultHost)
-                   };
-        }
 
         private static RouteId GetRouteId(OpenApiDocument spec,
                                           OpenApiOperation operation,

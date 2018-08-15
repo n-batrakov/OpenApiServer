@@ -12,8 +12,6 @@ namespace OpenApiServer.Core.MockServer.Context.Types
 
         public HttpMethod Method { get; set; }
 
-        public string Host { get; set; }
-
         public RouteData Route { get; set; }
 
         public IHeaderDictionary Headers { get; set; }
