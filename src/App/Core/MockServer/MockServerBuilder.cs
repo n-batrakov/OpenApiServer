@@ -97,7 +97,7 @@ namespace OpenApiServer.Core.MockServer
                 response.Headers[key] = value;
             }
 
-            return responseContext.StatusCode == HttpStatusCode.NoContent
+            return responseContext.Body == null
                            ? Task.CompletedTask
                            : response.WriteAsync(responseContext.Body);
         }

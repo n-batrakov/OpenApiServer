@@ -46,12 +46,12 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
                     continue;
                 }
 
+                prevResponse = ConcatContexts(prevResponse, currentResponse);
+
                 if (currentResponse.BreakPipeline)
                 {
                     break;
                 }
-
-                prevResponse = ConcatContexts(prevResponse, currentResponse);
             }
 
             return prevResponse;

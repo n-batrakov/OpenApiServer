@@ -7,7 +7,7 @@ using OpenApiServer.Core.MockServer.Context.Types;
 namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 {
     [RequestHandler("delay")]
-    public class DelayHanlder : IRequestHandler
+    public class DelayHandler : IRequestHandler
     {
         public class Options
         {
@@ -16,7 +16,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 
         private Options Config { get; }
 
-        public DelayHanlder(IConfiguration config)
+        public DelayHandler(IConfiguration config)
         {
             var options = new Options();
             config.Bind(options);
