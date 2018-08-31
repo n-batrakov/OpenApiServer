@@ -1,13 +1,10 @@
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 
 using OpenApiServer.Core.MockServer.Context.Types;
-using OpenApiServer.Core.MockServer.Options;
 
 namespace OpenApiServer.Core.MockServer.Context
 {
@@ -42,46 +39,6 @@ namespace OpenApiServer.Core.MockServer.Context
         {
             //TODO: Format server url wtih variables
             return server.Url;
-        }
-
-        public static bool IsMatch(this MockServerRouteOptions config, RouteId id)
-        {
-            if (config.Path == null)
-            {
-                return IsMethodsMatch(id.Verb, config.Method);
-            }
-
-            var regexp = new Regex(config.Path);
-            return regexp.IsMatch(id.Path) && IsMethodsMatch(id.Verb, config.Method);
-        }
-
-        private static bool IsMethodsMatch(HttpMethod specMethod, MockServerOptionsHttpMethod configMethod)
-        {
-            switch (configMethod)
-            {
-                case MockServerOptionsHttpMethod.Get:
-                    return specMethod == HttpMethod.Get;
-                case MockServerOptionsHttpMethod.Put:
-                    return specMethod == HttpMethod.Put;
-                case MockServerOptionsHttpMethod.Delete:
-                    return specMethod == HttpMethod.Delete;
-                case MockServerOptionsHttpMethod.Post:
-                    return specMethod == HttpMethod.Post;
-                case MockServerOptionsHttpMethod.Head:
-                    return specMethod == HttpMethod.Head;
-                case MockServerOptionsHttpMethod.Trace:
-                    return specMethod == HttpMethod.Trace;
-                case MockServerOptionsHttpMethod.Patch:
-                    return specMethod == HttpMethod.Patch;
-                case MockServerOptionsHttpMethod.Connect:
-                    return specMethod == HttpMethod.Connect;
-                case MockServerOptionsHttpMethod.Options:
-                    return specMethod == HttpMethod.Options;
-                case MockServerOptionsHttpMethod.Any:
-                    return true;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(configMethod), configMethod, null);
-            }
         }
     }
 }

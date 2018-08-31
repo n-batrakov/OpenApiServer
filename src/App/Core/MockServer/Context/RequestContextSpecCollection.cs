@@ -7,33 +7,25 @@ using Microsoft.OpenApi.Models;
 
 using OpenApiServer.Core.MockServer.Context.Mapping;
 using OpenApiServer.Core.MockServer.Context.Types;
-using OpenApiServer.Core.MockServer.Options;
 using OpenApiServer.Utils;
 
 namespace OpenApiServer.Core.MockServer.Context
 {
-    public static class RequestContextCollectionBuilder
+    public class RequestContextSpecCollection
     {
-        public static void UpdateContexts(IDictionary<RouteId, RequestContext> contexts, MockServerOptions options)
-        {
-            foreach (var (id, requestContext) in contexts)
-            {
-                foreach (var routeConfig in options.Routes)
-                {
-                    if (!routeConfig.IsMatch(id))
-                    {
-                        continue;
-                    }
+        private IDictionary<RouteId, RequestContextSpec> Source { get; }
 
-                    requestContext.UpdateConfig(routeConfig);
-                }
-            }
+        public IEnumerable<RouteId> Routes => Source.Keys;
+        public RequestContextSpec this[RouteId key] => Source[key];
+
+        public RequestContextSpecCollection(IEnumerable<OpenApiDocument> specs)
+        {
+            Source = GetRouteSpecs(specs);
         }
 
-        public static IDictionary<RouteId, RequestContext> Build(MockServerOptions options,
-                                                                 IEnumerable<OpenApiDocument> specs)
+        private static IDictionary<RouteId, RequestContextSpec> GetRouteSpecs(IEnumerable<OpenApiDocument> specs)
         {
-            var result = new Dictionary<RouteId, RequestContext>();
+            var result = new Dictionary<RouteId, RequestContextSpec>();
 
             foreach (var spec in specs)
             {
@@ -42,24 +34,14 @@ namespace OpenApiServer.Core.MockServer.Context
                     foreach (var (verb, operation) in pathSpec.Operations)
                     {
                         var key = GetRouteId(spec, operation, verb, path);
-                        var config = GetRouteOptions(options, key);
                         var specCtx = RequestContextSpecConverter.ConvertSpec(operation, spec.Servers);
-
-                        var value = new RequestContext(config, specCtx);
-                        result[key] = value;
+                        result[key] = specCtx;
                     }
                 }
             }
 
             return result;
         }
-
-        private static MockServerRouteOptions GetRouteOptions(MockServerOptions options, RouteId key) =>
-                options.Routes == null
-                        ? MockServerRouteOptions.Default
-                        : options.Routes
-                                 .Where(x => x.IsMatch(key))
-                                 .Aggregate((acc, x) => x.Merge(acc));
 
         private static RouteId GetRouteId(OpenApiDocument spec,
                                           OpenApiOperation operation,

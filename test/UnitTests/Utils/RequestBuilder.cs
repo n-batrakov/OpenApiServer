@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
 
@@ -63,7 +64,7 @@ namespace UnitTests.Utils
 
             var handler = new MockRequestHandler(new OpenApiExampleProvider());
 
-            return new RequestContext(config, spec).WithRequest(callCtx, handler);
+            return new RequestContext(config, spec, callCtx, handler, NullLogger.Instance);
         }
 
         public RequestBuilder WithSpec(OpenApiOperation spec)
