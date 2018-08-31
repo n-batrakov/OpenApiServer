@@ -18,7 +18,19 @@ namespace OpenApiServer.Core.MockServer.Context
                          .GetChildren()
                          .Where(x => IsRouteConfig(x, route))
                          .Select(GetRouteOptions)
-                         .Aggregate((acc, x) => x.Merge(acc));
+                         .Aggregate(MergeRouteOptions);
+        }
+
+        private static MockServerRouteOptions MergeRouteOptions(MockServerRouteOptions target,
+                                                                MockServerRouteOptions source)
+        {
+            return new MockServerRouteOptions
+                   {
+                           Path = target.Path,
+                           Method = target.Method,
+                           Handler = target.Handler ?? source.Handler,
+                           Config = target.Config ?? source.Config
+                   };
         }
 
         private static bool IsRouteConfig(IConfiguration config, RouteId route)
