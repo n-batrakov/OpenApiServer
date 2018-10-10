@@ -29,7 +29,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
         private string ProxyInstanceId { get; }
 
         private const string ForwarderFromHeader = "X-Forwarded-From";
-        private const string ForwaredHostHeader = "X-Forwarded-Host";
+        private const string ForwardedHostHeader = "X-Forwarded-Host";
 
         private IHttpClientFactory ClientFactory { get; }
         private Options Config { get; }
@@ -130,7 +130,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 
         private static string GetHostFromHeader(IHeaderDictionary headers)
         {
-            var hasProxyHeader = headers.TryGetValue(ForwaredHostHeader, out var header);
+            var hasProxyHeader = headers.TryGetValue(ForwardedHostHeader, out var header);
             if (hasProxyHeader)
             {
                 return UrlHelper.GetHost(header.ToString());
