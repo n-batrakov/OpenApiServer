@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
-
+using Newtonsoft.Json.Linq;
 using OpenApiServer.Core.MockServer.Context.Mapping;
 using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Core.MockServer.ExampleProviders;
@@ -34,7 +34,7 @@ namespace UnitTests.Utils
             Headers = new HeaderDictionary();
             Query = new QueryCollection();
             Form = null;
-            Body = string.Empty;
+            Body = null;
         }
 
         public static RequestBuilder FromUrl(string url, HttpMethod method = HttpMethod.Get)
@@ -56,7 +56,7 @@ namespace UnitTests.Utils
                                   Route = Route,
                                   Method = Method,
                                   Query = Query,
-                                  Body = Body,
+                                  Body = Body == null ? null : JToken.Parse(Body),
                                   Headers = Headers,
                                   ContentType = Form == null ? "application/json" : "multipart/form-data",
                                   PathAndQuery = Path,

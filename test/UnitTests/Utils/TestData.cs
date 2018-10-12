@@ -20,7 +20,7 @@ namespace UnitTests.Utils
             }
         }
 
-        public static RequestValidationError GetInvalidParameterTypeSchemaError(
+        public static HttpValidationError GetInvalidParameterTypeSchemaError(
                 string expectedType,
                 string actualType,
                 string path = "")
@@ -29,9 +29,9 @@ namespace UnitTests.Utils
             return ValidationError.SchemaValidationError(msg);
         }
 
-        public static RequestValidationError GetMissingParameterSchemaError(string parameterName, string path = "")
+        public static HttpValidationError GetMissingParameterSchemaError(string parameterName, string path = "")
         {
-            var msg = $"Required properties are missing from object: {parameterName}. Path '{path}'.";
+            var msg = $"Required properties are missing from object: {parameterName}. Path {path}.";
             return ValidationError.SchemaValidationError(msg);
         }
     }

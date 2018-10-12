@@ -26,7 +26,7 @@ namespace UnitTests
             
 
             var actual = Sut.Validate(ctx);
-            var expected = RequestValidationStatus.Success();
+            var expected = HttpValidationStatus.Success();
 
             Assert.Equal(expected, actual);
         }
@@ -51,7 +51,7 @@ namespace UnitTests
             var ctx = RequestBuilder.FromUrl("/pets?tags=test").WithSpec(spec).Build();
 
             var actual = Sut.Validate(ctx);
-            var expected = RequestValidationStatus.Success();
+            var expected = HttpValidationStatus.Success();
 
             Assert.Equal(expected, actual);
         }
@@ -79,7 +79,7 @@ namespace UnitTests
             var ctx = RequestBuilder.FromUrl("/pets").WithBody(body).WithSpec(spec).Build();
 
             var actual = Sut.Validate(ctx);
-            var expected = RequestValidationStatus.Success();
+            var expected = HttpValidationStatus.Success();
 
             Assert.Equal(expected, actual);
         }
@@ -92,7 +92,7 @@ namespace UnitTests
             var ctx = RequestBuilder.FromUrl("/pets").WithBody(body).WithSpec(spec).Build();
             
             var actual = Sut.Validate(ctx);
-            var expected = TestData.GetMissingParameterSchemaError("name")
+            var expected = TestData.GetMissingParameterSchemaError("name", "'', line 1, position 1")
                                    .Wrap(x => ValidationError.InvalidBody(x))
                                    .AsStatus();
 

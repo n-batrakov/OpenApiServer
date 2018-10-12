@@ -6,11 +6,11 @@ namespace UnitTests.Utils
 {
     public static class RequestStatusExtensions
     {
-        public static RequestValidationError Wrap(this RequestValidationError wrapped,
-                                                  Func<RequestValidationError, RequestValidationError> callback) =>
+        public static HttpValidationError Wrap(this HttpValidationError wrapped,
+                                                  Func<HttpValidationError, HttpValidationError> callback) =>
                 callback(wrapped);
 
-        public static RequestValidationStatus AsStatus(this RequestValidationError error) =>
-                RequestValidationStatus.Error(error);
+        public static HttpValidationStatus AsStatus(this HttpValidationError error) =>
+                HttpValidationStatus.Error(error);
     }
 }
