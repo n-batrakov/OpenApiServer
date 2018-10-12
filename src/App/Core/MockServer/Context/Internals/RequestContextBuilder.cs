@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Newtonsoft.Json.Linq;
 
 using OpenApiServer.Core.MockServer.Context.Types;
-using OpenApiServer.Core.MockServer.ExampleProviders.Internals;
+using OpenApiServer.Core.MockServer.MockDataProviders.Internals;
 
 namespace OpenApiServer.Core.MockServer.Context.Internals
 {

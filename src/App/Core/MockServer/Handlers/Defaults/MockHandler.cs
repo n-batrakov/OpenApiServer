@@ -8,7 +8,7 @@ using Microsoft.OpenApi.Writers;
 
 using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Core.MockServer.Context.Types.Spec;
-using OpenApiServer.Core.MockServer.ExampleProviders;
+using OpenApiServer.Core.MockServer.MockDataProviders;
 using OpenApiServer.Utils;
 
 namespace OpenApiServer.Core.MockServer.Handlers.Defaults
@@ -16,11 +16,11 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
     [RequestHandler("mock")]
     public class MockHandler : IRequestHandler
     {
-        private IOpenApiExampleProvider ExampleProvider { get; }
+        private IMockDataProvider DataProvider { get; }
 
-        public MockHandler(IOpenApiExampleProvider exampleProvider)
+        public MockHandler(IMockDataProvider dataProvider)
         {
-            ExampleProvider = exampleProvider;
+            DataProvider = dataProvider;
         }
 
         public Task<ResponseContext> HandleAsync(RouteContext request)
@@ -61,7 +61,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 
             void WriteBody(IOpenApiWriter writer)
             {
-                var _ = TryWriteExample(writer) || ExampleProvider.TryWriteValue(writer, mediaType.Schema);
+                var _ = TryWriteExample(writer) || DataProvider.TryWriteValue(writer, mediaType.Schema);
             }
 
             bool TryWriteExample(IOpenApiWriter writer)

@@ -9,7 +9,7 @@ using Newtonsoft.Json.Schema;
 
 using OpenApiServer.Core.MockServer.Exceptions;
 
-namespace OpenApiServer.Core.MockServer.ExampleProviders.Internals
+namespace OpenApiServer.Core.MockServer.MockDataProviders.Internals
 {
     internal static class Extensions
     {
@@ -68,7 +68,7 @@ namespace OpenApiServer.Core.MockServer.ExampleProviders.Internals
         }
 
 
-        public static void WriteValueOrThrow(this IEnumerable<IOpenApiExampleProvider> providers,
+        public static void WriteValueOrThrow(this IEnumerable<IMockDataProvider> providers,
                                              IOpenApiWriter writer,
                                              JSchema schema)
         {
@@ -81,7 +81,7 @@ namespace OpenApiServer.Core.MockServer.ExampleProviders.Internals
             throw new ValueGeneratorNotFoundException();
         }
 
-        public static bool TryWriteValue(this IEnumerable<IOpenApiExampleProvider> providers,
+        public static bool TryWriteValue(this IEnumerable<IMockDataProvider> providers,
                                       IOpenApiWriter writer,
                                       JSchema schema)
         {

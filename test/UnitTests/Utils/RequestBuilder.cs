@@ -12,8 +12,8 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Linq;
 using OpenApiServer.Core.MockServer.Context.Mapping;
 using OpenApiServer.Core.MockServer.Context.Types;
-using OpenApiServer.Core.MockServer.ExampleProviders;
 using OpenApiServer.Core.MockServer.Handlers.Defaults;
+using OpenApiServer.Core.MockServer.MockDataProviders;
 using OpenApiServer.Core.MockServer.Options;
 
 using RouteContext = OpenApiServer.Core.MockServer.Context.Types.RouteContext;
@@ -64,7 +64,7 @@ namespace UnitTests.Utils
                                   PathAndQuery = Path,
                           };
 
-            var handler = new MockHandler(new OpenApiExampleProvider());
+            var handler = new MockHandler(new MockDataProvider());
 
             return new RouteContext(config, spec, callCtx, handler, NullLogger.Instance);
         }

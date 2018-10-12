@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 using OpenApiServer.Core.MockServer.Context.Internals;
 using OpenApiServer.Core.MockServer.Context.Types;
-using OpenApiServer.Core.MockServer.ExampleProviders;
+using OpenApiServer.Core.MockServer.MockDataProviders;
 using OpenApiServer.Core.MockServer.Validation;
 using OpenApiServer.Core.MockServer.Validation.Types;
 
@@ -20,14 +20,14 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
         private IRequestValidator RequestValidator { get; }
         private IResponseValidator ResponseValidator { get; }
         
-        private IOpenApiExampleProvider ExampleProvider { get; }
+        private IMockDataProvider ExampleProvider { get; }
         private IHttpClientFactory HttpClientFactory { get; }
 
         public DefaultRequestHandler(
                 Options config,
                 IRequestValidator requestValidator,
                 IResponseValidator responseValidator,
-                IOpenApiExampleProvider exampleProvider,
+                IMockDataProvider exampleProvider,
                 IHttpClientFactory httpClientFactory)
         {
             Config = config;

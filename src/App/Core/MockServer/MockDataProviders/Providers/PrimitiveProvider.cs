@@ -7,9 +7,9 @@ using Newtonsoft.Json.Schema;
 using OpenApiServer.Core.MockServer.Context.Mapping;
 using OpenApiServer.Core.MockServer.Context.Types;
 
-namespace OpenApiServer.Core.MockServer.ExampleProviders.Providers
+namespace OpenApiServer.Core.MockServer.MockDataProviders.Providers
 {
-    public class PrimitiveProvider : IOpenApiExampleProvider
+    public class PrimitiveProvider : IMockDataProvider
     {
         private Random Random { get; }
 

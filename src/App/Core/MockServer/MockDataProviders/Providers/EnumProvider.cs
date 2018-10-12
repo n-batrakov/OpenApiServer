@@ -4,11 +4,11 @@ using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;
 
-using OpenApiServer.Core.MockServer.ExampleProviders.Internals;
+using OpenApiServer.Core.MockServer.MockDataProviders.Internals;
 
-namespace OpenApiServer.Core.MockServer.ExampleProviders.Providers
+namespace OpenApiServer.Core.MockServer.MockDataProviders.Providers
 {
-    public class EnumProvider : IOpenApiExampleProvider
+    public class EnumProvider : IMockDataProvider
     {
         private Random Random { get; }
 

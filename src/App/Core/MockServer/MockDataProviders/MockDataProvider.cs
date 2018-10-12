@@ -6,26 +6,26 @@ using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;
 
-using OpenApiServer.Core.MockServer.ExampleProviders.Internals;
-using OpenApiServer.Core.MockServer.ExampleProviders.Providers;
+using OpenApiServer.Core.MockServer.MockDataProviders.Internals;
+using OpenApiServer.Core.MockServer.MockDataProviders.Providers;
 
-namespace OpenApiServer.Core.MockServer.ExampleProviders
+namespace OpenApiServer.Core.MockServer.MockDataProviders
 {
-    public class OpenApiExampleProvider : IOpenApiExampleProvider
+    public class MockDataProvider : IMockDataProvider
     {
-        private static readonly IOpenApiExampleProvider[] Providers = GetProviders(new Random());
+        private static readonly IMockDataProvider[] Providers = GetProviders(new Random());
 
         public bool TryWriteValue(IOpenApiWriter writer, JSchema schema)
         {
             return Providers.Any(x => x.TryWriteValue(writer, schema));
         }
 
-        private static IOpenApiExampleProvider[] GetProviders(Random rnd)
+        private static IMockDataProvider[] GetProviders(Random rnd)
         {
             // The order between generators may be important.
 
             var counter = new ObjectDepthCounter(depthThreshold: 5);
-            var providers = new List<IOpenApiExampleProvider>();
+            var providers = new List<IMockDataProvider>();
 
             providers.Add(new SchemaExampleProvider());
 

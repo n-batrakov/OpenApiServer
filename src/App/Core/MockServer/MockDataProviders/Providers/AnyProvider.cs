@@ -5,9 +5,9 @@ using Newtonsoft.Json.Schema;
 using OpenApiServer.Core.MockServer.Context.Mapping;
 using OpenApiServer.Core.MockServer.Context.Types;
 
-namespace OpenApiServer.Core.MockServer.ExampleProviders.Providers
+namespace OpenApiServer.Core.MockServer.MockDataProviders.Providers
 {
-    public class AnyProvider : IOpenApiExampleProvider
+    public class AnyProvider : IMockDataProvider
     {
         public bool TryWriteValue(IOpenApiWriter writer, JSchema schema)
         {

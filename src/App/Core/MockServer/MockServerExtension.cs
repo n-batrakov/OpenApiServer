@@ -6,9 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
 using OpenApiServer.Core.MockServer.Context;
-using OpenApiServer.Core.MockServer.ExampleProviders;
 using OpenApiServer.Core.MockServer.Handlers;
 using OpenApiServer.Core.MockServer.Handlers.Internals;
+using OpenApiServer.Core.MockServer.MockDataProviders;
 using OpenApiServer.Core.MockServer.Options;
 using OpenApiServer.Core.MockServer.Validation;
 
@@ -39,7 +39,7 @@ namespace OpenApiServer.Core.MockServer
             services.AddSingleton<IRequestValidator, RequestValidator>();
             services.AddSingleton<IResponseValidator, ResponseValidator>();
 
-            services.AddSingleton<IOpenApiExampleProvider, OpenApiExampleProvider>();
+            services.AddSingleton<IMockDataProvider, MockDataProvider>();
 
             services.AddSingleton(x => new RequestHandlerActivator(x));
             services.AddSingleton(x => RequestHandlerProvider.FromAssemblies(x, typeof(Program).Assembly));

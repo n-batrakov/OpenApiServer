@@ -5,17 +5,17 @@ using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;
 
-using OpenApiServer.Core.MockServer.ExampleProviders.Internals;
+using OpenApiServer.Core.MockServer.MockDataProviders.Internals;
 
-namespace OpenApiServer.Core.MockServer.ExampleProviders.Providers
+namespace OpenApiServer.Core.MockServer.MockDataProviders.Providers
 {
     //TODO: Tuples
     //TODO: Uniqueness
-    public class ArrayProvider : IOpenApiExampleProvider
+    public class ArrayProvider : IMockDataProvider
     {
-        private IReadOnlyCollection<IOpenApiExampleProvider> ExampleProviders { get; }
+        private IReadOnlyCollection<IMockDataProvider> ExampleProviders { get; }
 
-        public ArrayProvider(IReadOnlyCollection<IOpenApiExampleProvider> providers)
+        public ArrayProvider(IReadOnlyCollection<IMockDataProvider> providers)
         {
             ExampleProviders = providers;
         }

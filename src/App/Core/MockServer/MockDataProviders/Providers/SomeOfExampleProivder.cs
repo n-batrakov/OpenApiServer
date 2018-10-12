@@ -7,15 +7,15 @@ using Newtonsoft.Json.Schema;
 
 using OpenApiServer.Core.MockServer.Context.Mapping;
 using OpenApiServer.Core.MockServer.Context.Types;
-using OpenApiServer.Core.MockServer.ExampleProviders.Internals;
+using OpenApiServer.Core.MockServer.MockDataProviders.Internals;
 
-namespace OpenApiServer.Core.MockServer.ExampleProviders.Providers
+namespace OpenApiServer.Core.MockServer.MockDataProviders.Providers
 {
-    public class CombinedGenerator : IOpenApiExampleProvider
+    public class CombinedGenerator : IMockDataProvider
     {
-        private IReadOnlyCollection<IOpenApiExampleProvider> Providers { get; }
+        private IReadOnlyCollection<IMockDataProvider> Providers { get; }
 
-        public CombinedGenerator(IReadOnlyCollection<IOpenApiExampleProvider> providers)
+        public CombinedGenerator(IReadOnlyCollection<IMockDataProvider> providers)
         {
             Providers = providers;
         }

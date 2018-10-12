@@ -1,6 +1,6 @@
 using System;
 
-namespace OpenApiServer.Core.MockServer.ExampleProviders.Internals
+namespace OpenApiServer.Core.MockServer.MockDataProviders.Internals
 {
     public class ObjectDepthCounter
     {

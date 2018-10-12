@@ -4,16 +4,16 @@ using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;
 
-using OpenApiServer.Core.MockServer.ExampleProviders.Internals;
+using OpenApiServer.Core.MockServer.MockDataProviders.Internals;
 
-namespace OpenApiServer.Core.MockServer.ExampleProviders.Providers
+namespace OpenApiServer.Core.MockServer.MockDataProviders.Providers
 {
     //TODO: minProperties, maxProperties
     //TODO: patternProperties
     //TODO: Property dependencies
-    public class ObjectProvider : IOpenApiExampleProvider
+    public class ObjectProvider : IMockDataProvider
     {
-        private IReadOnlyCollection<IOpenApiExampleProvider> Providers { get; }
+        private IReadOnlyCollection<IMockDataProvider> Providers { get; }
         private ObjectDepthCounter DepthCounter { get; }
 
         private static readonly string[] AdditionalPropertiesExampleNames =
@@ -23,7 +23,7 @@ namespace OpenApiServer.Core.MockServer.ExampleProviders.Providers
                 "dynamicProp3"
         };
 
-        public ObjectProvider(IReadOnlyCollection<IOpenApiExampleProvider> providers, ObjectDepthCounter counter)
+        public ObjectProvider(IReadOnlyCollection<IMockDataProvider> providers, ObjectDepthCounter counter)
         {
             Providers = providers;
             DepthCounter = counter;

@@ -8,7 +8,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 
-using OpenApiServer.Core.MockServer.ExampleProviders.Internals;
+using OpenApiServer.Core.MockServer.MockDataProviders.Internals;
 using OpenApiServer.Utils;
 
 namespace OpenApiServer.Core.MockServer.Context.Mapping
