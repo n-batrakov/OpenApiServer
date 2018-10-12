@@ -13,13 +13,13 @@ using Newtonsoft.Json.Linq;
 using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Core.MockServer.ExampleProviders.Internals;
 
-namespace OpenApiServer.Core.MockServer.Context
+namespace OpenApiServer.Core.MockServer.Context.Internals
 {
-    public static class RequestContextCallBuilder
+    internal static class RequestContextBuilder
     {
-        public static RequestContextCall GetCallContext(HttpContext ctx)
+        public static RequestContext Build(HttpContext ctx)
         {
-            return new RequestContextCall
+            return new RequestContext
             {
                 PathAndQuery = ctx.Request.GetEncodedPathAndQuery(),
                 Method = Enum.Parse<HttpMethod>(ctx.Request.Method, ignoreCase: true),

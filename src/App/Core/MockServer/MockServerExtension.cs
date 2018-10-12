@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using OpenApiServer.Core.MockServer.Context;
 using OpenApiServer.Core.MockServer.ExampleProviders;
 using OpenApiServer.Core.MockServer.Handlers;
+using OpenApiServer.Core.MockServer.Handlers.Internals;
 using OpenApiServer.Core.MockServer.Options;
 using OpenApiServer.Core.MockServer.Validation;
 
@@ -40,10 +41,10 @@ namespace OpenApiServer.Core.MockServer
 
             services.AddSingleton<IOpenApiExampleProvider, OpenApiExampleProvider>();
 
-            services.AddSingleton(x => new RequestHandlerFactory(x));
-            services.AddSingleton(x => HandlerProviderFactory.CreateHandlerProvider(x, typeof(Program).Assembly));
+            services.AddSingleton(x => new RequestHandlerActivator(x));
+            services.AddSingleton(x => RequestHandlerProvider.FromAssemblies(x, typeof(Program).Assembly));
 
-            services.AddSingleton<RequestContextProvider>();
+            services.AddSingleton<RouteContextProvider>();
 
             return services;
         }

@@ -8,9 +8,9 @@ using Microsoft.Extensions.Configuration;
 using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Core.MockServer.Options;
 
-namespace OpenApiServer.Core.MockServer.Context
+namespace OpenApiServer.Core.MockServer.Context.Internals
 {
-    public static class RouteOptionsBuilder
+    internal static class RouteOptionsBuilder
     {
         public static MockServerRouteOptions Build(RouteId route, IConfiguration config)
         {

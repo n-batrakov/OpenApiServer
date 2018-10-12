@@ -5,6 +5,6 @@ namespace OpenApiServer.Core.MockServer.Validation
 {
     public interface IRequestValidator
     {
-        HttpValidationStatus Validate(RequestContext context);
+        HttpValidationStatus Validate(RouteContext context);
     }
 }

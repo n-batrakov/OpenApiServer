@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json.Schema;
 
-namespace OpenApiServer.Core.MockServer.Context.Types
+namespace OpenApiServer.Core.MockServer.Context.Types.Spec
 {
-    public class RequestContextParameter
+    public class RouteSpecRequestParameter
     {
         public string Name { get; set; }
         public ParameterLocation In { get; set; }

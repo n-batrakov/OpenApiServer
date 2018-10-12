@@ -8,13 +8,9 @@ namespace OpenApiServer.Core.MockServer.Context.Types
     public class ResponseContext
     {
         public bool BreakPipeline { get; set; }
-
         public HttpStatusCode StatusCode { get; set; }
-
         public string Body { get; set; }
-
         public string ContentType { get; set; }
-
         public IDictionary<string, StringValues> Headers { get; set; } = new Dictionary<string, StringValues>();
     }
 }

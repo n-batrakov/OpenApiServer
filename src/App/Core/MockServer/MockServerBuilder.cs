@@ -11,8 +11,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 using OpenApiServer.Core.MockServer.Context;
+using OpenApiServer.Core.MockServer.Context.Internals;
 using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Server.Logging;
+
+using RouteContext = OpenApiServer.Core.MockServer.Context.Types.RouteContext;
 
 namespace OpenApiServer.Core.MockServer
 {
@@ -20,14 +23,14 @@ namespace OpenApiServer.Core.MockServer
     {
         private IApplicationBuilder ApplicationBuilder { get; }
 
-        private RequestContextProvider ContextProvider { get; }
+        private RouteContextProvider ContextProvider { get; }
 
         private ILogger Logger { get; }
 
         public MockServerBuilder(IApplicationBuilder app, IEnumerable<OpenApiDocument> specs)
         {
             ApplicationBuilder = app;
-            ContextProvider = ActivatorUtilities.CreateInstance<RequestContextProvider>(app.ApplicationServices, specs);
+            ContextProvider = ActivatorUtilities.CreateInstance<RouteContextProvider>(app.ApplicationServices, specs);
             
             Logger = app.ApplicationServices.GetRequiredService<ILoggerFactory>().CreateOpenApiLogger();
         }
@@ -67,7 +70,7 @@ namespace OpenApiServer.Core.MockServer
             return HandleRequest(requestContext, ctx.Response);
         }        
 
-        private Task HandleRequest(RequestContext requestContext, HttpResponse httpResponse)
+        private Task HandleRequest(RouteContext requestContext, HttpResponse httpResponse)
         {
             return requestContext.Handler.HandleAsync(requestContext).ContinueWith(HandleResponseAsync).Unwrap();
 

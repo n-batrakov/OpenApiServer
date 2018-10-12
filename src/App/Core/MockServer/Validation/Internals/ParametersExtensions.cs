@@ -9,6 +9,7 @@ using Newtonsoft.Json.Schema;
 
 using OpenApiServer.Core.MockServer.Context.Mapping;
 using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Context.Types.Spec;
 
 namespace OpenApiServer.Core.MockServer.Validation.Internals
 {
@@ -17,7 +18,7 @@ namespace OpenApiServer.Core.MockServer.Validation.Internals
         private const string ObjectNotSupported =
                 "Object parameters are not supported just yet for query, header, cookie and path parameters.";
 
-        public static object GetValue(this RequestContextParameter parameter, StringValues values)
+        public static object GetValue(this RouteSpecRequestParameter parameter, StringValues values)
         {
             if (parameter.In == ParameterLocation.Path)
             {

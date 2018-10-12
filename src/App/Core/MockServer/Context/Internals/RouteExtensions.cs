@@ -5,10 +5,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
 using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Context.Types.Spec;
 
-namespace OpenApiServer.Core.MockServer.Context
+using RouteContext = OpenApiServer.Core.MockServer.Context.Types.RouteContext;
+
+namespace OpenApiServer.Core.MockServer.Context.Internals
 {
-    internal static class RequestContextExtensions
+    internal static class RouteExtensions
     {
         public static RouteId GetRouteId(this HttpContext ctx)
         {
@@ -24,7 +27,7 @@ namespace OpenApiServer.Core.MockServer.Context
             return new RouteId(template, verb);
         }
 
-        public static RequestContextBody GetBodySpec(this RequestContext context)
+        public static RouteSpecRequestBody GetBodySpec(this RouteContext context)
         {
             if (context.Request == null)
             {

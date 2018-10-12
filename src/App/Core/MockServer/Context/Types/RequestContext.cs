@@ -1,31 +1,19 @@
-using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 
-using OpenApiServer.Core.MockServer.Handlers;
-using OpenApiServer.Core.MockServer.Options;
+using Newtonsoft.Json.Linq;
 
 namespace OpenApiServer.Core.MockServer.Context.Types
 {
     public class RequestContext
     {
-        public MockServerRouteOptions Config { get; }
-        public RequestContextSpec Spec { get; }
-        public RequestContextCall Request { get; }
-
-        public IRequestHandler Handler { get; }
-
-        public ILogger Logger { get; }
-
-        public RequestContext(MockServerRouteOptions config,
-                              RequestContextSpec spec,
-                              RequestContextCall request,
-                              IRequestHandler handler,
-                              ILogger logger)
-        {
-            Config = config;
-            Spec = spec;
-            Request = request;
-            Handler = handler;
-            Logger = logger;
-        }
+        public string PathAndQuery { get; set; }
+        public HttpMethod Method { get; set; }
+        public RouteData Route { get; set; }
+        public IHeaderDictionary Headers { get; set; }
+        public IQueryCollection Query { get; set; }
+        public JToken Body { get; set; }
+        public string ContentType { get; set; }
     }
 }

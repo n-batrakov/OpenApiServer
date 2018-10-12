@@ -6,9 +6,9 @@ using Newtonsoft.Json.Linq;
 
 using OpenApiServer.Core.MockServer.Context.Types;
 
-namespace OpenApiServer.Core.MockServer.Context
+namespace OpenApiServer.Core.MockServer.Context.Internals
 {
-    public static class ResponseContextExtensions
+    internal static class ResponseContextExtensions
     {
         private static readonly JsonMergeSettings JsonMergeSettings =
                 new JsonMergeSettings

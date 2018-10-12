@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 
 using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Context.Types.Spec;
 using OpenApiServer.Core.MockServer.Exceptions;
 using OpenApiServer.Utils;
 
@@ -17,7 +18,7 @@ using HttpMethod = System.Net.Http.HttpMethod;
 namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 {
     [RequestHandler("proxy")]
-    public class ProxyRequestHandler : IRequestHandler
+    public class ProxyHandler : IRequestHandler
     {
         public class Options
         {
@@ -33,14 +34,14 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
         private IHttpClientFactory ClientFactory { get; }
         private Options Config { get; }
 
-        public ProxyRequestHandler(IHttpClientFactory clientFactory, Options options)
+        public ProxyHandler(IHttpClientFactory clientFactory, Options options)
         {
             ClientFactory = clientFactory;
             ProxyInstanceId = Id.ToString();
             Config = options;
         }
 
-        public Task<ResponseContext> HandleAsync(RequestContext request)
+        public Task<ResponseContext> HandleAsync(RouteContext request)
         {
             var host = GetHostFromHeader(request.Request.Headers) ??
                        Config.Host ??
@@ -65,7 +66,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             return Proxy(request, host);
         }
 
-        private async Task<ResponseContext> Proxy(RequestContext ctx, string host)
+        private async Task<ResponseContext> Proxy(RouteContext ctx, string host)
         {
             var client = ClientFactory.CreateClient();
             var request = CreateRequest(ctx, host);
@@ -75,7 +76,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             return await CreateResponseAsync(response).ConfigureAwait(false);
         }
 
-        private HttpRequestMessage CreateRequest(RequestContext ctx, string host)
+        private HttpRequestMessage CreateRequest(RouteContext ctx, string host)
         {
             var bodyContent = ctx.Request.Body?.ToString() ?? string.Empty;
             var targetRequest = new HttpRequestMessage
@@ -137,7 +138,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             }
         }
 
-        private static string GetHostFromOperation(RequestContextSpec spec)
+        private static string GetHostFromOperation(RouteSpec spec)
         {
             var specUrl = spec.Servers.FirstOrDefault();
             return specUrl == null ? null : UrlHelper.GetHost(specUrl);

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
 
-using OpenApiServer.Core.MockServer.Context;
+using OpenApiServer.Core.MockServer.Context.Internals;
 using OpenApiServer.Core.MockServer.Context.Types;
 
 namespace OpenApiServer.Core.MockServer.Handlers.Defaults
@@ -14,15 +14,15 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
     public class MergeHandler : IRequestHandler
     {
         private IConfiguration Config { get; }
-        private IRequestHandlerProvider HandlerProvider { get; }
+        private RequestHandlerProvider HandlerProvider { get; }
 
-        public MergeHandler(IConfiguration config, IRequestHandlerProvider handlerProvider)
+        public MergeHandler(IConfiguration config, RequestHandlerProvider handlerProvider)
         {
             Config = config;
             HandlerProvider = handlerProvider;
         }
 
-        public async Task<ResponseContext> HandleAsync(RequestContext request)
+        public async Task<ResponseContext> HandleAsync(RouteContext request)
         {
             var handlersConfigs = Config.GetSection("handlers").GetChildren();
             var responseTasks = InvokeHandlersAsync(request, handlersConfigs).ToArray();
@@ -33,7 +33,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             return responses.Aggregate(ResponseContextExtensions.Merge);
         }
 
-        private IEnumerable<Task<ResponseContext>> InvokeHandlersAsync(RequestContext requestContext,
+        private IEnumerable<Task<ResponseContext>> InvokeHandlersAsync(RouteContext requestContext,
                                                                        IEnumerable<IConfiguration> handlersConfigs)
         {
             foreach (var handlerConfig in handlersConfigs)

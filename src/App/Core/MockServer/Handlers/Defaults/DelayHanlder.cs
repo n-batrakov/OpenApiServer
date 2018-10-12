@@ -19,7 +19,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             Config = options;
         }
 
-        public async Task<ResponseContext> HandleAsync(RequestContext request)
+        public async Task<ResponseContext> HandleAsync(RouteContext request)
         {
             await Task.Delay(Config.Value);
             return null;

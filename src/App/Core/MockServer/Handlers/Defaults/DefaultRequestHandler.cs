@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 
-using OpenApiServer.Core.MockServer.Context;
+using OpenApiServer.Core.MockServer.Context.Internals;
 using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Core.MockServer.ExampleProviders;
 using OpenApiServer.Core.MockServer.Validation;
@@ -20,28 +20,24 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
         private IRequestValidator RequestValidator { get; }
         private IResponseValidator ResponseValidator { get; }
         
-        private RequestHandlerFactory HandlerFactory { get; }
-
         private IOpenApiExampleProvider ExampleProvider { get; }
         private IHttpClientFactory HttpClientFactory { get; }
 
         public DefaultRequestHandler(
-            Options config, 
-            IRequestValidator requestValidator, 
-            IResponseValidator responseValidator, 
-            RequestHandlerFactory handlerFactory, 
-            IOpenApiExampleProvider exampleProvider, 
-            IHttpClientFactory httpClientFactory)
+                Options config,
+                IRequestValidator requestValidator,
+                IResponseValidator responseValidator,
+                IOpenApiExampleProvider exampleProvider,
+                IHttpClientFactory httpClientFactory)
         {
-            this.Config = config;
-            this.RequestValidator = requestValidator;
-            this.ResponseValidator = responseValidator;
-            this.HandlerFactory = handlerFactory;
-            this.ExampleProvider = exampleProvider;
-            this.HttpClientFactory = httpClientFactory;
+            Config = config;
+            RequestValidator = requestValidator;
+            ResponseValidator = responseValidator;
+            ExampleProvider = exampleProvider;
+            HttpClientFactory = httpClientFactory;
         }
 
-        public async Task<ResponseContext> HandleAsync(RequestContext request)
+        public async Task<ResponseContext> HandleAsync(RouteContext request)
         {
             if (Config.ValidateRequest)
             {
@@ -69,7 +65,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             return response;
         }
 
-        private Task<ResponseContext> GetResponseAsync(RequestContext request)
+        private Task<ResponseContext> GetResponseAsync(RouteContext request)
         {
             switch (Config.Mock)
             {
@@ -89,16 +85,16 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             }
         }
 
-        private Task<ResponseContext> GetMockResponseAsync(RequestContext request)
+        private Task<ResponseContext> GetMockResponseAsync(RouteContext request)
         {
-            var mockHandler = new MockRequestHandler(ExampleProvider);
+            var mockHandler = new MockHandler(ExampleProvider);
             return mockHandler.HandleAsync(request);
         }
 
-        private Task<ResponseContext> GetProxyResponseAsync(RequestContext request)
+        private Task<ResponseContext> GetProxyResponseAsync(RouteContext request)
         {
-            var proxyOptions = new ProxyRequestHandler.Options() { Host = Config.Proxy };
-            var proxyHandler = new ProxyRequestHandler(HttpClientFactory, proxyOptions);
+            var proxyOptions = new ProxyHandler.Options() { Host = Config.Proxy };
+            var proxyHandler = new ProxyHandler(HttpClientFactory, proxyOptions);
             return proxyHandler.HandleAsync(request);
         }
 

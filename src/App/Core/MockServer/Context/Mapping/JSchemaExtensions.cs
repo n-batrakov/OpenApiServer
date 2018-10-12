@@ -7,7 +7,7 @@ using OpenApiServer.Core.MockServer.Context.Types;
 
 namespace OpenApiServer.Core.MockServer.Context.Mapping
 {
-    public static class JSchemaExtensions
+    internal static class JSchemaExtensions
     {
         private const string ExampleKey = "x-example";
 

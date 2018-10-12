@@ -4,9 +4,9 @@ using System.Net;
 
 using Newtonsoft.Json.Schema;
 
-namespace OpenApiServer.Core.MockServer.Context.Types
+namespace OpenApiServer.Core.MockServer.Context.Types.Spec
 {
-    public class RequestContextResponse
+    public class RouteSpecResponse
     {
         public string ContentType { get; }
         public string StatusCode { get; }
@@ -18,7 +18,7 @@ namespace OpenApiServer.Core.MockServer.Context.Types
                         ? HttpStatusCode.InternalServerError
                         : (HttpStatusCode)int.Parse(StatusCode);
 
-        public RequestContextResponse(string contentType,
+        public RouteSpecResponse(string contentType,
                                       string statusCode,
                                       JSchema schema,
                                       IReadOnlyCollection<string> examples)

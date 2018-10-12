@@ -6,14 +6,15 @@ using Microsoft.OpenApi.Models;
 
 using Newtonsoft.Json.Schema;
 
-using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Context.Internals;
+using OpenApiServer.Core.MockServer.Context.Types.Spec;
 using OpenApiServer.Utils;
 
 namespace OpenApiServer.Core.MockServer.Context.Mapping
 {
     public static class RequestContextSpecConverter
     {
-        public static RequestContextSpec ConvertSpec(OpenApiOperation operation,
+        public static RouteSpec ConvertSpec(OpenApiOperation operation,
                                                      IEnumerable<Microsoft.OpenApi.Models.OpenApiServer> globalServers)
         {
             var schemaConverter = new OpenApiSchemaConverter();
@@ -22,16 +23,16 @@ namespace OpenApiServer.Core.MockServer.Context.Mapping
             var requestBody = MapBody(operation, schemaConverter).ToArray();
             var responses = MapResponses(operation, schemaConverter).ToArray();
             var servers = operation.Servers.Concat(globalServers).Select(x => x.FormatUrl()).ToArray();
-            return new RequestContextSpec(parameters, requestBody, responses, servers);
+            return new RouteSpec(parameters, requestBody, responses, servers);
         }
 
-        private static IEnumerable<RequestContextParameter> MapParameters(
+        private static IEnumerable<RouteSpecRequestParameter> MapParameters(
                 OpenApiOperation operation,
                 OpenApiSchemaConverter schemaConverter)
         {
             foreach (var parameter in operation.Parameters)
             {
-                yield return new RequestContextParameter
+                yield return new RouteSpecRequestParameter
                              {
                                      Style = parameter.Style,
                                      AllowEmptyValue = parameter.AllowEmptyValue,
@@ -45,7 +46,7 @@ namespace OpenApiServer.Core.MockServer.Context.Mapping
             }
         }
 
-        private static IEnumerable<RequestContextBody> MapBody(OpenApiOperation operation,
+        private static IEnumerable<RouteSpecRequestBody> MapBody(OpenApiOperation operation,
                                                                OpenApiSchemaConverter schemaConverter)
         {
             if (operation.RequestBody == null)
@@ -59,18 +60,18 @@ namespace OpenApiServer.Core.MockServer.Context.Mapping
             {
                 var schema = schemaConverter.Convert(body.Schema);
                 var examples = GetExamples(body.Examples, body.Example);
-                yield return new RequestContextBody(contentType, required, schema, examples);
+                yield return new RouteSpecRequestBody(contentType, required, schema, examples);
             }
         }
 
-        private static IEnumerable<RequestContextResponse> MapResponses(OpenApiOperation operation,
+        private static IEnumerable<RouteSpecResponse> MapResponses(OpenApiOperation operation,
                                                                         OpenApiSchemaConverter schemaConverter)
         {
             foreach (var (statusCode, responseSpec) in operation.Responses)
             {
                 if (responseSpec.Content.Count == 0)
                 {
-                    yield return new RequestContextResponse("*/*", statusCode, new JSchema(), new string[0]);
+                    yield return new RouteSpecResponse("*/*", statusCode, new JSchema(), new string[0]);
                     yield break;
                 }
 
@@ -78,7 +79,7 @@ namespace OpenApiServer.Core.MockServer.Context.Mapping
                 {
                     var schema = schemaConverter.Convert(mediaTypeSpec.Schema);
                     var examples = GetExamples(mediaTypeSpec.Examples, mediaTypeSpec.Example);
-                    yield return new RequestContextResponse(contentType, statusCode, schema, examples);
+                    yield return new RouteSpecResponse(contentType, statusCode, schema, examples);
                 }
             }
         }

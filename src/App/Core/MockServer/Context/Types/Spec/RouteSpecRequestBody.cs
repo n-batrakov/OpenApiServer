@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 using Newtonsoft.Json.Schema;
 
-namespace OpenApiServer.Core.MockServer.Context.Types
+namespace OpenApiServer.Core.MockServer.Context.Types.Spec
 {
-    public class RequestContextBody
+    public class RouteSpecRequestBody
     {
         public string ContentType { get; }
         public bool Required { get; }
         public JSchema Schema { get; }
         public IReadOnlyCollection<string> Examples { get; }
 
-        public RequestContextBody(string contentType,
+        public RouteSpecRequestBody(string contentType,
                                   bool required,
                                   JSchema schema,
                                   IReadOnlyCollection<string> examples)

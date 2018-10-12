@@ -7,22 +7,23 @@ using System.Threading.Tasks;
 using Microsoft.OpenApi.Writers;
 
 using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Context.Types.Spec;
 using OpenApiServer.Core.MockServer.ExampleProviders;
 using OpenApiServer.Utils;
 
 namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 {
     [RequestHandler("mock")]
-    public class MockRequestHandler : IRequestHandler
+    public class MockHandler : IRequestHandler
     {
         private IOpenApiExampleProvider ExampleProvider { get; }
 
-        public MockRequestHandler(IOpenApiExampleProvider exampleProvider)
+        public MockHandler(IOpenApiExampleProvider exampleProvider)
         {
             ExampleProvider = exampleProvider;
         }
 
-        public Task<ResponseContext> HandleAsync(RequestContext request)
+        public Task<ResponseContext> HandleAsync(RouteContext request)
         {
             var responseSpec = ChooseResponse(request.Spec.Responses);
             return Task.FromResult(responseSpec == null
@@ -30,7 +31,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
                                            : RespondWithMock(responseSpec));
         }
 
-        private static RequestContextResponse ChooseResponse(IEnumerable<RequestContextResponse> responseSpec)
+        private static RouteSpecResponse ChooseResponse(IEnumerable<RouteSpecResponse> responseSpec)
         {
             var filterMediaType =
                     responseSpec.Where(x => x.ContentType == "*/*" || x.ContentType == "application/json").ToArray();
@@ -46,7 +47,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             return successResponse ?? filterMediaType.FirstOrDefault();
         }
 
-        private ResponseContext RespondWithMock(RequestContextResponse mediaType)
+        private ResponseContext RespondWithMock(RouteSpecResponse mediaType)
         {
             var body = OpenApiSerializer.Serialize(WriteBody);
 

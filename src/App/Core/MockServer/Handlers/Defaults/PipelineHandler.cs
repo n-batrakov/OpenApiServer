@@ -8,18 +8,18 @@ using OpenApiServer.Core.MockServer.Context.Types;
 namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 {
     [RequestHandler("pipeline")]
-    public class PipelineRequestHandler : IRequestHandler
+    public class PipelineHandler : IRequestHandler
     {
         private IConfiguration Config { get; }
-        private IRequestHandlerProvider HandlerProvider { get; }
+        private RequestHandlerProvider HandlerProvider { get; }
 
-        public PipelineRequestHandler(IConfiguration config, IRequestHandlerProvider handlerProvider)
+        public PipelineHandler(IConfiguration config, RequestHandlerProvider handlerProvider)
         {
             Config = config;
             HandlerProvider = handlerProvider;
         }
 
-        public async Task<ResponseContext> HandleAsync(RequestContext request)
+        public async Task<ResponseContext> HandleAsync(RouteContext request)
         {
             var prevResponse = new ResponseContext();
 

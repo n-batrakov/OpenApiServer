@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace OpenApiServer.Core.MockServer.Handlers
+namespace OpenApiServer.Core.MockServer.Handlers.Internals
 {
-    public class RequestHandlerFactory
+    public class RequestHandlerActivator
     {
         private IServiceProvider ServiceProvider { get; }
 
-        public RequestHandlerFactory(IServiceProvider serviceProvider)
+        public RequestHandlerActivator(IServiceProvider serviceProvider)
         {
             ServiceProvider = serviceProvider;
         }
@@ -38,7 +38,7 @@ namespace OpenApiServer.Core.MockServer.Handlers
             for (var i = 0; i < ctorTypes.Length; i++)
             {
                 var type = ctorTypes[i];
-                var value = remainingArgs.FirstOrDefault(x => x != null && type.IsAssignableFrom(x.GetType()));
+                var value = remainingArgs.FirstOrDefault(x => x != null && type.IsInstanceOfType(x));
 
                 if (value == null)
                 {

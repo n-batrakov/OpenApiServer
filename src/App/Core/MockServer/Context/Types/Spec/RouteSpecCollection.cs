@@ -5,27 +5,27 @@ using System.Linq;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.OpenApi.Models;
 
+using OpenApiServer.Core.MockServer.Context.Internals;
 using OpenApiServer.Core.MockServer.Context.Mapping;
-using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Utils;
 
-namespace OpenApiServer.Core.MockServer.Context
+namespace OpenApiServer.Core.MockServer.Context.Types.Spec
 {
-    public class RequestContextSpecCollection
+    public class RouteSpecCollection
     {
-        private IDictionary<RouteId, RequestContextSpec> Source { get; }
+        private IDictionary<RouteId, RouteSpec> Source { get; }
 
         public IEnumerable<RouteId> Routes => Source.Keys;
-        public RequestContextSpec this[RouteId key] => Source[key];
+        public RouteSpec this[RouteId key] => Source[key];
 
-        public RequestContextSpecCollection(IEnumerable<OpenApiDocument> specs)
+        public RouteSpecCollection(IEnumerable<OpenApiDocument> specs)
         {
             Source = GetRouteSpecs(specs);
         }
 
-        private static IDictionary<RouteId, RequestContextSpec> GetRouteSpecs(IEnumerable<OpenApiDocument> specs)
+        private static IDictionary<RouteId, RouteSpec> GetRouteSpecs(IEnumerable<OpenApiDocument> specs)
         {
-            var result = new Dictionary<RouteId, RequestContextSpec>();
+            var result = new Dictionary<RouteId, RouteSpec>();
 
             foreach (var spec in specs)
             {

@@ -21,7 +21,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             Response = response;
         }
 
-        public Task<ResponseContext> HandleAsync(RequestContext request)
+        public Task<ResponseContext> HandleAsync(RouteContext request)
         {
             var responseValidationStatus = ResponseValidator.Validate(Response, request);
 

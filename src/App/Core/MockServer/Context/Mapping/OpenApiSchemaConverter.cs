@@ -13,7 +13,7 @@ using OpenApiServer.Utils;
 
 namespace OpenApiServer.Core.MockServer.Context.Mapping
 {
-    public class OpenApiSchemaConverter
+    internal class OpenApiSchemaConverter
     {
         private Dictionary<OpenApiSchema, JSchema> ReferenceMap { get; }
 
