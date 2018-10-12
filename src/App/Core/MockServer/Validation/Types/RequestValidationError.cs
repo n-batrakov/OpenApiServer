@@ -4,24 +4,24 @@ using System.Linq;
 
 namespace OpenApiServer.Core.MockServer.Validation.Types
 {
-    public class RequestValidationError : IEquatable<RequestValidationError>
+    public class HttpValidationError : IEquatable<HttpValidationError>
     {
         public string Code { get; }
         public string Description { get; }
         public string Parameter { get; }
-        public IEnumerable<RequestValidationError> Inner { get; }
+        public IEnumerable<HttpValidationError> Inner { get; }
 
-        public RequestValidationError(string code,
+        public HttpValidationError(string code,
                                       string description,
-                                      params RequestValidationError[] inner)
+                                      params HttpValidationError[] inner)
                 : this(code, description, null, inner)
         {
         }
 
-        public RequestValidationError(string code,
+        public HttpValidationError(string code,
                                       string description,
                                       string parameter,
-                                      params RequestValidationError[] inner)
+                                      params HttpValidationError[] inner)
         {
             Code = code;
             Description = description;
@@ -29,7 +29,7 @@ namespace OpenApiServer.Core.MockServer.Validation.Types
             Inner = inner;
         }
 
-        public bool Equals(RequestValidationError other)
+        public bool Equals(HttpValidationError other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -69,7 +69,7 @@ namespace OpenApiServer.Core.MockServer.Validation.Types
                 return false;
             }
 
-            return Equals((RequestValidationError)obj);
+            return Equals((HttpValidationError)obj);
         }
 
         public override int GetHashCode()

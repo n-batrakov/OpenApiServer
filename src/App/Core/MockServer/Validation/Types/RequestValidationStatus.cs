@@ -4,26 +4,26 @@ using System.Linq;
 
 namespace OpenApiServer.Core.MockServer.Validation.Types
 {
-    public class RequestValidationStatus : IEquatable<RequestValidationStatus>
+    public class HttpValidationStatus : IEquatable<HttpValidationStatus>
     {
         public bool IsSuccess { get; }
 
-        public IEnumerable<RequestValidationError> Errors { get; }
+        public IEnumerable<HttpValidationError> Errors { get; }
 
-        public RequestValidationStatus(IReadOnlyCollection<RequestValidationError> errors)
+        public HttpValidationStatus(IReadOnlyCollection<HttpValidationError> errors)
         {
             IsSuccess = errors == null || errors.Count == 0;
             Errors = errors;
         }
 
-        public static RequestValidationStatus Success() =>
-                new RequestValidationStatus(new RequestValidationError[0]);
+        public static HttpValidationStatus Success() =>
+                new HttpValidationStatus(new HttpValidationError[0]);
 
-        public static RequestValidationStatus Error(params RequestValidationError[] errors) =>
-                new RequestValidationStatus(errors);
+        public static HttpValidationStatus Error(params HttpValidationError[] errors) =>
+                new HttpValidationStatus(errors);
 
 
-        public bool Equals(RequestValidationStatus other)
+        public bool Equals(HttpValidationStatus other)
         {
             if (ReferenceEquals(null, other))
             {
@@ -62,7 +62,7 @@ namespace OpenApiServer.Core.MockServer.Validation.Types
                 return false;
             }
 
-            return Equals((RequestValidationStatus)obj);
+            return Equals((HttpValidationStatus)obj);
         }
 
         public override int GetHashCode()

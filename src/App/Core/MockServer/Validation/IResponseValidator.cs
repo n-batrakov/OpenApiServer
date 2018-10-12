@@ -5,14 +5,14 @@ namespace OpenApiServer.Core.MockServer.Validation
 {
     public interface IResponseValidator
     {
-        RequestValidationStatus Validate(ResponseContext response, RequestContext context);
+        HttpValidationStatus Validate(ResponseContext response, RequestContext context);
     }
 
     public class ResponseValidator : IResponseValidator
     {
-        public RequestValidationStatus Validate(ResponseContext response, RequestContext context)
+        public HttpValidationStatus Validate(ResponseContext response, RequestContext context)
         {
-            return RequestValidationStatus.Success();
+            return HttpValidationStatus.Success();
         }
     }
 }

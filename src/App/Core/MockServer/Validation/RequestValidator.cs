@@ -18,22 +18,22 @@ namespace OpenApiServer.Core.MockServer.Validation
 {
     public class RequestValidator : IRequestValidator
     {
-        public RequestValidationStatus Validate(RequestContext context)
+        public HttpValidationStatus Validate(RequestContext context)
         {
             var operation = context.Spec;
             var paramtersErrors = operation.Parameters?.SelectMany(ValidateParameter) ??
-                                  Enumerable.Empty<RequestValidationError>();
+                                  Enumerable.Empty<HttpValidationError>();
 
             var bodyErrors = operation.Bodies.Count > 0
                                      ? ValidateBody(context.GetBodySpec(),
                                                     context.Request.Body,
                                                     context.Request.ContentType)
-                                     : Enumerable.Empty<RequestValidationError>();
+                                     : Enumerable.Empty<HttpValidationError>();
 
             var errors = paramtersErrors.Concat(bodyErrors).ToArray();
-            return new RequestValidationStatus(errors);
+            return new HttpValidationStatus(errors);
 
-            IEnumerable<RequestValidationError> ValidateParameter(RequestContextParameter x)
+            IEnumerable<HttpValidationError> ValidateParameter(RequestContextParameter x)
             {
                 switch (x.In)
                 {
@@ -54,7 +54,7 @@ namespace OpenApiServer.Core.MockServer.Validation
         
 
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
-        private static IEnumerable<RequestValidationError> ValidateHeaders(
+        private static IEnumerable<HttpValidationError> ValidateHeaders(
                 RequestContextParameter parameter,
                 IHeaderDictionary headers)
         {
@@ -62,20 +62,20 @@ namespace OpenApiServer.Core.MockServer.Validation
         }
 
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
-        private static IEnumerable<RequestValidationError> ValidateCookie(RequestContextParameter parameter)
+        private static IEnumerable<HttpValidationError> ValidateCookie(RequestContextParameter parameter)
         {
             yield break;
         }
 
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
-        private static IEnumerable<RequestValidationError> ValidatePath(
+        private static IEnumerable<HttpValidationError> ValidatePath(
                 RequestContextParameter parameter,
                 RouteData routeData)
         {
             yield break;
         }
 
-        private static IEnumerable<RequestValidationError> ValidateQuery(
+        private static IEnumerable<HttpValidationError> ValidateQuery(
                 RequestContextParameter parameter,
                 IQueryCollection query)
         {
@@ -105,7 +105,7 @@ namespace OpenApiServer.Core.MockServer.Validation
             }
         }
 
-        private static IEnumerable<RequestValidationError> ValidateBody(
+        private static IEnumerable<HttpValidationError> ValidateBody(
                 RequestContextBody body,
                 JToken bodyContent,
                 string contentType)
@@ -115,7 +115,7 @@ namespace OpenApiServer.Core.MockServer.Validation
                 yield return ValidationError.UnexpectedContentType(contentType);
                 yield break;
             }
-
+            
             if (bodyContent == null && body.Required)
             {
                 yield return ValidationError.BodyRequired();

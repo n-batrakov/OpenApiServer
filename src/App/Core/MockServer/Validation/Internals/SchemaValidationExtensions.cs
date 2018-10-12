@@ -12,17 +12,22 @@ namespace OpenApiServer.Core.MockServer.Validation.Internals
 {
     internal static class SchemaValidationExtensions
     {
-        public static IEnumerable<RequestValidationError> ValidateValue(this JSchema jsonSchema, object value)
+        public static IEnumerable<HttpValidationError> ValidateValue(this JSchema jsonSchema, object value)
+        {
+            var token = JToken.FromObject(value);
+            return ValidateValue(jsonSchema, token);
+        }
+
+        public static IEnumerable<HttpValidationError> ValidateValue(this JSchema jsonSchema, JToken token)
         {
             if (jsonSchema == null)
             {
-                return Enumerable.Empty<RequestValidationError>();
+                return Enumerable.Empty<HttpValidationError>();
             }
 
-            var token = JToken.FromObject(value);
             var isValid = token.IsValid(jsonSchema, out IList<string> errors);
             return isValid
-                           ? Enumerable.Empty<RequestValidationError>()
+                           ? Enumerable.Empty<HttpValidationError>()
                            : errors.Select(ValidationError.SchemaValidationError);
         }
     }
