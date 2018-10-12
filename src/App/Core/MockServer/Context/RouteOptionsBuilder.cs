@@ -65,7 +65,7 @@ namespace OpenApiServer.Core.MockServer.Context
                         Path = routeConfig["path"],
                         Method = GetEnumValue<MockServerOptionsHttpMethod>(routeConfig, "method"),
 
-                        Handler = routeConfig["handler"],
+                        Handler = routeConfig["handler"] ?? "default",
                         Config = routeConfig
                 };
 
