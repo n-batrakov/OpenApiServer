@@ -24,7 +24,7 @@ namespace OpenApiServer.Core.MockServer.Context.Mapping
 
         public static OpenApiSchemaType GetSchemaType(this JSchema schema)
         {
-            if (schema.Type == null)
+            if (schema.Type == null || schema.Type == JSchemaType.None)
             {
                 var isObject = schema.Properties != null && schema.Properties.Count > 0;
                 if (isObject)
