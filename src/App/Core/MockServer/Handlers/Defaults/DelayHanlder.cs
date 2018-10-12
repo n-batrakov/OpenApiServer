@@ -1,12 +1,10 @@
 using System.Threading.Tasks;
 
-using Microsoft.Extensions.Configuration;
-
 using OpenApiServer.Core.MockServer.Context.Types;
 
 namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 {
-    [RequestHandler("delay")]
+    [RequestHandler("delay", typeof(Options))]
     public class DelayHandler : IRequestHandler
     {
         public class Options
@@ -16,14 +14,12 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 
         private Options Config { get; }
 
-        public DelayHandler(IConfiguration config)
+        public DelayHandler(Options options)
         {
-            var options = new Options();
-            config.Bind(options);
             Config = options;
         }
 
-        public async Task<ResponseContext> HandleAsync(RequestContext context)
+        public async Task<ResponseContext> HandleAsync(RequestContext request)
         {
             await Task.Delay(Config.Value);
             return null;

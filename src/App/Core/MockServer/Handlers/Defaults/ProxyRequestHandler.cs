@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 
 using OpenApiServer.Core.MockServer.Context.Types;
@@ -34,27 +33,24 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
         private IHttpClientFactory ClientFactory { get; }
         private Options Config { get; }
 
-        public ProxyRequestHandler(IHttpClientFactory clientFactory, IConfiguration config)
+        public ProxyRequestHandler(IHttpClientFactory clientFactory, Options options)
         {
             ClientFactory = clientFactory;
             ProxyInstanceId = Id.ToString();
-            
-            var options = new Options();
-            config.Bind(options);
             Config = options;
         }
 
-        public Task<ResponseContext> HandleAsync(RequestContext context)
+        public Task<ResponseContext> HandleAsync(RequestContext request)
         {
-            var host = GetHostFromHeader(context.Request.Headers) ??
+            var host = GetHostFromHeader(request.Request.Headers) ??
                        Config.Host ??
-                       GetHostFromOperation(context.Spec);
+                       GetHostFromOperation(request.Spec);
             if (host == null)
             {
                 throw new MockServerConfigurationException("Unable to find host to proxy the request.");
             }
 
-            var hasHeader = context.Request.Headers.TryGetValue(ForwarderFromHeader, out var mockServerHeader);
+            var hasHeader = request.Request.Headers.TryGetValue(ForwarderFromHeader, out var mockServerHeader);
             if (hasHeader)
             {
                 if (mockServerHeader == ProxyInstanceId)
@@ -66,7 +62,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
                 }
             }
 
-            return Proxy(context, host);
+            return Proxy(request, host);
         }
 
         private async Task<ResponseContext> Proxy(RequestContext ctx, string host)
@@ -81,14 +77,13 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 
         private HttpRequestMessage CreateRequest(RequestContext ctx, string host)
         {
+            var bodyContent = ctx.Request.Body?.ToString() ?? string.Empty;
             var targetRequest = new HttpRequestMessage
-                                {
-                                        RequestUri = new Uri($"{host}{ctx.Request.PathAndQuery}"),
-                                        Method = new HttpMethod(ctx.Request.Method.ToString().ToUpperInvariant()),
-                                        Content = new StringContent(ctx.Request.Body.ToString(),
-                                                                    Encoding.UTF8,
-                                                                    ctx.Request.ContentType)
-                                };
+            {
+                RequestUri = new Uri($"{host}{ctx.Request.PathAndQuery}"),
+                Method = new HttpMethod(ctx.Request.Method.ToString().ToUpperInvariant()),
+                Content = new StringContent(bodyContent, Encoding.UTF8, ctx.Request.ContentType)
+            };
 
             foreach (var (k, v) in ctx.Request.Headers)
             {
@@ -97,6 +92,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
                 if (k == "Content-Length") continue;
 
                 targetRequest.Content.Headers.TryAddWithoutValidation(k, v.ToArray());
+                targetRequest.Headers.TryAddWithoutValidation(k, v.ToArray());
             }
 
             targetRequest.Content.Headers.Add(ForwarderFromHeader, ProxyInstanceId);

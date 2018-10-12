@@ -19,7 +19,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             HandlerProvider = handlerProvider;
         }
 
-        public async Task<ResponseContext> HandleAsync(RequestContext requestContext)
+        public async Task<ResponseContext> HandleAsync(RequestContext request)
         {
             var prevResponse = new ResponseContext();
 
@@ -39,7 +39,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 
                 var handler = HandlerProvider.GetHandler(name, handlerConfig, prevResponse);
 
-                var currentResponse = await handler.HandleAsync(requestContext).ConfigureAwait(false);
+                var currentResponse = await handler.HandleAsync(request).ConfigureAwait(false);
 
                 if (currentResponse == null)
                 {

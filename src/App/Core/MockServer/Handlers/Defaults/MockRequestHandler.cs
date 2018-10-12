@@ -22,9 +22,9 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             ExampleProvider = exampleProvider;
         }
 
-        public Task<ResponseContext> HandleAsync(RequestContext context)
+        public Task<ResponseContext> HandleAsync(RequestContext request)
         {
-            var responseSpec = ChooseResponse(context.Spec.Responses);
+            var responseSpec = ChooseResponse(request.Spec.Responses);
             return Task.FromResult(responseSpec == null
                                            ? RespondWithNothing()
                                            : RespondWithMock(responseSpec));
@@ -51,12 +51,12 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             var body = OpenApiSerializer.Serialize(WriteBody);
 
             return new ResponseContext
-                   {
+            {
 
-                           StatusCode = mediaType.StatusCodeParsed,
-                           ContentType = mediaType.ContentType,
-                           Body = body,
-                   };
+                StatusCode = mediaType.StatusCodeParsed,
+                ContentType = mediaType.ContentType,
+                Body = body,
+            };
 
             void WriteBody(IOpenApiWriter writer)
             {
@@ -77,6 +77,6 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
         }
 
         private static ResponseContext RespondWithNothing() =>
-                new ResponseContext {StatusCode = HttpStatusCode.NoContent};
+                new ResponseContext { StatusCode = HttpStatusCode.NoContent };
     }
 }

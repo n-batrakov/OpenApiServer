@@ -19,9 +19,9 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             RequestValidator = requestValidator;
         }
 
-        public Task<ResponseContext> HandleAsync(RequestContext context)
+        public Task<ResponseContext> HandleAsync(RequestContext request)
         {
-            var requestValidationStatus = RequestValidator.Validate(context);
+            var requestValidationStatus = RequestValidator.Validate(request);
 
             return requestValidationStatus.IsSuccess
                            ? Task.FromResult((ResponseContext)null)
@@ -29,13 +29,13 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
         }
 
         private static ResponseContext Error(
-                RequestValidationStatus validationStatus) =>
+                HttpValidationStatus httpValidationStatus) =>
                 new ResponseContext
                 {
                         BreakPipeline = true,
                         StatusCode = HttpStatusCode.BadRequest,
                         ContentType = "application/json",
-                        Body = JsonConvert.SerializeObject(validationStatus)
+                        Body = JsonConvert.SerializeObject(httpValidationStatus)
                 };
     }
 }

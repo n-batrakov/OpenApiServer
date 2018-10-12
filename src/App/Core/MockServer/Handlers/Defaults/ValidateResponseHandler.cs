@@ -21,22 +21,22 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             Response = response;
         }
 
-        public Task<ResponseContext> HandleAsync(RequestContext context)
+        public Task<ResponseContext> HandleAsync(RequestContext request)
         {
-            var responseValidationStatus = ResponseValidator.Validate(Response, context);
+            var responseValidationStatus = ResponseValidator.Validate(Response, request);
 
             return responseValidationStatus.IsSuccess
                            ? Task.FromResult((ResponseContext)null)
                            : Task.FromResult(Error(responseValidationStatus));
         }
 
-        private static ResponseContext Error(RequestValidationStatus validationStatus) =>
+        private static ResponseContext Error(HttpValidationStatus httpValidationStatus) =>
                 new ResponseContext
                 {
                         BreakPipeline = true,
                         StatusCode = HttpStatusCode.InternalServerError,
                         ContentType = "application/json",
-                        Body = JsonConvert.SerializeObject(validationStatus)
+                        Body = JsonConvert.SerializeObject(httpValidationStatus)
                 };
     }
 }
