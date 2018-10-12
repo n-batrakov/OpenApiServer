@@ -42,7 +42,7 @@ namespace OpenApiServer.Core.MockServer.Context
             var spec = Specs[id];
             var options = RouteOptionsBuilder.Build(id, Config);
             var callCtx = RequestContextCallBuilder.GetCallContext(ctx);
-            var handler = HandlerProvider.GetHandler(options.Handler, options.Config);
+            var handler = HandlerProvider.GetHandler(options.Handler, options.Config, responseContext: null);
 
             return new RequestContext(options, spec, callCtx, handler, Logger);
         }

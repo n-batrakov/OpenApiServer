@@ -1,55 +1,51 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
+
+using Microsoft.Extensions.Configuration;
+
+using OpenApiServer.Core.MockServer.Context.Types;
 
 namespace OpenApiServer.Core.MockServer.Handlers
 {
     public class RequestHandlerProvider : IRequestHandlerProvider
     {
         private IDictionary<string, Type> Source { get; }
-        private IServiceProvider ServiceProvider { get; }
+        private RequestHandlerFactory HandlerFactory { get; }
 
-        public RequestHandlerProvider(IServiceProvider serviceProvider, IDictionary<string, Type> source)
+        public RequestHandlerProvider(IDictionary<string, Type> source, RequestHandlerFactory requestHandlerFactory)
         {
-            ServiceProvider = serviceProvider;
             Source = source;
+            HandlerFactory = requestHandlerFactory;
         }
 
-        public IRequestHandler GetHandler(string id, params object[] args)
+        public IRequestHandler GetHandler(string id, IConfiguration handlerConfig, ResponseContext responseContext)
         {
             Source.TryGetValue(id, out var handlerType);
             if (handlerType == null)
             {
                 throw new Exception($"Unable to find handler with name '{id}'.");
             }
-
-            var typeArgs = GetHandlerArgs(handlerType, args).ToArray();
-            
-            return (IRequestHandler)ActivatorUtilities.CreateInstance(ServiceProvider, handlerType, typeArgs);
-        }
-
-        private static IEnumerable<object> GetHandlerArgs(Type handlerType, object[] args)
-        {
-            var ctor = handlerType
-                       .GetConstructors(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
-                       .FirstOrDefault();
-
-            if (ctor == null)
+            if (!typeof(IRequestHandler).IsAssignableFrom(handlerType))
             {
-                return Enumerable.Empty<object>();
+                throw new Exception($"Registered '{id}' handler it does not implement IRequestHandler.");
             }
 
-            var ctorTypes = ctor.GetParameters().Select(x => x.ParameterType).ToArray();
-            return args.Where(IsCtorArgument);
+            object options = null;
 
-
-            bool IsCtorArgument(object arg)
+            var attr = handlerType.GetCustomAttribute<RequestHandlerAttribute>();
+            if (attr?.Options == null)
             {
-                var type = arg.GetType();
-                return ctorTypes.Any(x => x.IsAssignableFrom(type));
+                options = null;
             }
+            else
+            {
+                var optionsType = attr.Options;
+                options = Activator.CreateInstance(optionsType);
+                handlerConfig.Bind(options);
+            }
+
+            return HandlerFactory.CreateHandler(handlerType, new [] {options, responseContext});
         }
     }
 }

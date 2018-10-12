@@ -6,6 +6,6 @@ namespace OpenApiServer.Core.MockServer.Handlers
 {
     public interface IRequestHandler
     {
-        Task<ResponseContext> HandleAsync(RequestContext context);
+        Task<ResponseContext> HandleAsync(RequestContext request);
     }
 }

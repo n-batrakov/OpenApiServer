@@ -40,6 +40,7 @@ namespace OpenApiServer.Core.MockServer
 
             services.AddSingleton<IOpenApiExampleProvider, OpenApiExampleProvider>();
 
+            services.AddSingleton(x => new RequestHandlerFactory(x));
             services.AddSingleton(x => HandlerProviderFactory.CreateHandlerProvider(x, typeof(Program).Assembly));
 
             services.AddSingleton<RequestContextProvider>();

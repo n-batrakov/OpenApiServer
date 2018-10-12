@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using Microsoft.Extensions.DependencyInjection;
+
 namespace OpenApiServer.Core.MockServer.Handlers
 {
     public static class HandlerProviderFactory
@@ -29,7 +31,9 @@ namespace OpenApiServer.Core.MockServer.Handlers
                 handlerMap.Add(key, type);
             }
 
-            return new RequestHandlerProvider(serviceProvider, handlerMap);
+            var handlerFactory = serviceProvider.GetRequiredService<RequestHandlerFactory>();
+
+            return new RequestHandlerProvider(handlerMap, handlerFactory);
 
             bool IsHandlerType(Type t) => typeof(IRequestHandler).IsAssignableFrom(t);
         }
