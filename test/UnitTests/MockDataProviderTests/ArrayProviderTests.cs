@@ -11,7 +11,8 @@ namespace UnitTests.MockDataProviderTests
 {
     public class ArrayProviderTests
     {
-        private ArrayProvider Sut(string value) => new ArrayProvider(new[] {new StaticProvider(value)});
+        private static ArrayProvider Sut(string value) => 
+                new ArrayProvider(new[] {new StaticProvider(value)});
 
         [Theory]
         [InlineData(JSchemaType.None)]
@@ -41,7 +42,7 @@ namespace UnitTests.MockDataProviderTests
         [Fact]
         public void CanConsiderMinItems()
         {
-            var schema = Schema.Array(Schema.Int(), minItems: 3);
+            var schema = Schema.Array(Schema.Any(), minItems: 3);
             var elementValue = "42";
             var expected = "[42, 42, 42]";
 
