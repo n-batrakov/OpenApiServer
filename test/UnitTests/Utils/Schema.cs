@@ -5,14 +5,19 @@ namespace UnitTests.Utils
     public static class Schema
     {
         public static JSchema Any() => new JSchema();
-
         public static JSchema Int() => new JSchema {Type = JSchemaType.Integer};
-        public static JSchema Number() => new JSchema {Type = JSchemaType.Number};
-        public static JSchema String(string format = null) => new JSchema {Type = JSchemaType.String, Format = format};
-        public static JSchema Boolean() => new JSchema {Type = JSchemaType.Boolean};
-
+        public static JSchema Boolean() => new JSchema { Type = JSchemaType.Boolean };
         public static JSchema DateTime() => String("date-time");
         public static JSchema Base64() => String("base64");
+
+        public static JSchema String(string format = null, int? minLength = null, int? maxLength = null) =>
+                new JSchema
+                {
+                        Type = JSchemaType.String,
+                        Format = format,
+                        MinimumLength = minLength,
+                        MaximumLength = maxLength,
+                };
 
         public static JSchema Enum(params string[] values)
         {
