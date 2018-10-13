@@ -12,16 +12,22 @@ namespace OpenApiServer.Core.MockServer.MockDataProviders.Providers
     {
         public bool TryWriteValue(IOpenApiWriter writer, JSchema schema)
         {
-            var isDateTime = schema.IsFormattedString("date-time") || schema.IsFormattedString("date");
-            if (!isDateTime)
+            if (schema.IsFormattedString("date"))
+            {
+                var value = DateTime.UtcNow.ToString("yyyy-MM-dd");
+                writer.WriteValue(value);
+                return true;
+            }
+            else if (schema.IsFormattedString("date-time"))
+            {
+                var value = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
+                writer.WriteValue(value);
+                return true;
+            }
+            else
             {
                 return false;
             }
-
-            var value = DateTime.UtcNow.ToString("O");
-            writer.WriteValue(value);
-
-            return true;
         }
     }
 }
