@@ -14,6 +14,17 @@ namespace UnitTests.Utils
         public static JSchema DateTime() => String("date-time");
         public static JSchema Base64() => String("base64");
 
+        public static JSchema Enum(params string[] values)
+        {
+            var schema = String();
+            foreach (string value in values)
+            {
+                schema.Enum.Add(value);
+            }
+
+            return schema;
+        }
+
         public static JSchema Object() => new JSchema {Type = JSchemaType.Object};
 
         public static JSchema Array(JSchema item, int? minItems = null) =>
