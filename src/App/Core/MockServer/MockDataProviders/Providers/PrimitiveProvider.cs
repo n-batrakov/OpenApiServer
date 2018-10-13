@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 using Microsoft.OpenApi.Writers;
 
@@ -32,7 +33,8 @@ namespace OpenApiServer.Core.MockServer.MockDataProviders.Providers
                     writer.WriteValue(GetIntValue(schema));
                     return true;
                 case OpenApiSchemaType.Number:
-                    writer.WriteValue(GetNumberValue(schema));
+                    var rawValue = GetNumberValue(schema).ToString("F", CultureInfo.InvariantCulture);
+                    writer.WriteRaw(rawValue);
                     return true;
                 case OpenApiSchemaType.String:
                 case OpenApiSchemaType.Object:
@@ -49,7 +51,7 @@ namespace OpenApiServer.Core.MockServer.MockDataProviders.Providers
         {
             //TODO: MultipleOf
             var min = (int)(schema.Minimum ?? 0);
-            var max = (int)(schema.Maximum ?? int.MaxValue);
+            var max = (int)(schema.Maximum ?? 100);
             return Random.Next(min, max);
         }
 
@@ -57,7 +59,7 @@ namespace OpenApiServer.Core.MockServer.MockDataProviders.Providers
         {
             //TODO: MultipleOf
             var min = schema.Minimum ?? 0;
-            var max = schema.Maximum ?? double.MaxValue;
+            var max = schema.Maximum ?? 100;
             var number = Random.NextDouble();
             return min + (max - min) * number;
         }
