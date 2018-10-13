@@ -30,6 +30,14 @@ namespace UnitTests.Utils
             }
         }
 
+        public static void EnsureWrite(this IMockDataProvider sut, JSchema schema)
+        {
+            if (!TryGetMockData(sut, schema, out _))
+            {
+                throw new XunitException($"{sut.GetType().Name} is expected to write given schema, but did not.");
+            }
+        }
+
         public static bool TryGetMockData(this IMockDataProvider sut, JSchema schema, out string mockData)
         {
             var settings = new OpenApiSerializerSettings

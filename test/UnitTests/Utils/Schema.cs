@@ -25,7 +25,16 @@ namespace UnitTests.Utils
             return schema;
         }
 
-        public static JSchema Object() => new JSchema {Type = JSchemaType.Object};
+        public static JSchema Object(params (string Name, JSchema schema)[] properties) 
+        {
+            var schema = new JSchema { Type = JSchemaType.Object };
+            foreach (var (key, value) in properties)
+            {
+                schema.Properties[key] = value;
+            }
+
+            return schema;
+        }
 
         public static JSchema Array(JSchema item, int? minItems = null) =>
                 new JSchema
