@@ -8,10 +8,11 @@ namespace UnitTests.Utils
 
         public static JSchema Int() => new JSchema {Type = JSchemaType.Integer};
         public static JSchema Number() => new JSchema {Type = JSchemaType.Number};
-        public static JSchema String() => new JSchema {Type = JSchemaType.String};
+        public static JSchema String(string format = null) => new JSchema {Type = JSchemaType.String, Format = format};
         public static JSchema Boolean() => new JSchema {Type = JSchemaType.Boolean};
 
-        public static JSchema DateTime() => new JSchema {Type = JSchemaType.String, Format = "date-time"};
+        public static JSchema DateTime() => String("date-time");
+        public static JSchema Base64() => String("base64");
 
         public static JSchema Object() => new JSchema {Type = JSchemaType.Object};
 
