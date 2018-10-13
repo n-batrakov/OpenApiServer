@@ -13,28 +13,6 @@ namespace OpenApiServer.Core.MockServer.MockDataProviders.Internals
 {
     internal static class Extensions
     {
-        private static readonly Random Random = new Random();
-
-        public static IEnumerable<T> TakeRandom<T>(this IList<T> source,
-                                                   int minItems = 1,
-                                                   int maxItems = -1)
-        {
-            if (minItems > source.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(minItems), "min items can't be greater than source length.");
-            }
-
-            if (source.Count == 0)
-            {
-                return Enumerable.Empty<T>();
-            }
-
-            minItems = minItems < 0 ? 0 : minItems;
-            maxItems = maxItems < 0 ? source.Count : maxItems;
-            var numberOfItems = Random.Next(minItems, maxItems);
-            return Enumerable.Repeat(0, numberOfItems).Select(_ => source[Random.Next(0, source.Count)]);
-        }
-
         public static void AddRange<T>(this IDictionary<string, T> source,
                                        IDictionary<string, T> target,
                                        bool overwriteDuplicateKeys = true)

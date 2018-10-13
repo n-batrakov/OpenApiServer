@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Microsoft.OpenApi.Writers;
 
@@ -11,13 +11,15 @@ using OpenApiServer.Core.MockServer.MockDataProviders.Internals;
 
 namespace OpenApiServer.Core.MockServer.MockDataProviders.Providers
 {
-    public class CombinedGenerator : IMockDataProvider
+    public class CombinedSchemaDataProvider : IMockDataProvider
     {
+        private Random Random { get; }
         private IReadOnlyCollection<IMockDataProvider> Providers { get; }
 
-        public CombinedGenerator(IReadOnlyCollection<IMockDataProvider> providers)
+        public CombinedSchemaDataProvider(IReadOnlyCollection<IMockDataProvider> providers, Random random)
         {
             Providers = providers;
+            Random = random;
         }
 
         public bool TryWriteValue(IOpenApiWriter writer, JSchema schema)
@@ -34,16 +36,16 @@ namespace OpenApiServer.Core.MockServer.MockDataProviders.Providers
             return true;
         }
 
-        private static IEnumerable<JSchema> SelectSchemes(JSchema schema)
+        private IEnumerable<JSchema> SelectSchemes(JSchema schema)
         {
             if (schema.AnyOf?.Count > 0)
             {
-                yield return schema.AnyOf.TakeRandom().First();
+                yield return PickRandom(schema.AnyOf);
             }
 
             if (schema.OneOf?.Count > 0)
             {
-                yield return schema.OneOf.TakeRandom().First();
+                yield return PickRandom(schema.OneOf);
             }
 
             if (schema.AllOf?.Count > 0)
@@ -105,6 +107,13 @@ namespace OpenApiServer.Core.MockServer.MockDataProviders.Providers
             }
 
             return result;
+        }
+
+
+        private JSchema PickRandom(IList<JSchema> source)
+        {
+            var idx = Random.Next(0, source.Count);
+            return source[idx];
         }
     }
 }

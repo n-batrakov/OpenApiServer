@@ -42,7 +42,7 @@ namespace OpenApiServer.Core.MockServer.MockDataProviders
 
             providers.Add(new ArrayProvider(providers));
 
-            providers.Add(new CombinedGenerator(providers));
+            providers.Add(new CombinedSchemaDataProvider(providers, rnd));
             providers.Add(new ObjectProvider(providers, counter));
 
             return providers.ToArray();
