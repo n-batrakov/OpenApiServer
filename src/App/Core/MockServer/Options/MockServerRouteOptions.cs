@@ -15,7 +15,7 @@ namespace OpenApiServer.Core.MockServer.Options
                 {
                         Path = ".*",
                         Method = MockServerOptionsHttpMethod.Any,
-                        Handler = "proxy",
+                        Handler = "default",
                 };
     }
 }

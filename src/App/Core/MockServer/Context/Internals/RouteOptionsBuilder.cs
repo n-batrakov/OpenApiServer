@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -10,15 +11,19 @@ using OpenApiServer.Core.MockServer.Options;
 
 namespace OpenApiServer.Core.MockServer.Context.Internals
 {
-    internal static class RouteOptionsBuilder
+    public static class RouteOptionsBuilder
     {
         public static MockServerRouteOptions Build(RouteId route, IConfiguration config)
         {
-            return config.GetSection("routes")
-                         .GetChildren()
-                         .Where(x => IsRouteConfig(x, route))
-                         .Select(GetRouteOptions)
-                         .Aggregate(MergeRouteOptions);
+            var options = config.GetSection("routes")
+                                .GetChildren()
+                                .Where(x => IsRouteConfig(x, route))
+                                .Select(GetRouteOptions)
+                                .ToArray();
+
+            return options.Length == 0
+                           ? GetDefaultRouteOptions(route)
+                           : options.Aggregate(MergeRouteOptions);
         }
 
         private static MockServerRouteOptions MergeRouteOptions(MockServerRouteOptions target,
@@ -69,11 +74,51 @@ namespace OpenApiServer.Core.MockServer.Context.Internals
                         Config = routeConfig
                 };
 
+        private static MockServerRouteOptions GetDefaultRouteOptions(RouteId id) =>
+                new MockServerRouteOptions
+                {
+                        Path = id.Path,
+                        Method = ConvertMethod(id.Verb),
+                        Handler = "default",
+                        Config = new ConfigurationRoot(new List<IConfigurationProvider>()),
+                };
+
         private static T GetEnumValue<T>(IConfiguration configuration, string key) where T : struct
         {
             var str = configuration[key];
             Enum.TryParse<T>(str, ignoreCase: true, out var result);
             return result;
+        }
+
+        private static MockServerOptionsHttpMethod ConvertMethod(HttpMethod httpMethod)
+        {
+            switch (httpMethod)
+            {
+                case HttpMethod.Get:
+                    return MockServerOptionsHttpMethod.Get;
+                case HttpMethod.Put:
+                    return MockServerOptionsHttpMethod.Put;
+                case HttpMethod.Delete:
+                    return MockServerOptionsHttpMethod.Delete;
+                case HttpMethod.Post:
+                    return MockServerOptionsHttpMethod.Post;
+                case HttpMethod.Head:
+                    return MockServerOptionsHttpMethod.Head;
+                case HttpMethod.Trace:
+                    return MockServerOptionsHttpMethod.Trace;
+                case HttpMethod.Patch:
+                    return MockServerOptionsHttpMethod.Patch;
+                case HttpMethod.Connect:
+                    return MockServerOptionsHttpMethod.Connect;
+                case HttpMethod.Options:
+                    return MockServerOptionsHttpMethod.Options;
+                case HttpMethod.Custom:
+                    return MockServerOptionsHttpMethod.Any;
+                case HttpMethod.None:
+                    return MockServerOptionsHttpMethod.Any;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(httpMethod), httpMethod, null);
+            }
         }
     }
 }
