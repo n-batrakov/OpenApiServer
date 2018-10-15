@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
@@ -17,15 +16,21 @@ namespace UnitTests.ContextProviderTests
 {
     public class RouteOptionsBuilderTests
     {
-        [Fact]
-        public void CanBuildRouteOptions()
+        [Theory]
+        [InlineData(null, null)]
+        [InlineData("/foo/bar", "get")]
+        [InlineData("**", "get")]
+        [InlineData("/foo/*", "get")]
+        [InlineData("/foo/?ar", "get")]
+        [InlineData("/foo/bar", "any")]
+        public void CanBuildRouteOptions(string glob, string configMethod)
         {
-            var config = GetConfig("/", "get", "test");
-            var route = new RouteId("/", HttpMethod.Get);
+            var config = GetConfig(glob, configMethod, "test");
+            var route = new RouteId("/foo/bar", HttpMethod.Get);
 
             var expected = new MockServerRouteOptions
                            {
-                                   Path = "/",
+                                   Path = "/foo/bar",
                                    Method = MockServerOptionsHttpMethod.Get,
                                    Handler = "test"
                            };
@@ -54,7 +59,7 @@ namespace UnitTests.ContextProviderTests
         }
 
         [Fact]
-        public void ReturnDefaultOptionsIfNoRoutesConfigured()
+        public void ReturnDefaultsIfNoRoutesConfigured()
         {
             var config = GetConfig(new Dictionary<string, string>());
             var route = new RouteId("/", HttpMethod.Get);
@@ -71,7 +76,7 @@ namespace UnitTests.ContextProviderTests
             AssertEqual(expected, actual);
         }
 
-
+        
 
         private static void AssertEqual(MockServerRouteOptions expected, MockServerRouteOptions actual)
         {
