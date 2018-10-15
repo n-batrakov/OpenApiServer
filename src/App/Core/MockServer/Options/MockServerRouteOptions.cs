@@ -13,7 +13,7 @@ namespace OpenApiServer.Core.MockServer.Options
         public static MockServerRouteOptions Default =>
                 new MockServerRouteOptions
                 {
-                        Path = ".*",
+                        Path = "**",
                         Method = MockServerOptionsHttpMethod.Any,
                         Handler = "default",
                 };
