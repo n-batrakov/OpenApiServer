@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
+
+using DotNet.Globbing;
 
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +19,7 @@ namespace OpenApiServer.Core.MockServer.Context.Internals
             var options = config.GetSection("routes")
                                 .GetChildren()
                                 .Where(x => IsRouteConfig(x, route))
-                                .Select(GetRouteOptions)
+                                .Select(x => GetRouteOptions(x, route))
                                 .ToArray();
 
             return options.Length == 0
@@ -38,6 +39,10 @@ namespace OpenApiServer.Core.MockServer.Context.Internals
                    };
         }
 
+        /// <remarks>
+        /// Default values for `path` and `method` is `*, any`.
+        /// I.e. config without path and\or method always match.
+        /// </remarks>
         private static bool IsRouteConfig(IConfiguration config, RouteId route)
         {
             var path = config.GetValue<string>("path");
@@ -47,48 +52,44 @@ namespace OpenApiServer.Core.MockServer.Context.Internals
                 return IsMethodsMatch(method, route.Verb);
             }
 
-            var regexp = new Regex(path);
-            return regexp.IsMatch(route.Path) && IsMethodsMatch(method, route.Verb);
+            var glob = Glob.Parse(path);
+            return glob.IsMatch(route.Path) && IsMethodsMatch(method, route.Verb);
 
             bool IsMethodsMatch(string configMethod, HttpMethod routeMethod)
             {
-                const StringComparison comparison = StringComparison.OrdinalIgnoreCase;
+                if (string.IsNullOrEmpty(configMethod))
+                {
+                    return true;
+                }
 
-                if (configMethod.Equals("any", comparison))
+                if (configMethod.Equals("any", StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
 
                 var routeMethodString = routeMethod.ToString();
-                return configMethod.Equals(routeMethodString, comparison);
+                return configMethod.Equals(routeMethodString, StringComparison.OrdinalIgnoreCase);
             }
         }
 
-        private static MockServerRouteOptions GetRouteOptions(IConfiguration routeConfig) =>
+        private static MockServerRouteOptions GetRouteOptions(IConfiguration routeConfig, RouteId route) =>
                 new MockServerRouteOptions
                 {
-                        Path = routeConfig["path"],
-                        Method = GetEnumValue<MockServerOptionsHttpMethod>(routeConfig, "method"),
+                        Path = route.Path,
+                        Method = ConvertMethod(route.Verb),
 
                         Handler = routeConfig["handler"] ?? "default",
                         Config = routeConfig
                 };
 
-        private static MockServerRouteOptions GetDefaultRouteOptions(RouteId id) =>
+        private static MockServerRouteOptions GetDefaultRouteOptions(RouteId route) =>
                 new MockServerRouteOptions
                 {
-                        Path = id.Path,
-                        Method = ConvertMethod(id.Verb),
+                        Path = route.Path,
+                        Method = ConvertMethod(route.Verb),
                         Handler = "default",
                         Config = new ConfigurationRoot(new List<IConfigurationProvider>()),
                 };
-
-        private static T GetEnumValue<T>(IConfiguration configuration, string key) where T : struct
-        {
-            var str = configuration[key];
-            Enum.TryParse<T>(str, ignoreCase: true, out var result);
-            return result;
-        }
 
         private static MockServerOptionsHttpMethod ConvertMethod(HttpMethod httpMethod)
         {

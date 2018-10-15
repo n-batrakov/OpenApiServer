@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -10,6 +11,7 @@ using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Core.MockServer.Options;
 
 using Xunit;
+using Xunit.Sdk;
 
 namespace UnitTests.ContextProviderTests
 {
@@ -69,12 +71,26 @@ namespace UnitTests.ContextProviderTests
             AssertEqual(expected, actual);
         }
 
-        [SuppressMessage("ReSharper", "ParameterOnlyUsedForPreconditionCheck.Local")]
+
+
         private static void AssertEqual(MockServerRouteOptions expected, MockServerRouteOptions actual)
         {
-            Assert.Equal(expected.Path, actual.Path);
-            Assert.Equal(expected.Method, actual.Method);
-            Assert.Equal(expected.Handler, actual.Handler);
+            var comparison = StringComparison.OrdinalIgnoreCase;
+            if (!string.Equals(expected.Path, actual.Path, comparison))
+            {
+                throw new XunitException(GetErrorMessage("path", expected.Path, actual.Path));
+            }
+            if (expected.Method != actual.Method)
+            {
+                throw new XunitException(GetErrorMessage("method", expected.Method, actual.Method));
+            }
+            if (!string.Equals(expected.Handler, actual.Handler, comparison))
+            {
+                throw new XunitException(GetErrorMessage("handler", expected.Handler, actual.Handler));
+            }
+
+            string GetErrorMessage(string name, object expectedValue, object actualValue) => 
+                    $"Expected {name} is not equal to actual {name}.\r\nExpected: {expectedValue}\r\nActual: {actualValue}";
         }
 
 
@@ -97,7 +113,7 @@ namespace UnitTests.ContextProviderTests
 
         private static IConfiguration GetConfig(IDictionary<string, string> config)
         {
-            var sectionValues = config.ToDictionary(x => $"routes:0:{x}", x => x.Value);
+            var sectionValues = config.ToDictionary(x => $"routes:0:{x.Key}", x => x.Value);
 
             var configBuilder = new ConfigurationBuilder();
             configBuilder.AddInMemoryCollection(sectionValues);
