@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
 
+using OpenApiServer.Core.MockServer.Context;
 using OpenApiServer.Core.MockServer.Context.Internals;
 using OpenApiServer.Core.MockServer.Context.Types;
 

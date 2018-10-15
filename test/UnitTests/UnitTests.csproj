@@ -25,4 +25,10 @@
     </None>
   </ItemGroup>
 
+  
+
+  <ItemGroup>
+    <Folder Include="HandlersTests\" />
+  </ItemGroup>
+
 </Project>

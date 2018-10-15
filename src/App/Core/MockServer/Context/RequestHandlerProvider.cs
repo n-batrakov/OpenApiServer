@@ -7,9 +7,10 @@ using Microsoft.Extensions.Configuration;
 
 using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Core.MockServer.Exceptions;
+using OpenApiServer.Core.MockServer.Handlers;
 using OpenApiServer.Core.MockServer.Handlers.Internals;
 
-namespace OpenApiServer.Core.MockServer.Handlers
+namespace OpenApiServer.Core.MockServer.Context
 {
     public class RequestHandlerProvider
     {

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using OpenApiServer.Core.MockServer.Context;
 using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Core.MockServer.Exceptions;
 using OpenApiServer.Core.MockServer.Handlers;
