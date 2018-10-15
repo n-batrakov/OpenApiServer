@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Exceptions;
 using OpenApiServer.Core.MockServer.Handlers.Internals;
 
 namespace OpenApiServer.Core.MockServer.Handlers
@@ -14,12 +14,12 @@ namespace OpenApiServer.Core.MockServer.Handlers
     public class RequestHandlerProvider
     {
         private IDictionary<string, Type> Source { get; }
-        private RequestHandlerActivator HandlerActivator { get; }
+        private IServiceProvider ServiceProvider { get; }
 
-        public RequestHandlerProvider(IDictionary<string, Type> source, RequestHandlerActivator handlerActivator)
+        public RequestHandlerProvider(IDictionary<string, Type> source, IServiceProvider serviceProvider)
         {
             Source = source;
-            HandlerActivator = handlerActivator;
+            ServiceProvider = serviceProvider;
         }
 
         public IRequestHandler GetHandler(string id, IConfiguration handlerConfig, ResponseContext responseContext)
@@ -27,24 +27,26 @@ namespace OpenApiServer.Core.MockServer.Handlers
             Source.TryGetValue(id, out var handlerType);
             if (handlerType == null)
             {
-                throw new Exception($"Unable to find handler with name '{id}'.");
+                throw new HandlerNotFoundException(id);
             }
             if (!typeof(IRequestHandler).IsAssignableFrom(handlerType))
             {
-                throw new Exception($"Registered '{id}' handler it does not implement IRequestHandler.");
+                throw new MockServerException($"Registered '{id}' handler it does not implement IRequestHandler.");
             }
 
             object options = null;
 
             var attr = handlerType.GetCustomAttribute<RequestHandlerAttribute>();
-            if (attr?.Options != null)
+            if (handlerConfig != null && attr?.Options != null)
             {
                 var optionsType = attr.Options;
                 options = Activator.CreateInstance(optionsType);
                 handlerConfig.Bind(options);
             }
 
-            return HandlerActivator.CreateHandler(handlerType, new [] {options, responseContext});
+            return RequestHandlerActivator.CreateHandler(ServiceProvider,
+                                                         handlerType,
+                                                         new[] {options, responseContext});
         }
 
         public static RequestHandlerProvider FromAssemblies(IServiceProvider serviceProvider, params Assembly[] assemblies)
@@ -69,9 +71,7 @@ namespace OpenApiServer.Core.MockServer.Handlers
                 handlerMap.Add(key, type);
             }
 
-            var handlerFactory = serviceProvider.GetRequiredService<RequestHandlerActivator>();
-
-            return new RequestHandlerProvider(handlerMap, handlerFactory);
+            return new RequestHandlerProvider(handlerMap, serviceProvider);
 
             bool IsHandlerType(Type t) => typeof(IRequestHandler).IsAssignableFrom(t);
         }

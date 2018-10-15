@@ -5,22 +5,15 @@ using System.Reflection;
 
 namespace OpenApiServer.Core.MockServer.Handlers.Internals
 {
-    public class RequestHandlerActivator
+    public static class RequestHandlerActivator
     {
-        private IServiceProvider ServiceProvider { get; }
-
-        public RequestHandlerActivator(IServiceProvider serviceProvider)
+        public static IRequestHandler CreateHandler(IServiceProvider serviceProvider, Type handlerType, object[] args)
         {
-            ServiceProvider = serviceProvider;
-        }
-
-        public IRequestHandler CreateHandler(Type handlerType, object[] args)
-        {
-            var typeArgs = GetHandlerArgs(handlerType, args).ToArray();
+            var typeArgs = GetHandlerArgs(serviceProvider, handlerType, args).ToArray();
             return (IRequestHandler)Activator.CreateInstance(handlerType, typeArgs);
         }
 
-        private IEnumerable<object> GetHandlerArgs(Type handlerType, object[] args)
+        private static IEnumerable<object> GetHandlerArgs(IServiceProvider serviceProvider, Type handlerType, object[] args)
         {
             var ctor = handlerType
                        .GetConstructors(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
@@ -40,9 +33,9 @@ namespace OpenApiServer.Core.MockServer.Handlers.Internals
                 var type = ctorTypes[i];
                 var value = remainingArgs.FirstOrDefault(x => x != null && type.IsInstanceOfType(x));
 
-                if (value == null)
+                if (value == default)
                 {
-                    value = ServiceProvider.GetService(type);
+                    value = serviceProvider.GetService(type);
                 }
                 else
                 {
