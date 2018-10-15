@@ -15,7 +15,7 @@ namespace UnitTests.Utils
         {
         }
 
-        public InMemoryConfiguration(string root, IReadOnlyDictionary<string, string> values)
+        public InMemoryConfiguration(string root, IDictionary<string, string> values)
         {
             var configValues = string.IsNullOrEmpty(root)
                                        ? values

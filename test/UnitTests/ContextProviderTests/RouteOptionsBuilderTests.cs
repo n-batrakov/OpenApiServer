@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using OpenApiServer.Core.MockServer.Context.Internals;
 using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Core.MockServer.Options;
+
+using UnitTests.Utils;
 
 using Xunit;
 using Xunit.Sdk;
@@ -116,13 +117,7 @@ namespace UnitTests.ContextProviderTests
             return GetConfig(config);
         }
 
-        private static IConfiguration GetConfig(IDictionary<string, string> config)
-        {
-            var sectionValues = config.ToDictionary(x => $"routes:0:{x.Key}", x => x.Value);
-
-            var configBuilder = new ConfigurationBuilder();
-            configBuilder.AddInMemoryCollection(sectionValues);
-            return configBuilder.Build();
-        }
+        private static IConfiguration GetConfig(IDictionary<string, string> config) =>
+                new InMemoryConfiguration("routes:0", config);
     }
 }
