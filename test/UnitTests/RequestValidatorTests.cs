@@ -19,7 +19,7 @@ namespace UnitTests
         [Fact]
         public void CanValidateRequest()
         {
-            var ctx = RequestBuilder
+            var ctx = RouteContextBuilder
                       .FromUrl("/pets")
                       .WithSpec(TestData.Petstore.Get("/pets"))
                       .Build();
@@ -35,7 +35,7 @@ namespace UnitTests
         public void CanInvalidateRequestWithoutRequiredQueryParameter()
         {
             var spec = TestData.Petstore.Get("/pets").ConfiugureParameter("tags", x => x.Required = true);
-            var ctx = RequestBuilder.FromUrl("/pets").WithSpec(spec).Build();
+            var ctx = RouteContextBuilder.FromUrl("/pets").WithSpec(spec).Build();
             
 
             var actual = Sut.Validate(ctx);
@@ -48,7 +48,7 @@ namespace UnitTests
         public void CanValidateRequestWithRequiredQueryParameter()
         {
             var spec = TestData.Petstore.Get("/pets").ConfiugureParameter("tags", x => x.Required = true);
-            var ctx = RequestBuilder.FromUrl("/pets?tags=test").WithSpec(spec).Build();
+            var ctx = RouteContextBuilder.FromUrl("/pets?tags=test").WithSpec(spec).Build();
 
             var actual = Sut.Validate(ctx);
             var expected = HttpValidationStatus.Success();
@@ -60,7 +60,7 @@ namespace UnitTests
         public void CanInvalidateRequestWithMistypedParameter()
         {
             var spec = TestData.Petstore.Get("/pets");
-            var ctx = RequestBuilder.FromUrl("/pets?limit=false").WithSpec(spec).Build();
+            var ctx = RouteContextBuilder.FromUrl("/pets?limit=false").WithSpec(spec).Build();
 
             var actual = Sut.Validate(ctx);
             var expected = TestData
@@ -76,7 +76,7 @@ namespace UnitTests
         {
             var body = "{\"name\": \"name\", \"tag\": \"tag\"}";
             var spec = TestData.Petstore.Post("/pets");
-            var ctx = RequestBuilder.FromUrl("/pets").WithBody(body).WithSpec(spec).Build();
+            var ctx = RouteContextBuilder.FromUrl("/pets").WithBody(body).WithSpec(spec).Build();
 
             var actual = Sut.Validate(ctx);
             var expected = HttpValidationStatus.Success();
@@ -89,7 +89,7 @@ namespace UnitTests
         {
             var body = "{\"tag\": \"tag\"}";
             var spec = TestData.Petstore.Post("/pets");
-            var ctx = RequestBuilder.FromUrl("/pets").WithBody(body).WithSpec(spec).Build();
+            var ctx = RouteContextBuilder.FromUrl("/pets").WithBody(body).WithSpec(spec).Build();
             
             var actual = Sut.Validate(ctx);
             var expected = TestData.GetMissingParameterSchemaError("name", "'', line 1, position 1")
@@ -103,7 +103,7 @@ namespace UnitTests
         public void CanInvalidateRequestWithoutRequiredBody()
         {
             var spec = TestData.Petstore.Post("/pets");
-            var ctx = RequestBuilder.FromUrl("/pets").WithSpec(spec).Build();
+            var ctx = RouteContextBuilder.FromUrl("/pets").WithSpec(spec).Build();
 
             var actual = Sut.Validate(ctx);
             var expected = ValidationError.BodyRequired().AsStatus();

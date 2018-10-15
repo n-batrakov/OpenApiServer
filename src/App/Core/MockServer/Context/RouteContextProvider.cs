@@ -9,7 +9,6 @@ using Microsoft.OpenApi.Models;
 using OpenApiServer.Core.MockServer.Context.Internals;
 using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Core.MockServer.Context.Types.Spec;
-using OpenApiServer.Core.MockServer.Handlers;
 using OpenApiServer.Server.Logging;
 
 namespace OpenApiServer.Core.MockServer.Context

@@ -12,10 +12,10 @@ using OpenApiServer.Utils;
 
 namespace OpenApiServer.Core.MockServer.Context.Mapping
 {
-    public static class RequestContextSpecConverter
+    public static class OpenApiDocumentConverter
     {
         public static RouteSpec ConvertSpec(OpenApiOperation operation,
-                                                     IEnumerable<Microsoft.OpenApi.Models.OpenApiServer> globalServers)
+                                            IEnumerable<Microsoft.OpenApi.Models.OpenApiServer> globalServers)
         {
             var schemaConverter = new OpenApiSchemaConverter();
 
@@ -47,7 +47,7 @@ namespace OpenApiServer.Core.MockServer.Context.Mapping
         }
 
         private static IEnumerable<RouteSpecRequestBody> MapBody(OpenApiOperation operation,
-                                                               OpenApiSchemaConverter schemaConverter)
+                                                                 OpenApiSchemaConverter schemaConverter)
         {
             if (operation.RequestBody == null)
             {
@@ -65,13 +65,14 @@ namespace OpenApiServer.Core.MockServer.Context.Mapping
         }
 
         private static IEnumerable<RouteSpecResponse> MapResponses(OpenApiOperation operation,
-                                                                        OpenApiSchemaConverter schemaConverter)
+                                                                   OpenApiSchemaConverter schemaConverter)
         {
             foreach (var (statusCode, responseSpec) in operation.Responses)
             {
                 if (responseSpec.Content.Count == 0)
                 {
                     yield return new RouteSpecResponse("*/*", statusCode, new JSchema(), new string[0]);
+
                     yield break;
                 }
 

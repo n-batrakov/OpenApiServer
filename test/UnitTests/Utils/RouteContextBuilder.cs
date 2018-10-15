@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Linq;
 using OpenApiServer.Core.MockServer.Context.Mapping;
 using OpenApiServer.Core.MockServer.Context.Types;
+using OpenApiServer.Core.MockServer.Context.Types.Spec;
 using OpenApiServer.Core.MockServer.Handlers.Defaults;
 using OpenApiServer.Core.MockServer.MockDataProviders;
 using OpenApiServer.Core.MockServer.Options;
@@ -20,7 +21,7 @@ using RouteContext = OpenApiServer.Core.MockServer.Context.Types.RouteContext;
 
 namespace UnitTests.Utils
 {
-    public class RequestBuilder
+    public class RouteContextBuilder
     {
         private string Path { get; set; }
         private HttpMethod Method { get; set; }
@@ -29,9 +30,9 @@ namespace UnitTests.Utils
         private IQueryCollection Query { get; set; }
         private IFormCollection Form { get; set; }
         private string Body { get; set; }
-        private OpenApiOperation Spec { get; set; }
+        private RouteSpec Spec { get; set; }
 
-        private RequestBuilder()
+        private RouteContextBuilder()
         {
             Headers = new HeaderDictionary();
             Query = new QueryCollection();
@@ -39,9 +40,9 @@ namespace UnitTests.Utils
             Body = null;
         }
 
-        public static RequestBuilder FromUrl(string url, HttpMethod method = HttpMethod.Get)
+        public static RouteContextBuilder FromUrl(string url, HttpMethod method = HttpMethod.Get)
         {
-            var builder = new RequestBuilder();
+            var builder = new RouteContextBuilder();
             ApplyRouteAndQuery(builder, url);
             builder.Path = url;
             builder.Method = method;
@@ -51,8 +52,7 @@ namespace UnitTests.Utils
         public RouteContext Build()
         {
             var config = new MockServerRouteOptions();
-            var server = new Microsoft.OpenApi.Models.OpenApiServer[0];
-            var spec = RequestContextSpecConverter.ConvertSpec(Spec, server);
+            
             var callCtx = new RequestContext
                           {
                                   Route = Route,
@@ -66,29 +66,36 @@ namespace UnitTests.Utils
 
             var handler = new MockHandler(new MockDataProvider());
 
-            return new RouteContext(config, spec, callCtx, handler, NullLogger.Instance);
+            return new RouteContext(config, Spec, callCtx, handler, NullLogger.Instance);
         }
 
-        public RequestBuilder WithSpec(OpenApiOperation spec)
+        public RouteContextBuilder WithSpec(OpenApiOperation spec)
+        {
+            var server = new Microsoft.OpenApi.Models.OpenApiServer[0];
+            Spec = OpenApiDocumentConverter.ConvertSpec(spec, server);
+            return this;
+        }
+
+        public RouteContextBuilder WithSpec(RouteSpec spec)
         {
             Spec = spec;
             return this;
         }
 
-        public RequestBuilder WithBody(string body)
+        public RouteContextBuilder WithBody(string body)
         {
             Body = body;
             return this;
         }
 
-        public RequestBuilder WithHeaders(params (string Key, string Value)[] headers)
+        public RouteContextBuilder WithHeaders(params (string Key, string Value)[] headers)
         {
             var dict = headers.ToDictionary(x => x.Key, x => new StringValues(x.Value));
             Headers = new HeaderDictionary(dict);
             return this;
         }
 
-        public RequestBuilder WithForm(params (string Key, string Value)[] form)
+        public RouteContextBuilder WithForm(params (string Key, string Value)[] form)
         {
             var dict = form.ToDictionary(x => x.Key, x => new StringValues(x.Value));
             Form = new FormCollection(dict);
@@ -96,7 +103,7 @@ namespace UnitTests.Utils
         }
 
 
-        private static void ApplyRouteAndQuery(RequestBuilder builder, string url)
+        private static void ApplyRouteAndQuery(RouteContextBuilder builder, string url)
         {
             var split = url.Split("?");
             builder.Route = new RouteData();

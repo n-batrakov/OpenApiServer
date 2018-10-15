@@ -37,7 +37,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
                     responseSpec.Where(x => x.ContentType == "*/*" || x.ContentType == "application/json").ToArray();
             if (filterMediaType.Length == 0)
             {
-                throw new NotSupportedException("MockServer only supports 'application/json' or '*/*' for now.");
+                throw new NotSupportedException("Unable to find suitable response spec. MockServer only supports 'application/json' or '*/*' for now.");
             }
 
             var comparison = StringComparison.OrdinalIgnoreCase;

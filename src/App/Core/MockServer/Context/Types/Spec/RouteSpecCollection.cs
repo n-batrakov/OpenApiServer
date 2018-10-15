@@ -37,7 +37,7 @@ namespace OpenApiServer.Core.MockServer.Context.Types.Spec
                     foreach (var (verb, operation) in pathSpec.Operations)
                     {
                         var key = GetRouteId(spec, operation, verb, path);
-                        var specCtx = RequestContextSpecConverter.ConvertSpec(operation, spec.Servers);
+                        var specCtx = OpenApiDocumentConverter.ConvertSpec(operation, spec.Servers);
                         result[key] = specCtx;
                     }
                 }
