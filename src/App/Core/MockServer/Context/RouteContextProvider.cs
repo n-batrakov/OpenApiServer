@@ -31,7 +31,7 @@ namespace OpenApiServer.Core.MockServer.Context
             Logger = loggerFactory.CreateOpenApiLogger();
             HandlerProvider = handlerProvider;
 
-            Specs = new RouteSpecCollection(specs);
+            Specs = RouteSpecCollection.FromOpenApiDocuments(specs);
             Routes = Specs.Routes.ToArray();
         }
 

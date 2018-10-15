@@ -13,17 +13,20 @@ namespace OpenApiServer.Core.MockServer.Context.Types.Spec
 {
     public class RouteSpecCollection
     {
-        private IDictionary<RouteId, RouteSpec> Source { get; }
+        private IReadOnlyDictionary<RouteId, RouteSpec> Source { get; }
 
         public IEnumerable<RouteId> Routes => Source.Keys;
         public RouteSpec this[RouteId key] => Source[key];
 
-        public RouteSpecCollection(IEnumerable<OpenApiDocument> specs)
+        public RouteSpecCollection(IReadOnlyDictionary<RouteId, RouteSpec> source)
         {
-            Source = GetRouteSpecs(specs);
+            Source = source;
         }
 
-        private static IDictionary<RouteId, RouteSpec> GetRouteSpecs(IEnumerable<OpenApiDocument> specs)
+        public static RouteSpecCollection FromOpenApiDocuments(IEnumerable<OpenApiDocument> specs) =>
+                new RouteSpecCollection(GetRouteSpecs(specs));
+
+        private static IReadOnlyDictionary<RouteId, RouteSpec> GetRouteSpecs(IEnumerable<OpenApiDocument> specs)
         {
             var result = new Dictionary<RouteId, RouteSpec>();
 

@@ -15,7 +15,7 @@ using OpenApiServer.Core.MockServer.MockDataProviders.Internals;
 
 namespace OpenApiServer.Core.MockServer.Context.Internals
 {
-    internal static class RequestContextBuilder
+    public static class RequestContextBuilder
     {
         public static RequestContext Build(HttpContext ctx)
         {
