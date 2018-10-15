@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net;
 
 using Microsoft.OpenApi.Models;
 
@@ -46,10 +47,10 @@ namespace UnitTests.Utils
             return this;
         }
 
-        public RouteSpecBuilder WithResponse(JSchema schema, int statusCode = 200, string example = null)
+        public RouteSpecBuilder WithResponse(JSchema schema, HttpStatusCode statusCode = HttpStatusCode.OK, string contentType = "application/json")
         {
-            var examples = example == null ? new List<string>() : new List<string> {example};
-            var response = new RouteSpecResponse("application/json", statusCode.ToString(), schema, examples);
+            var statusCodeNum = (int)statusCode;
+            var response = new RouteSpecResponse(contentType, statusCodeNum.ToString(), schema, new List<string>());
             Responses.Add(response);
             return this;
         }
