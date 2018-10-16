@@ -1,14 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
-using OpenApiServer.Core.MockServer.Context;
 using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Core.MockServer.Exceptions;
 using OpenApiServer.Core.MockServer.Handlers;
@@ -117,40 +113,31 @@ namespace UnitTests.HandlersTests
 
         private static MergeHandler Sut(params Type[] handlerTypes)
         {
-            var handlerMap = handlerTypes.ToDictionary(x => x.GetCustomAttribute<RequestHandlerAttribute>().HandlerId);
-            var handlerProvider = CreateHandlerProvider(handlerMap);
+            var handlers = new HandlersCollection(handlerTypes);
 
-            var configValues = handlerMap.Keys.Select((x, i) => ($"handlers:{i}:handler", x)).ToArray();
+            var configValues = handlers.Keys.Select((x, i) => ($"handlers:{i}:handler", x)).ToArray();
             var config = new InMemoryConfiguration("", configValues);
 
-            return new MergeHandler(config, handlerProvider);
+            return new MergeHandler(config, handlers.HandlerProvider);
         }
 
         private static MergeHandler Sut(IConfiguration config, params Type[] handlers)
         {
-            var handlerMap = GetHandlerMap(handlers);
-            var handlerProvider = CreateHandlerProvider(handlerMap);
+            var handlerProvider = new HandlersCollection(handlers).HandlerProvider;
             return new MergeHandler(config, handlerProvider);
         }
 
-        private static IDictionary<string, Type> GetHandlerMap(params Type[] handlerTypes) =>
-                handlerTypes.ToDictionary(x => x.GetCustomAttribute<RequestHandlerAttribute>().HandlerId);
-
-        private static RequestHandlerProvider CreateHandlerProvider(IDictionary<string, Type> handlerMap)
-        {
-            var serviceProvider = new ServiceCollection().BuildServiceProvider();
-            return new RequestHandlerProvider(handlerMap, serviceProvider);
-        }
+        #region Test Types
 
         [RequestHandler("test1")]
         private class TestHandler1 : IRequestHandler
         {
             public Task<ResponseContext> HandleAsync(RouteContext request) =>
                     Task.FromResult(new ResponseContext
-                                    {
-                                            ContentType = "application/json",
-                                            Body = "{a: 42}"
-                                    });
+                    {
+                        ContentType = "application/json",
+                        Body = "{a: 42}"
+                    });
         }
 
         [RequestHandler("test2")]
@@ -158,10 +145,10 @@ namespace UnitTests.HandlersTests
         {
             public Task<ResponseContext> HandleAsync(RouteContext request) =>
                     Task.FromResult(new ResponseContext
-                                    {
-                                            ContentType = "application/json",
-                                            Body = "{b: 56}"
-                                    });
+                    {
+                        ContentType = "application/json",
+                        Body = "{b: 56}"
+                    });
         }
 
         [RequestHandler("test31")]
@@ -169,10 +156,10 @@ namespace UnitTests.HandlersTests
         {
             public Task<ResponseContext> HandleAsync(RouteContext request) =>
                     Task.FromResult(new ResponseContext
-                                    {
-                                            ContentType = "text/plain",
-                                            Body = "Test1"
-                                    });
+                    {
+                        ContentType = "text/plain",
+                        Body = "Test1"
+                    });
         }
 
         [RequestHandler("test32")]
@@ -180,10 +167,10 @@ namespace UnitTests.HandlersTests
         {
             public Task<ResponseContext> HandleAsync(RouteContext request) =>
                     Task.FromResult(new ResponseContext
-                                    {
-                                            ContentType = "text/plain",
-                                            Body = "Test2"
-                                    });
+                    {
+                        ContentType = "text/plain",
+                        Body = "Test2"
+                    });
         }
 
         [RequestHandler("test4")]
@@ -191,11 +178,13 @@ namespace UnitTests.HandlersTests
         {
             public Task<ResponseContext> HandleAsync(RouteContext request) =>
                     Task.FromResult(new ResponseContext
-                                    {
-                                            ContentType = "application/json",
-                                            StatusCode = HttpStatusCode.Unauthorized,
-                                            Body = "{success: false}"
-                                    });
+                    {
+                        ContentType = "application/json",
+                        StatusCode = HttpStatusCode.Unauthorized,
+                        Body = "{success: false}"
+                    });
         }
+
+        #endregion
     }
 }
