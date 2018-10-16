@@ -48,7 +48,8 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
                        GetHostFromOperation(request.Spec);
             if (host == null)
             {
-                throw new MockServerConfigurationException("Unable to find host to proxy the request.");
+                //throw new MockServerConfigurationException("Unable to find host to proxy the request.");
+                return Task.FromResult<ResponseContext>(null);
             }
 
             var hasHeader = request.Request.Headers.TryGetValue(ForwarderFromHeader, out var mockServerHeader);
@@ -140,7 +141,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 
         private static string GetHostFromOperation(RouteSpec spec)
         {
-            var specUrl = spec.Servers.FirstOrDefault();
+            var specUrl = spec?.Servers.FirstOrDefault();
             return specUrl == null ? null : UrlHelper.GetHost(specUrl);
         }
     }

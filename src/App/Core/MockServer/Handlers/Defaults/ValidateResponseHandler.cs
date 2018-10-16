@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using OpenApiServer.Core.MockServer.Context.Types;
 using OpenApiServer.Core.MockServer.Validation;
 using OpenApiServer.Core.MockServer.Validation.Types;
+using OpenApiServer.Utils;
 
 namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 {
@@ -36,7 +37,7 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
                         BreakPipeline = true,
                         StatusCode = HttpStatusCode.InternalServerError,
                         ContentType = "application/json",
-                        Body = JsonConvert.SerializeObject(httpValidationStatus)
+                        Body = JsonConvert.SerializeObject(httpValidationStatus, JsonSettings.Value)
                 };
     }
 }

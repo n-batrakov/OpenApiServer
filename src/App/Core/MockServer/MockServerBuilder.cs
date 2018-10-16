@@ -76,20 +76,18 @@ namespace OpenApiServer.Core.MockServer
 
             Task HandleResponseAsync(Task<ResponseContext> x)
             {
-                return x.IsCompletedSuccessfully ? HandleSuccess(x.Result) : HandleFault(x.Exception.InnerException);
-            }
+                if (x.IsCompletedSuccessfully)
+                {
+                    return x.Result == null ? HandleNullResponse(httpResponse) : HandleResponse(httpResponse, x.Result);
+                }
 
-            Task HandleSuccess(ResponseContext ctx) =>
-                    WriteResponse(httpResponse, ctx);
-
-            Task HandleFault(Exception e)
-            {
-                Logger.LogError(e, "An exception occured while handling request.");
-                return WriteException(httpResponse, e);
+                var exception = x.Exception.InnerException;
+                
+                return HandleException(httpResponse, exception);
             }
         }
 
-        private static Task WriteResponse(HttpResponse response, ResponseContext responseContext)
+        private static Task HandleResponse(HttpResponse response, ResponseContext responseContext)
         {
             response.StatusCode = (int)responseContext.StatusCode;
             response.ContentType = responseContext.ContentType;
@@ -104,8 +102,20 @@ namespace OpenApiServer.Core.MockServer
                            : response.WriteAsync(responseContext.Body);
         }
 
-        private static Task WriteException(HttpResponse response, Exception exception)
+        private Task HandleNullResponse(HttpResponse response)
         {
+            Logger.LogWarning("No handler processed the request");
+
+            response.StatusCode = 500;
+            response.ContentType = "text/plain";
+            var msg = "[NotProcessed] No handler processed the request. Check routes' `handler` option in the config.";
+            return response.WriteAsync(msg, Encoding.UTF8);
+        }
+
+        private Task HandleException(HttpResponse response, Exception exception)
+        {
+            Logger.LogError(exception, "An exception occured while handling request.");
+
             response.StatusCode = 500;
             response.ContentType = "text/plain";
             var msg = $"[{GetExceptionPrettyName(exception)}]: {exception.Message}";
