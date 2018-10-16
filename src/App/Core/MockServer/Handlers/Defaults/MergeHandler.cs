@@ -29,9 +29,9 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
             var responseTasks = InvokeHandlersAsync(request, handlersConfigs).ToArray();
             await Task.WhenAll(responseTasks).ConfigureAwait(false);
 
-            var responses = responseTasks.Select(x => x.Result);
+            var responses = responseTasks.Select(x => x.Result).ToArray();
 
-            return responses.Aggregate(ResponseContextExtensions.Merge);
+            return responses.Length == 0 ? null : responses.Aggregate(ResponseContextExtensions.Merge);
         }
 
         private IEnumerable<Task<ResponseContext>> InvokeHandlersAsync(RouteContext requestContext,
