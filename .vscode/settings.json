@@ -8,8 +8,8 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true,
-        "**/bin": true,
-        "**/obj": true,
+        "src/*/bin": true,
+        "src/*/obj": true,
         "**/*.sln": true
     }
 }
