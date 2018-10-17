@@ -14,17 +14,25 @@ namespace UnitTests.Utils
         private List<RouteSpecRequestParameter> Parameters { get; }
         private List<RouteSpecRequestBody> Bodies { get; }
         private List<RouteSpecResponse> Responses { get; }
+        private List<string> Servers { get; }
 
         public RouteSpecBuilder()
         {
             Parameters = new List<RouteSpecRequestParameter>();
             Bodies = new List<RouteSpecRequestBody>();
             Responses = new List<RouteSpecResponse>();
+            Servers = new List<string>();
         }
 
         public RouteSpec Build()
         {
-            return new RouteSpec(Parameters, Bodies, Responses, new string[0]);
+            return new RouteSpec(Parameters, Bodies, Responses, Servers);
+        }
+
+        public RouteSpecBuilder WithServer(string url)
+        {
+            Servers.Add(url);
+            return this;
         }
 
         public RouteSpecBuilder WithQueryParameter(string name, JSchema schema, bool required = false)

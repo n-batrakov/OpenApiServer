@@ -95,6 +95,12 @@ namespace UnitTests.Utils
             return this;
         }
 
+        public RouteContextBuilder WithHeaders(IDictionary<string, StringValues> headers)
+        {
+            Headers = new HeaderDictionary(headers.ToDictionary(x => x.Key, x => x.Value));
+            return this;
+        }
+
         public RouteContextBuilder WithForm(params (string Key, string Value)[] form)
         {
             var dict = form.ToDictionary(x => x.Key, x => new StringValues(x.Value));

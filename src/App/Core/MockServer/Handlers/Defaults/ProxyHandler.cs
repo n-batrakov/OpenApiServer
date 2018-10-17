@@ -48,7 +48,6 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
                        GetHostFromOperation(request.Spec);
             if (host == null)
             {
-                //throw new MockServerConfigurationException("Unable to find host to proxy the request.");
                 return Task.FromResult<ResponseContext>(null);
             }
 
@@ -104,25 +103,35 @@ namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 
         private static Task<ResponseContext> CreateResponseAsync(HttpResponseMessage sourceResponse)
         {
-            return sourceResponse.Content.ReadAsStringAsync().ContinueWith(CreateContext);
+            var ctx = new ResponseContext
+                      {
+                              ContentType = sourceResponse.Content?.Headers.ContentType?.ToString(),
+                              StatusCode = sourceResponse.StatusCode,
+                              Headers = GetHeaders()
+                      };
 
-            ResponseContext CreateContext(Task<string> body) =>
-                    new ResponseContext
-                    {
-                            ContentType = sourceResponse.Content.Headers.ContentType?.ToString(),
-                            StatusCode = sourceResponse.StatusCode,
-                            Body = body.Result,
-                            Headers = GetHeaders()
-                    };
+            return sourceResponse.Content == null
+                           ? Task.FromResult(ctx)
+                           : sourceResponse.Content.ReadAsStringAsync().ContinueWith(AssignBody);
+
+            ResponseContext AssignBody(Task<string> body)
+            {
+                ctx.Body = body.Result;
+                return ctx;
+            }
 
             IDictionary<string, StringValues> GetHeaders()
             {
-                // Setting {Transer-Encoding = chunked} on response results in invalid response.
-                var items = sourceResponse.Headers
-                                          .Where(x => x.Key != "Transfer-Encoding")
-                                          .Concat(sourceResponse.Content.Headers)
-                                          .ToDictionary(x => x.Key, x => new StringValues(x.Value.ToArray()));
-                return new Dictionary<string, StringValues>(items);
+                // Setting {Transfer-Encoding = chunked} on response results in error.
+                var items = sourceResponse.Headers.Where(x => x.Key != "Transfer-Encoding");
+
+                if (sourceResponse.Content != null)
+                {
+                    items = items.Concat(sourceResponse.Content.Headers);
+                }
+                
+                var headers = items.ToDictionary(x => x.Key, x => new StringValues(x.Value.ToArray()));
+                return new Dictionary<string, StringValues>(headers);
             }
         }
 
