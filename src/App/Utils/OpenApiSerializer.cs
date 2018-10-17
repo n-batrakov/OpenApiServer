@@ -11,17 +11,10 @@ namespace OpenApiServer.Utils
 {
     public static class OpenApiSerializer
     {
-        public static string Serialize(Action<IOpenApiWriter> callback,
-                                       OpenApiSpecVersion targetVersion = OpenApiSpecVersion.OpenApi3_0,
-                                       OpenApiFormat targetFormat = OpenApiFormat.Json)
+        public static string Serialize(Action<IOpenApiWriter> callback)
         {
-            var settings = new OpenApiSerializerSettings
-                           {
-                                   Format = OpenApiFormat.Json,
-                                   SpecVersion = targetVersion
-                           };
             var stringWriter = new StringWriter(CultureInfo.InvariantCulture);
-            var openApiWriter = new MyOpenApiJsonWriter(stringWriter, settings);
+            var openApiWriter = new OpenApiJsonWriter(stringWriter);
             callback(openApiWriter);
             return stringWriter.ToString();
         }
@@ -33,31 +26,11 @@ namespace OpenApiServer.Utils
             switch (targetFormat)
             {
                 case OpenApiFormat.Json:
-                    return SerializeAsJson(source, targetVersion);
+                    return source.SerializeAsJson(targetVersion);
                 case OpenApiFormat.Yaml:
-                    return SerializeAsYaml(source, targetVersion);
+                    return source.SerializeAsYaml(targetVersion);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(targetFormat), targetFormat, null);
-            }
-        }
-
-        private static string SerializeAsYaml(IOpenApiSerializable spec, OpenApiSpecVersion version) =>
-                Serialize(x => spec.Serialize(x, version), version, OpenApiFormat.Yaml);
-
-        private static string SerializeAsJson(IOpenApiSerializable spec, OpenApiSpecVersion version) =>
-                Serialize(x => spec.Serialize(x, version), version, OpenApiFormat.Json);
-
-
-        // See: https://github.com/Microsoft/OpenAPI.NET/issues/291
-        private class MyOpenApiJsonWriter : OpenApiJsonWriter
-        {
-            public MyOpenApiJsonWriter(TextWriter textWriter, OpenApiSerializerSettings settings) : base(textWriter, settings)
-            {
-            }
-
-            public override void WriteValue(DateTimeOffset value)
-            {
-                WriteValue(value.ToString("o"));
             }
         }
     }

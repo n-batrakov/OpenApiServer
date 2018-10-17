@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -95,6 +96,11 @@ namespace OpenApiServer.Core.MockServer
             foreach (var (key, value) in responseContext.Headers)
             {
                 response.Headers[key] = value;
+            }
+
+            if (responseContext.StatusCode == HttpStatusCode.NoContent)
+            {
+                return Task.CompletedTask;
             }
 
             return responseContext.Body == null

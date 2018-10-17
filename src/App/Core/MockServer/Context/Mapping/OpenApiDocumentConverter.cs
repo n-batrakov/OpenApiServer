@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Microsoft.OpenApi;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 
@@ -86,11 +87,17 @@ namespace OpenApiServer.Core.MockServer.Context.Mapping
         }
 
         private static IReadOnlyCollection<string> GetExamples(IDictionary<string, OpenApiExample> examples,
-                                                               params IOpenApiAny[] additionalExamples) =>
-                examples.Select(x => x.Value.Value)
-                        .Concat(additionalExamples)
-                        .Where(x => x != null)
-                        .Select(x => OpenApiSerializer.Serialize(x.Write))
-                        .ToArray();
+                                                               params IOpenApiAny[] additionalExamples)
+        {
+
+            return examples.Select(x => x.Value.Value)
+                           .Concat(additionalExamples)
+                           .Where(x => x != null)
+                           .Select(Serialize)
+                           .ToArray();
+        }
+
+        private static string Serialize(this IOpenApiAny any) =>
+                OpenApiSerializer.Serialize(x => any.Write(x, OpenApiSpecVersion.OpenApi3_0));
     }
 }

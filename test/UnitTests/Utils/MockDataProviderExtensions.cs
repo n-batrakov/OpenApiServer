@@ -1,6 +1,5 @@
 using System.IO;
 
-using Microsoft.OpenApi;
 using Microsoft.OpenApi.Writers;
 
 using Newtonsoft.Json.Schema;
@@ -38,16 +37,11 @@ namespace UnitTests.Utils
             }
         }
 
-        public static bool TryGetMockData(this IMockDataProvider sut, JSchema schema, out string mockData)
+        private static bool TryGetMockData(this IMockDataProvider sut, JSchema schema, out string mockData)
         {
-            var settings = new OpenApiSerializerSettings
-                           {
-                                   Format = OpenApiFormat.Json,
-                                   SpecVersion = OpenApiSpecVersion.OpenApi3_0
-                           };
             using (var textWriter = new StringWriter())
             {
-                var writer = new OpenApiJsonWriter(textWriter, settings);
+                var writer = new OpenApiJsonWriter(textWriter);
                 var isWritten = sut.TryWriteValue(writer, schema);
                 mockData = isWritten ? textWriter.ToString() : null;
 

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App", "src\App\App.csproj", "{02717FBA-72BF-4C95-8852-EC7E5DDB9F8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenApiServer", "src\App\OpenApiServer.csproj", "{02717FBA-72BF-4C95-8852-EC7E5DDB9F8E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "test\UnitTests\UnitTests.csproj", "{E837C431-CCFF-443F-855B-C3A7B49641BC}"
 EndProject

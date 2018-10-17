@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Microsoft.OpenApi;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 
@@ -103,7 +104,8 @@ namespace OpenApiServer.Core.MockServer.Context.Mapping
             {
                 return null;
             }
-            var json = OpenApiSerializer.Serialize(any.Write);
+
+            var json = OpenApiSerializer.Serialize(x => any.Write(x, OpenApiSpecVersion.OpenApi3_0));
             return JToken.Parse(json);
         }
     }
