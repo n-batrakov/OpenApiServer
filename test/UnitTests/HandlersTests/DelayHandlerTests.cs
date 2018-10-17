@@ -24,7 +24,7 @@ namespace UnitTests.HandlersTests
             stopwatch.Stop();
 
             Assert.Null(actual);
-            Assert.InRange(stopwatch.ElapsedMilliseconds, delayMilliseconds, delayMilliseconds * 10);
+            Assert.InRange(stopwatch.ElapsedMilliseconds, delayMilliseconds, long.MaxValue);
         }
     }
 }

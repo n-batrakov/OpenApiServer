@@ -25,7 +25,7 @@ namespace UnitTests.MockDataProviderTests.Fakes
 
         public bool TryWriteValue(IOpenApiWriter writer, JSchema schema)
         {
-            if (ShouldWrite == null || !ShouldWrite(schema))
+            if (ShouldWrite != null && !ShouldWrite(schema))
             {
                 return false;
             }
