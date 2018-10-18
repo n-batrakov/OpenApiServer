@@ -12,9 +12,8 @@ jobs:
       name: GitHub
       env: [PLATFORM=linux-x64]
       script:
-        - dotnet publish ./src/App -r $PLATFORM /property:Version=$(cat .version) -o ../../dist/$(echo $PATFORM)
-        - ls ./dist
-        - zip ./dist/$(echo $PLATFORM)
+        - dotnet publish ./src/App -r linux-x64 /property:Version=$(cat .version) -o ../../dist/linux-x64
+        - zip -r linux-x64.zip ./dist/linux-x64
       deploy:
         provider: releases
         api_key: $GITHUB_OAUTH_TOKEN
