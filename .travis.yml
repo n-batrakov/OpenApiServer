@@ -1,6 +1,7 @@
 stages:
   - name: test
   - name: deploy
+    if: branch = master
 
 env:
 - PLATFROM=win-x64
@@ -11,6 +12,7 @@ env:
 jobs:
   include:
     - stage: test
+      env: [PLATFORM=linux-x64]
       language: csharp
       mono: none
       dotnet: 2.1
