@@ -10,7 +10,10 @@ jobs:
       mono: none
       dotnet: 2.1
       name: GitHub
-      env: [PLATFORM=linux-x64]
+      env:
+        - PLATFORM=linux-x64
+        - PLATFORM=win-x64
+        - PLATFORM=osx-x64
       script:
         - dotnet publish ./src/App -r $PLATFORM /property:Version=$(cat .version) -o out
       deploy:
@@ -20,18 +23,3 @@ jobs:
         file_glob: true
         file: src/app/out/*
         skip_cleanup: true
-    - stage: deploy
-      language: node_js
-      name: NPM
-      env:
-        - PLATFORM=linux-x64
-      script:
-        - ls
-        - cd ./npm
-        - npm install
-        - npm test
-        - npm version $(cat .version)
-      deploy:
-        provider: npm
-        api_key: $NPM_API_KEY
-        email: $NPM_EMAIL
