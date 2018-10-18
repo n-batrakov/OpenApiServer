@@ -14,7 +14,7 @@ jobs:
       language: csharp
       mono: none
       dotnet: 2.1
-      script: dotnet test ./test/UnitTests -r $PLATFORM
+      script: dotnet test ./test/UnitTests
     - stage: deploy
       language: csharp
       mono: none
