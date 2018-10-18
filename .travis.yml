@@ -13,6 +13,7 @@ jobs:
       env: [PLATFORM=linux-x64]
       script:
         - dotnet publish ./src/App -r linux-x64 /property:Version=$(cat .version) -o ../../dist/linux-x64
+        - mkdir ./dist/zip
         - zip -r ./dist/zip/linux-x64.zip ./dist/linux-x64
       deploy:
         provider: releases
