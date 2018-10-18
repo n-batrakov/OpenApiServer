@@ -1,19 +1,7 @@
 stages:
   - name: test
   - name: deploy
-
-env:
-- PLATFORM=win-x64
-- PLATFORM=linux-x64
-- PLATFORM=osx-x64
-
-matrix:
-  exclude:
-    - env: PLATFORM=win-x64
-    - env: PLATFORM=linux-x64
-    - env: PLATFORM=osx-x64
-
-script: echo 'HERE'
+    if: branch = master
 
 jobs:
   include:
@@ -21,6 +9,10 @@ jobs:
       language: csharp
       mono: none
       dotnet: 2.1
+      env:
+        - PLATFORM=win-x64
+        - PLATFORM=linux-x64
+        - PLATFORM=osx-x64
       name: GitHub
       script:
         - dotnet publish ./src/App -r $PLATFORM /property:Version=$(cat .version) -o out
@@ -32,11 +24,11 @@ jobs:
         file: src/app/out/*
         skip_cleanup: true
     - stage: deploy
-      env: [PLATFORM=linux-x64]
       language: node_js
       name: NPM
       script:
-        - cd npm
+        - ls
+        - cd ./npm
         - npm install
         - npm test
         - npm version $(cat .version)
