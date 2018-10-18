@@ -11,8 +11,14 @@ env:
 jobs:
   include:
     - stage: test
+      language: csharp
+      mono: none
+      dotnet: 2.1
       script: dotnet test ./test/UnitTests -r $PLATFORM
     - stage: deploy
+      language: csharp
+      mono: none
+      dotnet: 2.1
       name: GitHub
       script:
         - dotnet publish ./src/App -r $PLATFORM /property:Version=$(cat .version) -o out
@@ -24,7 +30,8 @@ jobs:
         file: src/app/out/*
         skip_cleanup: true
     - stage: deploy
-      name: NPM 
+      language: node_js
+      name: NPM
       script:
         - cd ./src/npm
         - npm install
