@@ -2,13 +2,6 @@ stages:
   - name: test
   - name: deploy
     if: branch = master
-    
-env:
-  - PLATFORM=win-x64
-  - PLATFORM=linux-x64
-  - PLATFORM=osx-x64
-
-script: echo HERE!
 
 jobs:
   include:
@@ -17,6 +10,7 @@ jobs:
       mono: none
       dotnet: 2.1
       name: GitHub
+      env: [PLATFORM=linux-x64]
       script:
         - dotnet publish ./src/App -r $PLATFORM /property:Version=$(cat .version) -o out
       deploy:
