@@ -36,7 +36,7 @@ jobs:
       language: node_js
       name: NPM
       script:
-        - cd ./src/npm
+        - cd npm
         - npm install
         - npm test
         - npm version $(cat .version)
