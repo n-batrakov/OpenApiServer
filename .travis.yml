@@ -2,6 +2,13 @@ stages:
   - name: test
   - name: deploy
     if: branch = master
+    
+env:
+  - PLATFORM=win-x64
+  - PLATFORM=linux-x64
+  - PLATFORM=osx-x64
+
+script: echo HERE!
 
 jobs:
   include:
@@ -9,10 +16,6 @@ jobs:
       language: csharp
       mono: none
       dotnet: 2.1
-      env:
-        - PLATFORM=win-x64
-        - PLATFORM=linux-x64
-        - PLATFORM=osx-x64
       name: GitHub
       script:
         - dotnet publish ./src/App -r $PLATFORM /property:Version=$(cat .version) -o out
@@ -26,6 +29,8 @@ jobs:
     - stage: deploy
       language: node_js
       name: NPM
+      env:
+        - PLATFORM=linux-x64
       script:
         - ls
         - cd ./npm
