@@ -12,12 +12,13 @@ jobs:
       name: GitHub
       env: [PLATFORM=linux-x64]
       script:
-        - dotnet publish ./src/App -r $PLATFORM /property:Version=$(cat .version) -o ../../dist/$PATFORM
-        - zip ./dist/$PLATFORM
+        - dotnet publish ./src/App -r $PLATFORM /property:Version=$(cat .version) -o ../../dist/$(echo $PATFORM)
+        - ls ./dist
+        - zip ./dist/$(echo $PLATFORM)
       deploy:
         provider: releases
         api_key: $GITHUB_OAUTH_TOKEN
-        name: oas-$PLATFORM-$(cat .version)
+        name: oas-$(cat .version)
         file_glob: true
         file: ./dist/*
         skip_cleanup: true
