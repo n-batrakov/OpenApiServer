@@ -13,12 +13,10 @@ jobs:
       env: [PLATFORM=linux-x64]
       script:
         - dotnet publish ./src/App -r linux-x64 /property:Version=$(cat .version) -o ../../dist/linux-x64
-        - zip -r linux-x64.zip ./dist/linux-x64
-        - ls
-        - ls dist
+        - zip -r ./dist/zip/linux-x64.zip ./dist/linux-x64
       deploy:
         provider: releases
         api_key: $GITHUB_OAUTH_TOKEN
         name: oas-$(cat .version)
-        file: ./dist/linux-x64.zip
+        file: ./dist/zip/linux-x64.zip
         skip_cleanup: true
