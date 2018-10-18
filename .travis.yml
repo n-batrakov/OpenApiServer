@@ -1,13 +1,19 @@
 stages:
   - name: test
   - name: deploy
-    if: branch = master
 
 env:
 - PLATFROM=win-x64
 - PLATFORM=linux-x64
 - PLATFORM=osx-x64
 
+matrix:
+  exclude:
+    - env: PLATFROM=win-x64
+    - env: PLATFORM=linux-x64
+    - env: PLATFORM=osx-x64
+
+script: echo 'HERE'
 
 jobs:
   include:
@@ -16,7 +22,11 @@ jobs:
       language: csharp
       mono: none
       dotnet: 2.1
-      script: dotnet test ./test/UnitTests
+      script:
+        - cd ./test/UnitTests
+        - dotnet restore
+        - dotnet build
+        - dotnet test
     - stage: deploy
       language: csharp
       mono: none
