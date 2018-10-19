@@ -22,3 +22,14 @@ jobs:
         file_glob: true
         file: ./dist/zip/*
         skip_cleanup: true
+    - stage: deploy
+      language: node_js
+      name: NPM
+      install:
+        - cd ./npm
+        - npm ci
+        - npm version $(cat .version)
+      deploy:
+        provider: npm
+        api_key: $NPM_API_KEY
+        email: $NPM_EMAIL
