@@ -7,14 +7,14 @@ mkdir -p dist/zip
 for runtime in ${runtimes[@]}; do
     name=oas-${version}-${runtime}
 
-    dotnet publish ./src/App -r $runtime /property:Version=$version -o ../../dist/$runtime/oas
+    dotnet publish ./src/App -r $runtime /property:Version=$version -o ../../dist/$runtime
 
     cd ./dist/$runtime
 
     if [ $runtime = win-x64 ]; then
-        zip -r ../zip/$name.zip oas
+        zip -r ../zip/$name.zip .
     else 
-        tar -zcvf ../zip/$name.tar.gz oas
+        tar -zcvf ../zip/$name.tar.gz .
     fi
     
     cd ../..
