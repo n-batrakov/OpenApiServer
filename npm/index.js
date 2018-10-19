@@ -4,7 +4,7 @@ const path = require("path");
 const packageInfo = require(path.join(__dirname, "package.json"));
 const version = packageInfo.version;
 
-const root = `https://github.com/n-batrakov/OpenApiServer/releases/download/${version}/oas-${version}-`;
+const root = 'https://github.com/n-batrakov/OpenApiServer/releases/download/' + version + '/oas-' + version + '-';
 
 module.exports = binwrap({
   dirname: __dirname,
