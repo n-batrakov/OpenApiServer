@@ -25,5 +25,5 @@ jobs:
         api_key: $GITHUB_OAUTH_TOKEN
         name: $VERSION
         file_glob: true
-        file: ./dist/zip/*
+        file: ./zip/*
         skip_cleanup: true
