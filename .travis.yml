@@ -13,12 +13,13 @@ jobs:
       env: 
         - PLATFORM=linux-x64
         - VERSION=$(cat .version)
+        - BUILDNAME=oas-$PLATFORM-$VERSION
       script:
-        - dotnet publish ./src/App -r $PLATFORM /property:Version=$VERSION -o ../../dist/oas-$VERSION-$PLATFORM
+        - dotnet publish ./src/App -r $PLATFORM /property:Version=$VERSION -o ../../dist/$BUILDNAME
         - mkdir ./dist/zip
         - cd ./dist
-        - tar -zcvf ./oas-$VERSION-$PLATFORM -C ./zip
-        - zip -r ./zip/oas-$VERSION-$PLATFORM.zip ./oas-$VERSION-$PLATFORM
+        - tar -zcvf ./zip/$BUILDNAME.tag.gz ./$BUILDNAME 
+        - zip -r ./zip/$BUILDNAME.zip ./$BUILDNAME
       deploy:
         provider: releases
         api_key: $GITHUB_OAUTH_TOKEN
