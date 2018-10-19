@@ -10,20 +10,11 @@ jobs:
       mono: none
       dotnet: 2.1
       name: GitHub
-      env: 
-        - PLATFORM=linux-x64
-        - VERSION=$(cat .version)
-        - BUILDNAME=oas-$PLATFORM-$VERSION
-      script:
-        - dotnet publish ./src/App -r $PLATFORM /property:Version=$VERSION -o ../../dist/$BUILDNAME
-        - mkdir ./dist/zip
-        - cd ./dist
-        - tar -zcvf ./zip/$BUILDNAME.tag.gz ./$BUILDNAME 
-        - zip -r ./zip/$BUILDNAME.zip ./$BUILDNAME
+      script: ./scripts/release.sh
       deploy:
         provider: releases
         api_key: $GITHUB_OAUTH_TOKEN
         name: $VERSION
         file_glob: true
-        file: ./zip/*
+        file: ./dist/zip/*
         skip_cleanup: true
