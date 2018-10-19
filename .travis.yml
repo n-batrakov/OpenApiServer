@@ -24,6 +24,7 @@ jobs:
         skip_cleanup: true
     - stage: deploy
       language: node_js
+      node_js: node
       name: NPM
       install:
         - cd ./npm
