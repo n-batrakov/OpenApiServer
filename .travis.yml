@@ -16,9 +16,9 @@ jobs:
       script:
         - dotnet publish ./src/App -r $PLATFORM /property:Version=$VERSION -o ../../dist/oas-$VERSION-$PLATFORM
         - mkdir ./dist/zip
-        - cd ./dist/zip
-        - tar -zcvf ./oas-$VERSION-$PLATFORM
-        - zip -r ./oas-$VERSION-$PLATFORM.zip oas-$VERSION-$PLATFORM
+        - cd ./dist
+        - tar -zcvf ./oas-$VERSION-$PLATFORM -C ./zip
+        - zip -r ./zip/oas-$VERSION-$PLATFORM.zip ./oas-$VERSION-$PLATFORM
       deploy:
         provider: releases
         api_key: $GITHUB_OAUTH_TOKEN
