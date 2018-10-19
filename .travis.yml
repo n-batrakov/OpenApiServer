@@ -33,3 +33,4 @@ jobs:
         provider: npm
         api_key: $NPM_API_KEY
         email: $NPM_EMAIL
+        skip_cleanup: true
