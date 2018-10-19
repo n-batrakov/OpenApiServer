@@ -1,10 +1,10 @@
-const binwrap = require("binwrap");
-const path = require("path");
+var binwrap = require("binwrap");
+var path = require("path");
 
-const packageInfo = require(path.join(__dirname, "package.json"));
-const version = packageInfo.version;
+var packageInfo = require(path.join(__dirname, "package.json"));
+var version = packageInfo.version;
 
-const root = 'https://github.com/n-batrakov/OpenApiServer/releases/download/' + version + '/oas-' + version + '-';
+var root = 'https://github.com/n-batrakov/OpenApiServer/releases/download/' + version + '/oas-' + version + '-';
 
 module.exports = binwrap({
   dirname: __dirname,
