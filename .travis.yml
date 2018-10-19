@@ -11,6 +11,10 @@ jobs:
       dotnet: 2.1
       name: GitHub
       script: bash ./scripts/release.sh
+      before_deploy:
+      - git config --local user.name Traivs
+      - git config --local user.email dev@lasmera.com
+      - git tag "$(cat .version)"
       deploy:
         provider: releases
         api_key: $GITHUB_OAUTH_TOKEN
