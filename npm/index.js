@@ -2,10 +2,9 @@ const binwrap = require("binwrap");
 const path = require("path");
 
 const packageInfo = require(path.join(__dirname, "package.json"));
-//const version = packageInfo.version;
+const version = packageInfo.version;
 
-            //https://github.com/n-batrakov/OpenApiServer/releases/download/0.2.1/oas-0.2.1-linux-x64.tar.gz
-const root = `https://github.com/n-batrakov/OpenApiServer/releases/download/0.2.1/oas-0.2.1-`;
+const root = `https://github.com/n-batrakov/OpenApiServer/releases/download/${version}/oas-${version}-`;
 
 module.exports = binwrap({
   dirname: __dirname,

@@ -27,8 +27,8 @@ jobs:
       name: NPM
       install:
         - cd ./npm
-        - npm install
-        - npm version $(cat .version)
+        - npm install --ignore-scripts
+        - npm version $(cat ../version)
       deploy:
         provider: npm
         api_key: $NPM_API_KEY

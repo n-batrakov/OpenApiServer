@@ -8,7 +8,6 @@
   "scripts": {
     "install": "binwrap-install",
     "prepare": "binwrap-prepare",
-    "test": "binwrap-test",
     "prepublish": "npm test"
   },
   "bin": {
