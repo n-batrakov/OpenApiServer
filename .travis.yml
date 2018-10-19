@@ -27,7 +27,7 @@ jobs:
       name: NPM
       install:
         - cd ./npm
-        - npm ci
+        - npm install
         - npm version $(cat .version)
       deploy:
         provider: npm
