@@ -7,9 +7,7 @@
   "main": "index.js",
   "scripts": {
     "install": "binwrap-install",
-    "prepare": "binwrap-prepare",
-    "prepublish": "npm test",
-    "test": "echo Skip"
+    "prepare": "binwrap-prepare"
   },
   "bin": {
     "oas": "./bin/oas"
