@@ -17,7 +17,7 @@ using HttpMethod = System.Net.Http.HttpMethod;
 
 namespace OpenApiServer.Core.MockServer.Handlers.Defaults
 {
-    [RequestHandler("proxy")]
+    [RequestHandler("proxy", typeof(Options))]
     public class ProxyHandler : IRequestHandler
     {
         public class Options
