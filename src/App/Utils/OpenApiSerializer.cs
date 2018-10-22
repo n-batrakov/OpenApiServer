@@ -14,7 +14,7 @@ namespace OpenApiServer.Utils
         public static string Serialize(Action<IOpenApiWriter> callback)
         {
             var stringWriter = new StringWriter(CultureInfo.InvariantCulture);
-            var openApiWriter = new OpenApiJsonWriter(stringWriter);
+            var openApiWriter = new MyOpenApiWriter(stringWriter);
             callback(openApiWriter);
             return stringWriter.ToString();
         }
@@ -26,11 +26,24 @@ namespace OpenApiServer.Utils
             switch (targetFormat)
             {
                 case OpenApiFormat.Json:
-                    return source.SerializeAsJson(targetVersion);
+                    return Serialize(x => source.Serialize(x, targetVersion));
                 case OpenApiFormat.Yaml:
                     return source.SerializeAsYaml(targetVersion);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(targetFormat), targetFormat, null);
+            }
+        }
+
+        private class MyOpenApiWriter : OpenApiJsonWriter
+        {
+            public MyOpenApiWriter(TextWriter textWriter)
+                    : base(textWriter)
+            {
+            }
+
+            public override void WriteValue(DateTimeOffset value)
+            {
+                WriteValue(value.ToString("o"));
             }
         }
     }

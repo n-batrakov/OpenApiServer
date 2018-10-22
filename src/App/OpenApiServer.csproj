@@ -9,12 +9,11 @@
     <TieredCompilation>true</TieredCompilation>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageId>ITExpert.OpenApi</PackageId>
+    <PackageId>Lasmera.OpenApi</PackageId>
     <Authors>Nikita Batrakov</Authors>
-    <Owners>ITExpert</Owners>
+    <Owners>Lasmera</Owners>
     <Description>Development tools for OpenAPI Specification</Description>
-    <Copyright>ITExpert</Copyright>
-    <PackageIconUrl>https://s.gravatar.com/avatar/244f0b4fb377646c641b943478121721?s=80</PackageIconUrl>
+    <Copyright>Lasmera</Copyright>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
