@@ -5,11 +5,11 @@ stages:
 
 jobs:
   include:
-    - stage: deploy
+    - name: GitHub
+      stage: deploy
       language: csharp
       mono: none
       dotnet: 2.1
-      name: GitHub
       script: bash ./scripts/release.sh
       before_deploy:
       - git config --local user.name Traivs
@@ -22,10 +22,12 @@ jobs:
         file_glob: true
         file: ./dist/zip/*
         skip_cleanup: true
-    - stage: deploy
+
+        
+    - name: NPM
+      stage: deploy
       language: node_js
       node_js: node
-      name: NPM
       install:
         - cd ./npm
         - npm install --ignore-scripts
