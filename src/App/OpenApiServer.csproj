@@ -9,11 +9,11 @@
     <TieredCompilation>true</TieredCompilation>
   </PropertyGroup>
   <PropertyGroup>
-    <PackageId>Lasmera.OpenApi</PackageId>
+    <PackageId>nbatrakov.test</PackageId>
     <Authors>Nikita Batrakov</Authors>
-    <Owners>Lasmera</Owners>
-    <Description>Development tools for OpenAPI Specification</Description>
-    <Copyright>Lasmera</Copyright>
+    <Owners>nbatrakov</Owners>
+    <Description></Description>
+    <Copyright>nbatrakov</Copyright>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">

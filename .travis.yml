@@ -11,5 +11,6 @@ jobs:
       mono: none
       dotnet: 2.1
       script:
-        - dotnet pack ./src/App /property:Version=$(cat .version) -o ./dist
-        - dotnet publish ./dist/*.nupkg -k $NUGET_API_KEY
+        - dotnet pack ./src/App /property:Version=$(cat .version) -o ./../../dist
+        - cd ./dist
+        - dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k $NUGET_API_KEY
