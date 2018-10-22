@@ -5,7 +5,6 @@ stages:
 
 jobs:
   include:
-
     - name: Nuget
       stage: deploy
       language: csharp
