@@ -5,6 +5,41 @@ stages:
 
 jobs:
   include:
+    - name: GitHub
+      stage: deploy
+      language: csharp
+      mono: none
+      dotnet: 2.1
+      script: bash ./scripts/release.sh
+      before_deploy:
+      - git config --local user.name Traivs
+      - git config --local user.email dev@lasmera.com
+      - git tag "$(cat .version)"
+      deploy:
+        provider: releases
+        api_key: $GITHUB_OAUTH_TOKEN
+        name: $(cat .version)
+        file_glob: true
+        file: ./dist/zip/*
+        skip_cleanup: true
+
+        
+    - name: NPM
+      stage: deploy
+      language: node_js
+      node_js: node
+      install:
+        - cd ./npm
+        - npm install --ignore-scripts
+        - npm version $(cat ../.version)
+        - npm run prepare
+      deploy:
+        provider: npm
+        api_key: $NPM_API_KEY
+        email: $NPM_EMAIL
+        skip_cleanup: true
+
+
     - name: Nuget
       stage: deploy
       language: csharp
@@ -14,3 +49,25 @@ jobs:
         - dotnet pack ./src/App /property:Version=$(cat .version) -o ./../../dist
         - cd ./dist
         - dotnet nuget push *.nupkg -s https://api.nuget.org/v3/index.json -k $NUGET_API_KEY
+    
+    
+    - name: Docker
+      stage: deploy
+      language: csharp
+      mono: none
+      dotnet: 2.1
+      sudo: required
+      services:
+        - docker
+      env:
+        - VERSION=$(cat .version)
+        - DOCKER_IMAGE=nbatrakov/oas
+      script:
+        - dotnet publish ./src/App -r linux-x64 /property:Version=$VERSION -o ../../dist/docker
+        - docker build -t $DOCKER_IMAGE:$VERSION -t $DOCKER_IMAGE:latest .
+      before_deploy:
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      deploy:
+        provider: script
+        script: docker push $DOCKER_IMAGE:$VERSION &$ docker push $DOCKER_IMAGE:latest
+
